@@ -2,7 +2,8 @@ import * as React from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Loader2, Save } from "lucide-react"
+import { format } from "date-fns"
+import { Loader2, Plus, Save, ScanFace, Trash2 } from "lucide-react"
 
 import { PageHeader } from "@/components/page-header"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -10,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
+import { ConfirmDialog } from "@/components/confirm-dialog"
 import {
   Select,
   SelectContent,
@@ -18,6 +20,12 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useSettings, useUpdateSettings } from "@/features/settings/use-settings"
+import {
+  usePasskeys,
+  useRegisterPasskey,
+  useDeletePasskey,
+  type Passkey,
+} from "@/features/settings/use-passkeys"
 import { useTheme } from "@/context/theme-context"
 import { modeOrder, fanOrder, modeConfig, fanConfig } from "@/lib/ac-labels"
 import { getTimezoneOptions } from "@/lib/timezones"
@@ -46,6 +54,110 @@ const LANGUAGES = [
   { value: "tr", label: "Türkçe" },
   { value: "ar", label: "العربية" },
 ]
+
+function PasskeyRow({ passkey, onDelete, deleting }: { passkey: Passkey; onDelete: () => void; deleting: boolean }) {
+  const [confirmOpen, setConfirmOpen] = React.useState(false)
+
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-xl border px-4 py-3">
+      <div className="flex items-center gap-3 overflow-hidden">
+        <div className="bg-muted flex size-9 shrink-0 items-center justify-center rounded-full">
+          <ScanFace className="text-muted-foreground size-4" />
+        </div>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium">{passkey.friendly_name ?? "Passkey"}</p>
+          <p className="text-muted-foreground truncate text-xs">
+            Added {format(new Date(passkey.created_at), "MMM d, yyyy")}
+            {passkey.last_used_at &&
+              ` · last used ${format(new Date(passkey.last_used_at), "MMM d, yyyy")}`}
+          </p>
+        </div>
+      </div>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        disabled={deleting}
+        onClick={() => setConfirmOpen(true)}
+        aria-label="Remove passkey"
+      >
+        {deleting ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+      </Button>
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="Remove this passkey?"
+        description="You won't be able to sign in with this passkey anymore. This can't be undone."
+        confirmLabel="Remove"
+        onConfirm={onDelete}
+      />
+    </div>
+  )
+}
+
+function PasskeysCard() {
+  const { data: passkeys, isLoading } = usePasskeys()
+  const registerPasskey = useRegisterPasskey()
+  const deletePasskey = useDeletePasskey()
+  const [deletingId, setDeletingId] = React.useState<string | null>(null)
+
+  const handleDelete = async (passkeyId: string) => {
+    setDeletingId(passkeyId)
+    await deletePasskey.mutateAsync(passkeyId)
+    setDeletingId(null)
+  }
+
+  return (
+    <Card className="lg:col-span-2">
+      <CardHeader className="flex-row items-start justify-between space-y-0">
+        <div>
+          <CardTitle className="text-base">Passkeys</CardTitle>
+          <CardDescription>
+            Sign in with Face ID, Touch ID, Windows Hello, or a security key instead of a
+            password.
+          </CardDescription>
+        </div>
+        <Button
+          type="button"
+          size="sm"
+          onClick={() => registerPasskey.mutate()}
+          disabled={registerPasskey.isPending}
+          className="bg-foreground text-background hover:bg-foreground/90 shrink-0 gap-2 rounded-full"
+        >
+          {registerPasskey.isPending ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Plus className="size-4" />
+          )}
+          Add passkey
+        </Button>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="space-y-2">
+            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-14 w-full" />
+          </div>
+        ) : passkeys && passkeys.length > 0 ? (
+          <div className="space-y-2">
+            {passkeys.map((passkey) => (
+              <PasskeyRow
+                key={passkey.id}
+                passkey={passkey}
+                deleting={deletingId === passkey.id}
+                onDelete={() => handleDelete(passkey.id)}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            No passkeys yet. Add one so you can sign in without typing a password.
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
 
 export function SettingsPage() {
   const { data: settings, isLoading } = useSettings()
@@ -209,6 +321,8 @@ export function SettingsPage() {
             </div>
           </CardContent>
         </Card>
+
+        <PasskeysCard />
 
         <Card className="lg:col-span-2">
           <CardHeader>

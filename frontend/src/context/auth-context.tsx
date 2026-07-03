@@ -10,6 +10,8 @@ interface AuthContextValue {
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
   signUp: (email: string, password: string) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
+  signInWithPasskey: () => Promise<{ error: string | null }>
+  registerPasskey: () => Promise<{ error: string | null }>
 }
 
 const AuthContext = React.createContext<AuthContextValue | undefined>(undefined)
@@ -54,6 +56,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await supabase.auth.signOut()
   }, [])
 
+  const signInWithPasskey = React.useCallback(async () => {
+    try {
+      const { error } = await supabase.auth.signInWithPasskey()
+      return { error: error?.message ?? null }
+    } catch (err) {
+      // navigator.credentials.get() throws (rather than resolving with an
+      // error) if the user cancels the prompt or the browser lacks WebAuthn.
+      return { error: err instanceof Error ? err.message : "Passkey sign-in failed" }
+    }
+  }, [])
+
+  const registerPasskey = React.useCallback(async () => {
+    try {
+      const { error } = await supabase.auth.registerPasskey()
+      return { error: error?.message ?? null }
+    } catch (err) {
+      return { error: err instanceof Error ? err.message : "Couldn't register passkey" }
+    }
+  }, [])
+
   const value = React.useMemo<AuthContextValue>(
     () => ({
       session,
@@ -62,8 +84,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signIn,
       signUp,
       signOut,
+      signInWithPasskey,
+      registerPasskey,
     }),
-    [session, loading, signIn, signUp, signOut]
+    [session, loading, signIn, signUp, signOut, signInWithPasskey, registerPasskey]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
