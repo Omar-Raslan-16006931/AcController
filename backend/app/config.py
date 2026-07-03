@@ -13,10 +13,12 @@ class Settings(BaseSettings):
 
     cors_origins: str = "http://localhost:5173"
 
+    # gpio_pin/carrier_frequency/duty_cycle were removed — the production
+    # CarrierAC library (app/services/carrier_ac.py) ignores all three; its
+    # IR timing is derived directly from a captured base.txt file, not from
+    # configurable protocol parameters. ir_device is still real: it's the
+    # Linux device path passed to `ir-ctl -d <device>`.
     ir_device: str = "/dev/lirc0"
-    gpio_pin: int = 17
-    carrier_frequency: int = 38000
-    duty_cycle: float = 0.33
 
     ir_files_dir: str = "./ir_files"
     state_file_path: str = "./ac_state.json"
