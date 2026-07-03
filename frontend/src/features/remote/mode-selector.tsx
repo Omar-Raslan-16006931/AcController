@@ -14,29 +14,35 @@ export function ModeSelector({
   onChange: (mode: AcMode) => void
 }) {
   return (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="bg-secondary/60 flex items-center gap-1 rounded-2xl p-1">
       {modeOrder.map((mode) => {
         const config = modeConfig[mode]
         const Icon = config.icon
         const active = value === mode
         return (
-          <motion.button
+          <button
             key={mode}
             type="button"
             disabled={disabled}
             onClick={() => onChange(mode)}
-            whileTap={{ scale: 0.95 }}
             className={cn(
-              "flex flex-col items-center gap-2 rounded-2xl border py-4 text-sm font-medium transition-colors disabled:opacity-50",
-              active
-                ? "border-primary bg-primary/10 text-primary"
-                : "border-border hover:bg-accent/60 text-foreground/80"
+              "relative flex-1 cursor-pointer rounded-xl py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+              active ? "text-foreground" : "text-muted-foreground hover:text-foreground/80"
             )}
             aria-pressed={active}
           >
-            <Icon className={cn("size-6", active ? "" : config.className)} />
-            {config.label}
-          </motion.button>
+            {active && (
+              <motion.span
+                layoutId="mode-active-pill"
+                className="bg-background absolute inset-0 rounded-xl shadow-sm"
+                transition={{ type: "spring", stiffness: 400, damping: 32 }}
+              />
+            )}
+            <span className="relative flex items-center justify-center gap-1.5">
+              <Icon className={cn("size-4", active && "text-frost")} />
+              {config.label}
+            </span>
+          </button>
         )
       })}
     </div>
