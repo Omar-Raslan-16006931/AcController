@@ -1,0 +1,14 @@
+# Allows the `pi` user (running the ac-controller systemd service) to trigger
+# a reboot, shutdown, or service restart WITHOUT a password, and WITHOUT
+# granting broader sudo access.
+#
+# Install with:
+#   sudo cp systemd/ac-controller.sudoers /etc/sudoers.d/ac-controller
+#   sudo chmod 440 /etc/sudoers.d/ac-controller
+#   sudo visudo -c
+#
+# Adjust the paths below if `which reboot / shutdown / systemctl` differ on
+# your Pi OS image.
+pi ALL=(root) NOPASSWD: /sbin/reboot
+pi ALL=(root) NOPASSWD: /sbin/shutdown -h now
+pi ALL=(root) NOPASSWD: /bin/systemctl restart ac-controller

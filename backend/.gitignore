@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+ir_files/*.ir
+ac_state.json

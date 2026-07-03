@@ -1,0 +1,23 @@
+[Unit]
+Description=AcController FastAPI backend
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/AcController/backend
+EnvironmentFile=/home/pi/AcController/backend/.env
+ExecStart=/home/pi/AcController/backend/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=3
+
+# Allow the "restart"/"reboot"/"shutdown" endpoints to run `sudo systemctl
+# restart ac-controller` / `sudo reboot` / `sudo shutdown` — configure a
+# matching /etc/sudoers.d/ac-controller rule (see docs/DEPLOYMENT.md) rather
+# than running this service as root.
+NoNewPrivileges=false
+
+[Install]
+WantedBy=multi-user.target
