@@ -9,7 +9,12 @@ class Settings(BaseSettings):
 
     supabase_url: str
     supabase_service_role_key: str
-    supabase_jwt_secret: str
+
+    # Only required for projects still on Supabase's legacy JWT secret system.
+    # Projects using the current JWT signing keys system (asymmetric
+    # ES256/RS256, verified via the project's JWKS endpoint) don't need this
+    # set at all -- see app/dependencies.py.
+    supabase_jwt_secret: str | None = None
 
     cors_origins: str = "http://localhost:5173"
 
