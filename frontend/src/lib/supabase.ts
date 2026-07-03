@@ -20,6 +20,10 @@ export const supabase = createClient<Database>(
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
+      // Passkey (WebAuthn) support is experimental in supabase-js — opt in
+      // explicitly. Requires >= 2.105.0 and passkeys enabled on the project
+      // (Authentication -> Passkeys in the Supabase dashboard).
+      experimental: { passkey: true },
     },
   }
 )

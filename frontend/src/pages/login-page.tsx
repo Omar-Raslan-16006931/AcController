@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { motion, AnimatePresence } from "framer-motion"
-import { CheckCircle2, Loader2, Lock, Mail, Snowflake } from "lucide-react"
+import { CheckCircle2, Loader2, Lock, Mail, ScanFace, Snowflake } from "lucide-react"
 import { toast } from "sonner"
 
 import { useAuth } from "@/context/auth-context"
@@ -27,9 +27,10 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>
 
 export function LoginPage() {
-  const { session, loading, signIn, signUp } = useAuth()
+  const { session, loading, signIn, signUp, signInWithPasskey } = useAuth()
   const location = useLocation()
   const [submitting, setSubmitting] = React.useState(false)
+  const [passkeySubmitting, setPasskeySubmitting] = React.useState(false)
   const [mode, setMode] = React.useState<"sign-in" | "sign-up">("sign-in")
   const [signUpSuccess, setSignUpSuccess] = React.useState(false)
 
@@ -66,6 +67,17 @@ export function LoginPage() {
     setSubmitting(false)
     if (error) {
       toast.error("Couldn't sign in", { description: error })
+      return
+    }
+    toast.success("Welcome back")
+  }
+
+  const onPasskeySignIn = async () => {
+    setPasskeySubmitting(true)
+    const { error } = await signInWithPasskey()
+    setPasskeySubmitting(false)
+    if (error) {
+      toast.error("Couldn't sign in with passkey", { description: error })
       return
     }
     toast.success("Welcome back")
@@ -122,58 +134,83 @@ export function LoginPage() {
                   </Button>
                 </motion.div>
               ) : (
-                <motion.form
+                <motion.div
                   key={mode}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
-                  onSubmit={handleSubmit(onSubmit)}
                   className="space-y-4"
-                  noValidate
                 >
-                  <div className="space-y-1.5">
-                    <Label htmlFor="email">Email</Label>
-                    <div className="relative">
-                      <Mail className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-                      <Input
-                        id="email"
-                        type="email"
-                        autoComplete="email"
-                        placeholder="you@example.com"
-                        className="pl-9"
-                        aria-invalid={!!errors.email}
-                        {...register("email")}
-                      />
+                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="email">Email</Label>
+                      <div className="relative">
+                        <Mail className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                        <Input
+                          id="email"
+                          type="email"
+                          autoComplete="email webauthn"
+                          placeholder="you@example.com"
+                          className="pl-9"
+                          aria-invalid={!!errors.email}
+                          {...register("email")}
+                        />
+                      </div>
+                      {errors.email && (
+                        <p className="text-destructive text-xs">{errors.email.message}</p>
+                      )}
                     </div>
-                    {errors.email && (
-                      <p className="text-destructive text-xs">{errors.email.message}</p>
-                    )}
-                  </div>
 
-                  <div className="space-y-1.5">
-                    <Label htmlFor="password">Password</Label>
-                    <div className="relative">
-                      <Lock className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-                      <Input
-                        id="password"
-                        type="password"
-                        autoComplete={mode === "sign-in" ? "current-password" : "new-password"}
-                        placeholder="********"
-                        className="pl-9"
-                        aria-invalid={!!errors.password}
-                        {...register("password")}
-                      />
+                    <div className="space-y-1.5">
+                      <Label htmlFor="password">Password</Label>
+                      <div className="relative">
+                        <Lock className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                        <Input
+                          id="password"
+                          type="password"
+                          autoComplete={mode === "sign-in" ? "current-password webauthn" : "new-password"}
+                          placeholder="********"
+                          className="pl-9"
+                          aria-invalid={!!errors.password}
+                          {...register("password")}
+                        />
+                      </div>
+                      {errors.password && (
+                        <p className="text-destructive text-xs">{errors.password.message}</p>
+                      )}
                     </div>
-                    {errors.password && (
-                      <p className="text-destructive text-xs">{errors.password.message}</p>
-                    )}
-                  </div>
 
-                  <Button type="submit" size="lg" className="w-full" disabled={submitting}>
-                    {submitting && <Loader2 className="size-4 animate-spin" />}
-                    {mode === "sign-in" ? "Sign in" : "Create account"}
-                  </Button>
-                </motion.form>
+                    <Button type="submit" size="lg" className="w-full" disabled={submitting}>
+                      {submitting && <Loader2 className="size-4 animate-spin" />}
+                      {mode === "sign-in" ? "Sign in" : "Create account"}
+                    </Button>
+                  </form>
+
+                  {mode === "sign-in" && (
+                    <>
+                      <div className="flex items-center gap-3">
+                        <div className="bg-border h-px flex-1" />
+                        <span className="text-muted-foreground text-xs">or</span>
+                        <div className="bg-border h-px flex-1" />
+                      </div>
+
+                      <Button
+                        type="button"
+                        size="lg"
+                        onClick={onPasskeySignIn}
+                        disabled={passkeySubmitting}
+                        className="bg-foreground text-background hover:bg-foreground/90 w-full rounded-full shadow-sm"
+                      >
+                        {passkeySubmitting ? (
+                          <Loader2 className="size-4 animate-spin" />
+                        ) : (
+                          <ScanFace className="size-5" />
+                        )}
+                        Sign in with a passkey
+                      </Button>
+                    </>
+                  )}
+                </motion.div>
               )}
             </AnimatePresence>
           </CardContent>

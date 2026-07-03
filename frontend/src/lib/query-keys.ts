@@ -6,4 +6,5 @@ export const queryKeys = {
   timers: (userId: string) => ["timers", userId] as const,
   history: (userId: string, params: object) =>
     ["history", userId, params] as const,
+  passkeys: (userId: string) => ["passkeys", userId] as const,
 }
