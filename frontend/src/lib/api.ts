@@ -9,7 +9,7 @@
 import { supabase } from "@/lib/supabase"
 
 export const API_BASE_URL =
-  (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "http://localhost:8000"
+  (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "http://acpi.local:8000"
 
 export class ApiError extends Error {
   status: number
