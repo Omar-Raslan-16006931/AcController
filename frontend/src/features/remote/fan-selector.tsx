@@ -14,7 +14,7 @@ export function FanSelector({
   onChange: (fan: FanSpeed) => void
 }) {
   return (
-    <div className="bg-muted grid grid-cols-4 gap-1 rounded-2xl p-1">
+    <div className="bg-muted grid grid-cols-3 gap-1 rounded-2xl p-1">
       {fanOrder.map((fan) => {
         const active = value === fan
         return (

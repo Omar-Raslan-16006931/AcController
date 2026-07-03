@@ -30,12 +30,16 @@ create table if not exists public.settings (
   theme                text not null default 'system' check (theme in ('light', 'dark', 'system')),
   timezone             text not null default 'UTC',
   language             text not null default 'en',
-  carrier_frequency    integer not null default 38000 check (carrier_frequency between 30000 and 56000),
-  duty_cycle           numeric not null default 0.33 check (duty_cycle > 0 and duty_cycle <= 1),
-  gpio_pin             integer not null default 17 check (gpio_pin between 0 and 27),
-  default_temperature  integer not null default 24 check (default_temperature between 16 and 32),
-  default_mode         text not null default 'cool' check (default_mode in ('cool', 'heat', 'dry', 'fan', 'eco')),
-  default_fan          text not null default 'auto' check (default_fan in ('low', 'medium', 'high', 'auto')),
+  -- Mode/fan/temperature are restricted to exactly what the real Carrier
+  -- hardware supports (confirmed via IR capture analysis) — no fan-only
+  -- mode, no confirmed eco bit, no auto fan speed, no temperature outside
+  -- 20-28C. carrier_frequency/duty_cycle/gpio_pin were removed entirely:
+  -- the production CarrierAC library ignores them (it derives timing from
+  -- a captured base.txt), so they were never real, user-controllable
+  -- settings.
+  default_temperature  integer not null default 24 check (default_temperature between 20 and 28),
+  default_mode         text not null default 'cool' check (default_mode in ('cool', 'heat', 'dry')),
+  default_fan          text not null default 'low' check (default_fan in ('low', 'medium', 'high')),
   created_at           timestamptz not null default now(),
   updated_at           timestamptz not null default now(),
   unique (user_id)
@@ -158,9 +162,9 @@ create table if not exists public.command_history (
   id           uuid primary key default gen_random_uuid(),
   user_id      uuid not null references auth.users(id) on delete cascade,
   power        boolean not null,
-  temperature  integer,
-  mode         text check (mode in ('cool', 'heat', 'dry', 'fan', 'eco') or mode is null),
-  fan          text check (fan in ('low', 'medium', 'high', 'auto') or fan is null),
+  temperature  integer check (temperature between 20 and 28 or temperature is null),
+  mode         text check (mode in ('cool', 'heat', 'dry') or mode is null),
+  fan          text check (fan in ('low', 'medium', 'high') or fan is null),
   source       text not null default 'manual' check (source in ('manual', 'schedule', 'timer', 'system')),
   result       text not null check (result in ('success', 'failure')),
   error        text,

@@ -35,9 +35,10 @@ const scheduleSchema = z
     customDays: z.array(z.number()),
     runDate: z.string().optional(),
     power: z.boolean(),
-    temperature: z.coerce.number().min(16).max(32),
-    mode: z.enum(["cool", "heat", "dry", "fan", "eco"]),
-    fan: z.enum(["low", "medium", "high", "auto"]),
+    // Restricted to exactly what the real Carrier hardware supports.
+    temperature: z.coerce.number().min(20).max(28),
+    mode: z.enum(["cool", "heat", "dry"]),
+    fan: z.enum(["low", "medium", "high"]),
   })
   .refine((v) => v.repeat !== "custom" || v.customDays.length > 0, {
     message: "Pick at least one day",
@@ -63,7 +64,7 @@ function toFormValues(schedule?: Schedule): ScheduleFormInput {
     power: action.power ?? true,
     temperature: action.temperature ?? 24,
     mode: action.mode ?? "cool",
-    fan: action.fan ?? "auto",
+    fan: action.fan ?? "low",
   }
 }
 
@@ -224,7 +225,7 @@ export function ScheduleForm({ schedule, submitting, onSubmit, onCancel }: Sched
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-1.5">
               <Label htmlFor="temperature">Temp °C</Label>
-              <Input id="temperature" type="number" min={16} max={32} {...register("temperature")} />
+              <Input id="temperature" type="number" min={20} max={28} {...register("temperature")} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="mode">Mode</Label>

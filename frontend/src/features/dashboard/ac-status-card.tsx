@@ -35,7 +35,7 @@ export function AcStatusCard({ status }: { status: StatusResponse }) {
           <div className="flex flex-col gap-1.5">
             <div className={`flex items-center gap-1.5 text-sm font-medium ${mode.className}`}>
               <ModeIcon className="size-4" />
-              {mode.label} {ac.eco && "· Eco"}
+              {mode.label}
             </div>
             <div className="text-muted-foreground flex items-center gap-1.5 text-sm">
               <Wind className="size-4" />

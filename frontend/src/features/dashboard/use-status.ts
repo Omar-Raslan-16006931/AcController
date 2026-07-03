@@ -9,7 +9,6 @@ export interface AcState {
   temperature: number
   mode: AcMode
   fan: FanSpeed
-  eco: boolean
   updated_at: string
 }
 

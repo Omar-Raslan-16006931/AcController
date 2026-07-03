@@ -49,8 +49,12 @@ app.add_middleware(
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    # Unsupported mode/fan/temperature values (or any other malformed
+    # request body) are rejected here with a 400 before ever reaching the
+    # CarrierAC/IR layer — FastAPI's default is 422, overridden to 400 per
+    # the API contract this app uses for "bad request" errors.
     return JSONResponse(
-        status_code=422,
+        status_code=400,
         content={"detail": exc.errors()},
     )
 

@@ -34,12 +34,12 @@ const settingsSchema = z.object({
   theme: z.enum(["light", "dark", "system"]),
   timezone: z.string().min(1),
   language: z.string().min(1),
-  carrier_frequency: z.coerce.number().min(30000).max(56000),
-  duty_cycle: z.coerce.number().min(0.01).max(1),
-  gpio_pin: z.coerce.number().min(0).max(27),
-  default_temperature: z.coerce.number().min(16).max(32),
-  default_mode: z.enum(["cool", "heat", "dry", "fan", "eco"]),
-  default_fan: z.enum(["low", "medium", "high", "auto"]),
+  // Restricted to exactly what the real Carrier hardware supports (see
+  // ac-labels.ts) — carrier_frequency/duty_cycle/gpio_pin were removed
+  // entirely since the production CarrierAC library ignores them.
+  default_temperature: z.coerce.number().min(20).max(28),
+  default_mode: z.enum(["cool", "heat", "dry"]),
+  default_fan: z.enum(["low", "medium", "high"]),
 })
 
 type SettingsFormInput = z.input<typeof settingsSchema>
@@ -172,9 +172,6 @@ export function SettingsPage() {
           theme: settings.theme,
           timezone: settings.timezone,
           language: settings.language,
-          carrier_frequency: settings.carrier_frequency,
-          duty_cycle: settings.duty_cycle,
-          gpio_pin: settings.gpio_pin,
           default_temperature: settings.default_temperature,
           default_mode: settings.default_mode,
           default_fan: settings.default_fan,
@@ -190,7 +187,7 @@ export function SettingsPage() {
   if (isLoading) {
     return (
       <div>
-        <PageHeader title="Settings" description="Theme, defaults, and IR transmission parameters." />
+        <PageHeader title="Settings" description="Theme, defaults, and account security." />
         <div className="space-y-4">
           <Skeleton className="h-48 w-full" />
           <Skeleton className="h-48 w-full" />
@@ -204,7 +201,7 @@ export function SettingsPage() {
     <form onSubmit={onSubmit}>
       <PageHeader
         title="Settings"
-        description="Theme, defaults, and IR transmission parameters."
+        description="Theme, defaults, and account security."
         actions={
           <Button type="submit" disabled={updateSettings.isPending} className="gap-2">
             {updateSettings.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
@@ -283,7 +280,7 @@ export function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="default_temperature">Default temperature (°C)</Label>
-              <Input id="default_temperature" type="number" min={16} max={32} {...register("default_temperature")} />
+              <Input id="default_temperature" type="number" min={20} max={28} {...register("default_temperature")} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="default_mode">Default mode</Label>
@@ -323,29 +320,6 @@ export function SettingsPage() {
         </Card>
 
         <PasskeysCard />
-
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-base">IR transmission</CardTitle>
-            <CardDescription>
-              Advanced — only change these if you know your AC's IR protocol parameters.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="carrier_frequency">Carrier frequency (Hz)</Label>
-              <Input id="carrier_frequency" type="number" min={30000} max={56000} {...register("carrier_frequency")} />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="duty_cycle">Duty cycle</Label>
-              <Input id="duty_cycle" type="number" step={0.01} min={0.01} max={1} {...register("duty_cycle")} />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="gpio_pin">GPIO pin</Label>
-              <Input id="gpio_pin" type="number" min={0} max={27} {...register("gpio_pin")} />
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </form>
   )

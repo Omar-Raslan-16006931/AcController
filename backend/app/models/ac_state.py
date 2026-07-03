@@ -2,8 +2,15 @@ from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
 
-AcMode = Literal["cool", "heat", "dry", "fan", "eco"]
-FanSpeed = Literal["low", "medium", "high", "auto"]
+# Restricted to exactly what the real Carrier hardware supports, confirmed
+# via IR capture analysis in carrier_ac.py (see MODE_CODES/FAN_CODES/
+# TEMP_TABLE there). There is no "fan-only" mode, no confirmed "eco" bit,
+# no "auto" fan speed exposed to users, and no temperature outside 20-28C.
+# FastAPI/Pydantic rejects anything else with a 400 before it ever reaches
+# the IR transmission layer — see the RequestValidationError handler in
+# app/main.py.
+AcMode = Literal["cool", "heat", "dry"]
+FanSpeed = Literal["low", "medium", "high"]
 
 
 class AcState(BaseModel):
@@ -12,10 +19,9 @@ class AcState(BaseModel):
     transmitted command, not a live reading from the unit."""
 
     power: bool
-    temperature: int = Field(ge=16, le=32)
+    temperature: int = Field(ge=20, le=28)
     mode: AcMode
     fan: FanSpeed
-    eco: bool = False
     updated_at: str
 
 
@@ -24,7 +30,7 @@ class PowerRequest(BaseModel):
 
 
 class TemperatureRequest(BaseModel):
-    temperature: int = Field(ge=16, le=32)
+    temperature: int = Field(ge=20, le=28)
 
 
 class ModeRequest(BaseModel):

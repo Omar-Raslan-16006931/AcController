@@ -12,7 +12,6 @@ import os
 import tempfile
 from datetime import datetime, timezone
 from threading import Lock
-from typing import Optional
 
 from app.config import get_settings
 from app.models.ac_state import AcState
@@ -28,13 +27,14 @@ def _default_state() -> AcState:
     # Fallback before any command has ever been sent. Per-user preferred
     # defaults (from the Supabase `settings` table) are applied by the
     # `/api/power` "turn on" flow, not here — this is just a safe bootstrap
-    # value so `load_state()` always returns something valid.
+    # value so `load_state()` always returns something valid. "low" is used
+    # for fan (not "auto") since the real hardware's confirmed FanSpeed
+    # values exposed to users are low/medium/high only.
     return AcState(
         power=False,
         temperature=24,
         mode="cool",
-        fan="auto",
-        eco=False,
+        fan="low",
         updated_at=_now_iso(),
     )
 
@@ -73,28 +73,3 @@ def save_state(state: AcState) -> AcState:
                 os.remove(tmp_path)
 
     return state
-
-
-def update_state(
-    *,
-    power: Optional[bool] = None,
-    temperature: Optional[int] = None,
-    mode: Optional[str] = None,
-    fan: Optional[str] = None,
-    eco: Optional[bool] = None,
-) -> AcState:
-    current = load_state()
-    merged = current.model_copy(
-        update={
-            k: v
-            for k, v in {
-                "power": power,
-                "temperature": temperature,
-                "mode": mode,
-                "fan": fan,
-                "eco": eco,
-            }.items()
-            if v is not None
-        }
-    )
-    return save_state(merged)

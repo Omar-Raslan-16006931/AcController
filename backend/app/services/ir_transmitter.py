@@ -31,11 +31,12 @@ def _build_ir_file(state: AcState) -> str:
     settings = get_settings()
     os.makedirs(settings.ir_files_dir, exist_ok=True)
 
-    ac = CarrierAC(
-        gpio_pin=settings.gpio_pin,
-        frequency=settings.carrier_frequency,
-        duty_cycle=settings.duty_cycle,
-    )
+    # The real CarrierAC takes no constructor args — its IR timing comes
+    # from decoding backend/app/services/raw/ac_codes/base.txt directly
+    # (a real capture), not from configurable frequency/duty-cycle/GPIO
+    # settings. Those Settings-page fields no longer affect transmission
+    # with this library; they're kept only for display/reference.
+    ac = CarrierAC()
     ac.power(state.power)
     ac.set_temperature(state.temperature)
     ac.set_mode(state.mode)
