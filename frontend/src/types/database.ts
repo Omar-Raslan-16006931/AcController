@@ -12,8 +12,10 @@
 export type Json = string | number | boolean | null | { [key: string]: Json } | Json[]
 
 export type ThemePreference = "light" | "dark" | "system"
-export type AcMode = "cool" | "heat" | "dry" | "fan" | "eco"
-export type FanSpeed = "low" | "medium" | "high" | "auto"
+// Restricted to exactly what the real Carrier hardware supports: no
+// fan-only mode, no confirmed eco bit, no auto fan speed.
+export type AcMode = "cool" | "heat" | "dry"
+export type FanSpeed = "low" | "medium" | "high"
 export type RepeatRule = "once" | "daily" | "weekdays" | "weekends" | "custom"
 export type CommandSource = "manual" | "schedule" | "timer" | "system"
 export type CommandResult = "success" | "failure"
@@ -37,9 +39,6 @@ export interface Database {
           theme: ThemePreference
           timezone: string
           language: string
-          carrier_frequency: number
-          duty_cycle: number
-          gpio_pin: number
           default_temperature: number
           default_mode: AcMode
           default_fan: FanSpeed

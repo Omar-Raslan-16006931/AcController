@@ -37,8 +37,8 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass, field
 
-from decoder import decode_file, TimingProfile
-from generator import payload_to_ir_ctl_text, generate_from_base, FrameGaps
+from .decoder import decode_file, TimingProfile
+from .generator import payload_to_ir_ctl_text, generate_from_base, FrameGaps
 
 RAW_DIR = os.path.join(os.path.dirname(__file__), "raw", "ac_codes")
 

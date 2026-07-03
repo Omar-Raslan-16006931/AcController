@@ -14,7 +14,7 @@ export function ModeSelector({
   onChange: (mode: AcMode) => void
 }) {
   return (
-    <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
+    <div className="grid grid-cols-3 gap-3">
       {modeOrder.map((mode) => {
         const config = modeConfig[mode]
         const Icon = config.icon

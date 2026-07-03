@@ -10,7 +10,7 @@ RepeatRule = Literal["once", "daily", "weekdays", "weekends", "custom"]
 
 class ScheduleAction(BaseModel):
     power: bool
-    temperature: Optional[int] = Field(default=None, ge=16, le=32)
+    temperature: Optional[int] = Field(default=None, ge=20, le=28)
     mode: Optional[AcMode] = None
     fan: Optional[FanSpeed] = None
 
