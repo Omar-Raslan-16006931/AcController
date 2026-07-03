@@ -1,7 +1,8 @@
 /**
  * Thin client for the FastAPI backend running on the Raspberry Pi.
- * Base URL is configured via VITE_API_BASE_URL (e.g. http://acpi.local:8000
- * or a Cloudflare/Tailscale URL that fronts the Pi).
+ * Base URL is configured via VITE_API_BASE_URL — a Tailscale Funnel HTTPS
+ * URL (e.g. https://acpi.tail3f987b.ts.net) or a Cloudflare Tunnel URL that
+ * fronts the Pi.
  *
  * Every request attaches the current Supabase access token so the FastAPI
  * backend can verify the caller against Supabase Auth.
@@ -9,7 +10,7 @@
 import { supabase } from "@/lib/supabase"
 
 export const API_BASE_URL =
-  (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "http://acpi.local:8000"
+  (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "https://acpi.tail3f987b.ts.net"
 
 export class ApiError extends Error {
   status: number

@@ -43,7 +43,7 @@ Then:
      hardware is wired up (`SIMULATE_IR=1` generates packets but skips the
      `ir-ctl` call — useful while testing).
 3. Start it: `sudo systemctl start ac-controller`
-4. Verify: `curl http://localhost:8000/api/status/ping` and
+4. Verify: `curl https://acpi.tail3f987b.ts.net/api/status/ping` and
    `sudo journalctl -u ac-controller -f`
 5. Expose it to the internet so Vercel can reach it — either:
    - **Tailscale Funnel / Cloudflare Tunnel** (recommended: no port
