@@ -10,11 +10,11 @@ import { SystemMetricsGrid } from "@/features/dashboard/system-metrics-grid"
 
 function DashboardSkeleton() {
   return (
-    <div className="space-y-6">
-      <Skeleton className="h-40 w-full max-w-md" />
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+    <div className="space-y-3">
+      <Skeleton className="h-44 w-full rounded-[1.25rem]" />
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <Skeleton key={i} className="h-24 w-full" />
+          <Skeleton key={i} className="h-[104px] w-full rounded-[1.25rem]" />
         ))}
       </div>
     </div>
@@ -28,11 +28,16 @@ export function DashboardPage() {
     <div>
       <PageHeader
         title="Dashboard"
-        description="Live status of your AC and the Raspberry Pi controlling it."
         actions={
-          <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching} className="gap-2">
+          <Button
+            variant="secondary"
+            size="icon"
+            aria-label="Refresh"
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="size-9"
+          >
             <RefreshCw className={`size-4 ${isFetching ? "animate-spin" : ""}`} />
-            Refresh
           </Button>
         }
       />
@@ -40,18 +45,18 @@ export function DashboardPage() {
       {isLoading && <DashboardSkeleton />}
 
       {isError && !isLoading && (
-        <Card className="border-destructive/30">
-          <CardContent className="flex flex-col items-center gap-3 py-10 text-center">
+        <Card>
+          <CardContent className="flex flex-col items-center gap-3 py-8 text-center">
             <div className="bg-destructive/10 text-destructive flex size-12 items-center justify-center rounded-2xl">
               <WifiOff className="size-6" />
             </div>
             <div>
-              <p className="font-medium">Can't reach the Raspberry Pi</p>
-              <p className="text-muted-foreground mt-1 text-sm">
+              <p className="font-semibold">Can't reach the Raspberry Pi</p>
+              <p className="text-muted-foreground mt-1 text-[13px]">
                 Check that the backend is running and VITE_API_BASE_URL points to it.
               </p>
             </div>
-            <Button variant="outline" size="sm" onClick={() => refetch()}>
+            <Button variant="secondary" size="sm" onClick={() => refetch()}>
               Try again
             </Button>
           </CardContent>
@@ -59,9 +64,14 @@ export function DashboardPage() {
       )}
 
       {status && (
-        <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
+        <div className="space-y-3 lg:grid lg:grid-cols-[380px_1fr] lg:items-start lg:gap-4 lg:space-y-0">
           <AcStatusCard status={status} />
-          <SystemMetricsGrid system={status.system} />
+          <div>
+            <p className="text-muted-foreground mb-2 px-1 text-[13px] font-semibold tracking-[0.02em] uppercase lg:hidden">
+              Raspberry Pi
+            </p>
+            <SystemMetricsGrid system={status.system} />
+          </div>
         </div>
       )}
     </div>

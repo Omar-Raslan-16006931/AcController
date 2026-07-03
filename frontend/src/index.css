@@ -46,109 +46,115 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --font-sans: "Work Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-heading: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  /* iOS-native: always defer to the platform's system font (SF on Apple). */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
+    Roboto, "Helvetica Neue", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Segoe UI", Roboto, "Helvetica Neue", ui-sans-serif, system-ui, sans-serif;
   --animate-in: enter 0.2s ease-out;
   --animate-out: exit 0.2s ease-in;
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 0.875rem;
 
-  --background: oklch(0.98 0.003 90);
-  --foreground: oklch(0.17 0.008 260);
+  /* iOS light "grouped" surfaces: #F2F2F7 background, white cards. */
+  --background: oklch(0.962 0.003 265);
+  --foreground: oklch(0.16 0.006 260);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.17 0.008 260);
+  --card-foreground: oklch(0.16 0.006 260);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.17 0.008 260);
-  /* Confident, saturated indigo-blue — not washed out. */
-  --primary: oklch(0.56 0.19 258);
+  --popover-foreground: oklch(0.16 0.006 260);
+  /* iOS system blue (#007AFF) - vivid, not washed out. */
+  --primary: oklch(0.585 0.2 255);
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.955 0.004 260);
+  --secondary: oklch(0.945 0.005 260);
   --secondary-foreground: oklch(0.25 0.008 260);
-  --muted: oklch(0.955 0.004 260);
+  --muted: oklch(0.945 0.005 260);
   --muted-foreground: oklch(0.5 0.012 260);
-  --accent: oklch(0.93 0.03 258);
-  --accent-foreground: oklch(0.3 0.05 258);
-  --destructive: oklch(0.58 0.22 25);
+  --accent: oklch(0.93 0.03 255);
+  --accent-foreground: oklch(0.34 0.09 255);
+  --destructive: oklch(0.6 0.22 27);
   --destructive-foreground: oklch(0.985 0 0);
-  --success: oklch(0.62 0.16 155);
+  --success: oklch(0.64 0.17 150);
   --success-foreground: oklch(0.985 0 0);
-  --warning: oklch(0.75 0.16 75);
+  --warning: oklch(0.74 0.16 70);
   --warning-foreground: oklch(0.17 0.008 260);
-  --frost: oklch(0.56 0.19 258);
-  --frost-from: oklch(0.55 0.18 255);
-  --frost-to: oklch(0.6 0.19 268);
+  --frost: oklch(0.585 0.2 255);
+  --frost-from: oklch(0.575 0.2 250);
+  --frost-to: oklch(0.62 0.2 265);
   --mint: var(--frost);
   --glow: var(--frost);
   --brand-from: var(--frost-from);
   --brand-to: var(--frost-to);
   --tint-cool: oklch(0.65 0.13 250 / 12%);
   --tint-heat: oklch(0.7 0.15 50 / 12%);
-  --border: oklch(0.9 0.006 260);
-  --input: oklch(0.9 0.006 260);
-  --ring: oklch(0.56 0.19 258 / 0.45);
-  --chart-1: oklch(0.56 0.19 258);
+  --border: oklch(0.89 0.005 260);
+  --input: oklch(0.89 0.005 260);
+  --ring: oklch(0.585 0.2 255 / 0.45);
+  --chart-1: oklch(0.585 0.2 255);
   --chart-2: oklch(0.65 0.14 190);
   --chart-3: oklch(0.68 0.15 145);
   --chart-4: oklch(0.72 0.15 80);
   --chart-5: oklch(0.62 0.18 25);
-  --sidebar: oklch(0.98 0.003 90);
-  --sidebar-foreground: oklch(0.17 0.008 260);
-  --sidebar-primary: oklch(0.56 0.19 258);
+  --sidebar: oklch(0.962 0.003 265);
+  --sidebar-foreground: oklch(0.16 0.006 260);
+  --sidebar-primary: oklch(0.585 0.2 255);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.93 0.03 258);
-  --sidebar-accent-foreground: oklch(0.3 0.05 258);
-  --sidebar-border: oklch(0.9 0.006 260);
-  --sidebar-ring: oklch(0.56 0.19 258 / 0.45);
+  --sidebar-accent: oklch(0.93 0.03 255);
+  --sidebar-accent-foreground: oklch(0.34 0.09 255);
+  --sidebar-border: oklch(0.89 0.005 260);
+  --sidebar-ring: oklch(0.585 0.2 255 / 0.45);
 }
 
 .dark {
-  --background: oklch(0.15 0.005 260);
-  --foreground: oklch(0.94 0.004 90);
-  --card: oklch(0.195 0.006 260);
-  --card-foreground: oklch(0.94 0.004 90);
-  --popover: oklch(0.195 0.006 260);
-  --popover-foreground: oklch(0.94 0.004 90);
-  --primary: oklch(0.68 0.17 258);
-  --primary-foreground: oklch(0.13 0.02 258);
-  --secondary: oklch(0.25 0.006 260);
-  --secondary-foreground: oklch(0.94 0.004 90);
-  --muted: oklch(0.25 0.006 260);
-  --muted-foreground: oklch(0.64 0.01 260);
-  --accent: oklch(0.28 0.04 258);
-  --accent-foreground: oklch(0.85 0.05 258);
-  --destructive: oklch(0.68 0.2 25);
+  /* iOS dark "grouped" surfaces: near-black background, #1C1C1E cards. */
+  --background: oklch(0.115 0 0);
+  --foreground: oklch(0.95 0.002 260);
+  --card: oklch(0.225 0.004 265);
+  --card-foreground: oklch(0.95 0.002 260);
+  --popover: oklch(0.245 0.004 265);
+  --popover-foreground: oklch(0.95 0.002 260);
+  /* iOS dark system blue (#0A84FF). */
+  --primary: oklch(0.63 0.19 253);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.3 0.004 265);
+  --secondary-foreground: oklch(0.95 0.002 260);
+  --muted: oklch(0.3 0.004 265);
+  --muted-foreground: oklch(0.66 0.008 260);
+  --accent: oklch(0.31 0.05 255);
+  --accent-foreground: oklch(0.87 0.06 255);
+  --destructive: oklch(0.66 0.21 25);
   --destructive-foreground: oklch(0.99 0 0);
-  --success: oklch(0.72 0.15 155);
+  --success: oklch(0.72 0.17 152);
   --success-foreground: oklch(0.13 0.03 155);
   --warning: oklch(0.78 0.15 75);
   --warning-foreground: oklch(0.15 0.01 75);
-  --frost: oklch(0.68 0.17 258);
-  --frost-from: oklch(0.63 0.16 253);
-  --frost-to: oklch(0.72 0.17 270);
+  --frost: oklch(0.63 0.19 253);
+  --frost-from: oklch(0.6 0.19 248);
+  --frost-to: oklch(0.66 0.19 263);
   --mint: var(--frost);
   --glow: var(--frost);
   --brand-from: var(--frost-from);
   --brand-to: var(--frost-to);
   --tint-cool: oklch(0.55 0.13 250 / 16%);
   --tint-heat: oklch(0.6 0.15 50 / 16%);
-  --border: oklch(1 0 0 / 0.09);
-  --input: oklch(1 0 0 / 0.08);
-  --ring: oklch(0.68 0.17 258 / 0.5);
-  --chart-1: oklch(0.68 0.17 258);
+  --border: oklch(1 0 0 / 0.1);
+  --input: oklch(1 0 0 / 0.09);
+  --ring: oklch(0.63 0.19 253 / 0.5);
+  --chart-1: oklch(0.63 0.19 253);
   --chart-2: oklch(0.7 0.14 190);
   --chart-3: oklch(0.74 0.15 145);
   --chart-4: oklch(0.78 0.15 80);
   --chart-5: oklch(0.7 0.18 25);
-  --sidebar: oklch(0.17 0.006 260);
-  --sidebar-foreground: oklch(0.94 0.004 90);
-  --sidebar-primary: oklch(0.68 0.17 258);
-  --sidebar-primary-foreground: oklch(0.13 0.02 258);
-  --sidebar-accent: oklch(0.28 0.04 258);
-  --sidebar-accent-foreground: oklch(0.85 0.05 258);
-  --sidebar-border: oklch(1 0 0 / 0.09);
-  --sidebar-ring: oklch(0.68 0.17 258 / 0.5);
+  --sidebar: oklch(0.17 0.004 265);
+  --sidebar-foreground: oklch(0.95 0.002 260);
+  --sidebar-primary: oklch(0.63 0.19 253);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.31 0.05 255);
+  --sidebar-accent-foreground: oklch(0.87 0.06 255);
+  --sidebar-border: oklch(1 0 0 / 0.1);
+  --sidebar-ring: oklch(0.63 0.19 253 / 0.5);
 }
 
 @layer base {
@@ -162,6 +168,11 @@
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-sans);
     font-feature-settings: "cv11", "ss01";
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
+  }
+  button {
+    touch-action: manipulation;
   }
 }
 
@@ -179,6 +190,20 @@
     backdrop-filter: blur(16px) saturate(150%);
     -webkit-backdrop-filter: blur(16px) saturate(150%);
     border: 1px solid color-mix(in oklch, var(--foreground) 7%, transparent);
+  }
+
+  /* iOS navigation-bar / tab-bar material: heavy blur + hairline edge. */
+  .ios-bar {
+    background: color-mix(in oklch, var(--background) 72%, transparent);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+  }
+
+  .hairline-t {
+    box-shadow: 0 -0.5px 0 0 color-mix(in oklch, var(--foreground) 16%, transparent);
+  }
+  .hairline-b {
+    box-shadow: 0 0.5px 0 0 color-mix(in oklch, var(--foreground) 16%, transparent);
   }
 
   .brand-gradient {
@@ -204,5 +229,10 @@
 
   .pb-safe {
     padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  }
+
+  /* Reserve room for the fixed bottom tab bar (+ home indicator). */
+  .pb-tabbar {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
   }
 }

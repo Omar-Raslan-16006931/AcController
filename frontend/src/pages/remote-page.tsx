@@ -111,8 +111,8 @@ export function RemotePage() {
       />
 
       {isLoading && (
-        <Card className="mx-auto max-w-xs">
-          <CardContent className="flex flex-col items-center gap-4 pt-5 pb-5">
+        <Card className="mx-auto w-full max-w-sm">
+          <CardContent className="flex flex-col items-center gap-4">
             <Skeleton className="size-44 rounded-full sm:size-48" />
             <Skeleton className="h-9 w-full rounded-lg" />
             <Skeleton className="h-16 w-full rounded-lg" />
@@ -121,7 +121,7 @@ export function RemotePage() {
       )}
 
       {isError && !isLoading && (
-        <Card className="mx-auto max-w-xs">
+        <Card className="mx-auto w-full max-w-sm">
           <CardContent className="flex flex-col items-center gap-2.5 py-10 text-center">
             <div className="bg-destructive/10 text-destructive flex size-10 items-center justify-center rounded-xl">
               <WifiOff className="size-5" />
@@ -135,8 +135,8 @@ export function RemotePage() {
       )}
 
       {status && (
-        <Card className="mx-auto max-w-xs">
-          <CardContent className="flex flex-col items-center gap-4 pt-5 pb-5">
+        <Card className="mx-auto w-full max-w-sm">
+          <CardContent className="flex flex-col items-center gap-4 pt-1">
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <Zap className={autoSend ? "text-frost size-3.5" : "text-muted-foreground size-3.5"} />
@@ -175,7 +175,7 @@ export function RemotePage() {
             </div>
 
             {!autoSend && hasPendingChanges && (
-              <div className="bg-accent flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2">
+              <div className="bg-accent flex w-full items-center justify-between gap-2 rounded-2xl px-3 py-2">
                 <p className="text-xs font-medium">
                   {pendingCount} change{pendingCount > 1 ? "s" : ""} pending
                 </p>
