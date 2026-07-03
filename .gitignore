@@ -1,0 +1,29 @@
+# Node
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+
+# Python
+backend/.venv/
+backend/__pycache__/
+**/__pycache__/
+*.pyc
+
+# Environment secrets - never commit these
+.env
+.env.local
+.env.*.local
+backend/.env
+frontend/.env.local
+
+# Backend runtime files
+backend/ir_files/*.ir
+backend/ac_state.json
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.log
