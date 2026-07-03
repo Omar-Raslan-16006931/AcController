@@ -90,10 +90,10 @@ export function LoginPage() {
   }
 
   return (
-    <div className="bg-background relative flex min-h-svh items-center justify-center overflow-hidden p-6">
+    <div className="bg-background relative flex min-h-svh items-center justify-center overflow-hidden px-4 py-10 sm:p-6">
       <div
         aria-hidden
-        className="bg-primary/20 absolute top-1/4 left-1/2 size-[36rem] -translate-x-1/2 rounded-full blur-3xl"
+        className="bg-glow-orb absolute top-[18%] left-1/2 size-[26rem] -translate-x-1/2 blur-3xl sm:size-[36rem]"
       />
       <motion.div
         initial={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -101,19 +101,19 @@ export function LoginPage() {
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="relative z-10 w-full max-w-sm"
       >
-        <Card className="border-border/60 backdrop-blur-sm">
-          <CardHeader className="items-center text-center">
-            <div className="bg-primary text-primary-foreground mb-2 flex size-12 items-center justify-center rounded-2xl shadow-sm">
-              <Snowflake className="size-6" />
+        <Card className="card-glow border backdrop-blur-sm">
+          <CardHeader className="items-center pt-8 text-center">
+            <div className="brand-gradient mb-2 flex size-14 items-center justify-center rounded-2xl text-white shadow-lg shadow-primary/25">
+              <Snowflake className="size-7" />
             </div>
-            <CardTitle className="text-xl">AcController</CardTitle>
+            <CardTitle className="text-2xl font-bold">AcController</CardTitle>
             <CardDescription>
               {mode === "sign-in"
                 ? "Sign in to control your Carrier AC"
                 : "Create an account to get started"}
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pb-8">
             <AnimatePresence mode="wait">
               {signUpSuccess ? (
                 <motion.div
@@ -123,7 +123,7 @@ export function LoginPage() {
                   exit={{ opacity: 0, y: -8 }}
                   className="flex flex-col items-center gap-3 py-4 text-center"
                 >
-                  <CheckCircle2 className="text-primary size-10" />
+                  <CheckCircle2 className="text-mint size-10" />
                   <p className="text-sm font-medium">Check your email to confirm your account</p>
                   <p className="text-muted-foreground text-xs">
                     We sent a confirmation link. Once confirmed, sign in below with the same
@@ -139,11 +139,13 @@ export function LoginPage() {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
-                  className="space-y-4"
+                  className="space-y-5"
                 >
-                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="email">Email</Label>
+                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="label-accent">
+                        Email
+                      </Label>
                       <div className="relative">
                         <Mail className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
                         <Input
@@ -151,7 +153,7 @@ export function LoginPage() {
                           type="email"
                           autoComplete="email webauthn"
                           placeholder="you@example.com"
-                          className="pl-9"
+                          className="bg-foreground/5 h-11 pl-9"
                           aria-invalid={!!errors.email}
                           {...register("email")}
                         />
@@ -161,8 +163,10 @@ export function LoginPage() {
                       )}
                     </div>
 
-                    <div className="space-y-1.5">
-                      <Label htmlFor="password">Password</Label>
+                    <div className="space-y-2">
+                      <Label htmlFor="password" className="label-accent">
+                        Password
+                      </Label>
                       <div className="relative">
                         <Lock className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
                         <Input
@@ -170,7 +174,7 @@ export function LoginPage() {
                           type="password"
                           autoComplete={mode === "sign-in" ? "current-password webauthn" : "new-password"}
                           placeholder="********"
-                          className="pl-9"
+                          className="bg-foreground/5 h-11 pl-9"
                           aria-invalid={!!errors.password}
                           {...register("password")}
                         />
@@ -180,9 +184,9 @@ export function LoginPage() {
                       )}
                     </div>
 
-                    <Button type="submit" size="lg" className="w-full" disabled={submitting}>
+                    <Button type="submit" variant="brand" size="lg" className="h-12 w-full text-base" disabled={submitting}>
                       {submitting && <Loader2 className="size-4 animate-spin" />}
-                      {mode === "sign-in" ? "Sign in" : "Create account"}
+                      {mode === "sign-in" ? "Sign In" : "Create account"}
                     </Button>
                   </form>
 
@@ -196,13 +200,14 @@ export function LoginPage() {
 
                       <Button
                         type="button"
+                        variant="outline"
                         size="lg"
                         onClick={onPasskeySignIn}
                         disabled={passkeySubmitting}
-                        className="bg-foreground text-background hover:bg-foreground/90 w-full rounded-full shadow-sm"
+                        className="border-mint/40 text-mint hover:bg-mint/10 h-12 w-full text-base"
                       >
                         {passkeySubmitting ? (
-                          <Loader2 className="size-4 animate-spin" />
+                          <Loader2 className="size-5 animate-spin" />
                         ) : (
                           <ScanFace className="size-5" />
                         )}

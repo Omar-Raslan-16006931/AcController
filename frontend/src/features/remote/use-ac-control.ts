@@ -88,3 +88,23 @@ export function useSetFan() {
     (current, fan) => ({ ...current, fan })
   )
 }
+
+export interface DraftCommand {
+  temperature?: number
+  mode?: AcMode
+  fan?: FanSpeed
+}
+
+/**
+ * Combined "send now" mutation used when Automatic Send is off: fires
+ * whichever of temperature/mode/fan were changed locally as one request,
+ * matching the backend's /api/command endpoint (one IR transmission for
+ * the whole batch instead of one per change).
+ */
+export function useSendCommand() {
+  return useAcMutation<DraftCommand>(
+    "/api/command",
+    (draft) => ({ ...draft }),
+    (current, draft) => ({ ...current, ...draft })
+  )
+}

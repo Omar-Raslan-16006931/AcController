@@ -1,39 +1,70 @@
 import { motion } from "framer-motion"
-import { Power } from "lucide-react"
+import { Power, PowerOff } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-export function PowerButton({
+/**
+ * Two independent buttons instead of one toggle. IR is a one-way,
+ * occasionally-lossy signal, so the user needs to be able to mash
+ * "Power On" or "Power Off" repeatedly to make sure the AC actually
+ * receives the command — neither button is ever disabled while a
+ * request is in flight, and clicking doesn't depend on the current
+ * reported state.
+ */
+export function PowerButtons({
   on,
-  disabled,
-  onToggle,
+  connected = true,
+  onPowerOn,
+  onPowerOff,
 }: {
   on: boolean
-  disabled?: boolean
-  onToggle: () => void
+  connected?: boolean
+  onPowerOn: () => void
+  onPowerOff: () => void
 }) {
   return (
-    <motion.button
-      type="button"
-      disabled={disabled}
-      onClick={onToggle}
-      whileTap={{ scale: 0.94 }}
-      className={cn(
-        "relative flex size-32 items-center justify-center rounded-full shadow-lg transition-colors duration-300 focus-visible:ring-4 focus-visible:ring-ring/50 focus-visible:outline-none disabled:opacity-50 sm:size-36",
-        on ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-      )}
-      aria-pressed={on}
-      aria-label={on ? "Turn AC off" : "Turn AC on"}
-    >
-      {on && (
-        <motion.span
-          layoutId="power-glow"
-          className="bg-primary/30 absolute inset-0 rounded-full blur-xl"
-          animate={{ scale: [1, 1.15, 1] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-        />
-      )}
-      <Power className="relative size-12 sm:size-14" strokeWidth={2.25} />
-    </motion.button>
+    <div className="grid grid-cols-2 gap-3">
+      <motion.button
+        type="button"
+        disabled={!connected}
+        onClick={onPowerOn}
+        whileTap={{ scale: 0.96 }}
+        className={cn(
+          "relative flex h-24 flex-col items-center justify-center gap-1.5 rounded-2xl text-sm font-semibold shadow-md transition-colors focus-visible:ring-4 focus-visible:ring-ring/50 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-40 sm:h-28",
+          on ? "brand-gradient text-white shadow-primary/25" : "bg-secondary text-secondary-foreground hover:bg-secondary/70"
+        )}
+        aria-pressed={on}
+        aria-label="Turn AC on"
+      >
+        {on && (
+          <motion.span
+            layoutId="power-glow"
+            className="bg-glow-orb absolute inset-0 rounded-2xl opacity-60"
+            animate={{ opacity: [0.4, 0.7, 0.4] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+          />
+        )}
+        <Power className="relative size-8 sm:size-9" strokeWidth={2.25} />
+        <span className="relative">Power On</span>
+      </motion.button>
+
+      <motion.button
+        type="button"
+        disabled={!connected}
+        onClick={onPowerOff}
+        whileTap={{ scale: 0.96 }}
+        className={cn(
+          "relative flex h-24 flex-col items-center justify-center gap-1.5 rounded-2xl text-sm font-semibold shadow-md transition-colors focus-visible:ring-4 focus-visible:ring-ring/50 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-40 sm:h-28",
+          !on
+            ? "bg-destructive text-destructive-foreground"
+            : "bg-secondary text-secondary-foreground hover:bg-secondary/70"
+        )}
+        aria-pressed={!on}
+        aria-label="Turn AC off"
+      >
+        <PowerOff className="relative size-8 sm:size-9" strokeWidth={2.25} />
+        <span className="relative">Power Off</span>
+      </motion.button>
+    </div>
   )
 }
