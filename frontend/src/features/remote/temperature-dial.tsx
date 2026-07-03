@@ -9,10 +9,10 @@ const START_ANGLE = -135
 const END_ANGLE = 135
 const SWEEP = END_ANGLE - START_ANGLE
 
-const SIZE = 300
+const SIZE = 220
 const CENTER = SIZE / 2
-const RADIUS = 124
-const STROKE = 14
+const RADIUS = 92
+const STROKE = 10
 
 function angleForValue(value: number) {
   const t = (value - MIN_TEMP) / (MAX_TEMP - MIN_TEMP)
@@ -39,10 +39,9 @@ function describeArc(startAngle: number, endAngle: number) {
 }
 
 /**
- * A frictionless, single-purpose circular dial: drag (or tap) anywhere on
- * the ring to preview a temperature in real time, release to commit it.
- * Committing only on release/keypress — not on every pointermove — keeps
- * this from firing a flood of requests mid-drag.
+ * Drag (or tap) anywhere on the ring to preview a temperature in real time,
+ * release to commit it. Committing only on release/keypress — not on every
+ * pointermove — keeps this from firing a flood of requests mid-drag.
  */
 export function TemperatureDial({
   value,
@@ -111,96 +110,64 @@ export function TemperatureDial({
   const handlePos = polarToCartesian(angleForValue(displayValue))
   const settleTransition = isDragging
     ? { duration: 0 }
-    : { type: "spring" as const, stiffness: 320, damping: 28 }
+    : { type: "spring" as const, stiffness: 340, damping: 30 }
 
   return (
-    <div className="flex flex-col items-center gap-3">
-      <div
-        role="slider"
-        tabIndex={disabled ? -1 : 0}
-        aria-label="Temperature"
-        aria-valuemin={MIN_TEMP}
-        aria-valuemax={MAX_TEMP}
-        aria-valuenow={displayValue}
-        aria-valuetext={`${displayValue} degrees Celsius`}
-        aria-disabled={disabled}
-        onKeyDown={handleKeyDown}
-        className={cn(
-          "relative touch-none select-none rounded-full focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
-          disabled && "pointer-events-none opacity-40"
-        )}
+    <div
+      role="slider"
+      tabIndex={disabled ? -1 : 0}
+      aria-label="Temperature"
+      aria-valuemin={MIN_TEMP}
+      aria-valuemax={MAX_TEMP}
+      aria-valuenow={displayValue}
+      aria-valuetext={`${displayValue} degrees Celsius`}
+      aria-disabled={disabled}
+      onKeyDown={handleKeyDown}
+      className={cn(
+        "relative touch-none select-none rounded-full focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
+        disabled && "pointer-events-none opacity-40"
+      )}
+    >
+      <svg
+        ref={svgRef}
+        viewBox={`0 0 ${SIZE} ${SIZE}`}
+        className="size-44 cursor-pointer sm:size-48"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
       >
-        <svg
-          ref={svgRef}
-          viewBox={`0 0 ${SIZE} ${SIZE}`}
-          className="size-64 cursor-pointer sm:size-72"
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
-        >
-          <path
-            d={trackPath}
-            fill="none"
-            stroke="var(--color-border)"
-            strokeWidth={STROKE}
-            strokeLinecap="round"
-          />
-          {fillPath && (
-            <path
-              d={fillPath}
-              fill="none"
-              stroke="var(--color-frost)"
-              strokeWidth={STROKE}
-              strokeLinecap="round"
-            />
-          )}
-          <motion.circle
-            cx={handlePos.x}
-            cy={handlePos.y}
-            r={STROKE / 2 + 5}
-            fill="var(--color-background)"
-            stroke="var(--color-frost)"
-            strokeWidth={3}
-            animate={{ cx: handlePos.x, cy: handlePos.y }}
-            transition={settleTransition}
-          />
-          <text
-            x={polarToCartesian(START_ANGLE).x}
-            y={polarToCartesian(START_ANGLE).y}
-            textAnchor="middle"
-            dominantBaseline="hanging"
-            className="fill-muted-foreground font-heading text-[11px]"
-          >
-            {MIN_TEMP}°
-          </text>
-          <text
-            x={polarToCartesian(END_ANGLE).x}
-            y={polarToCartesian(END_ANGLE).y}
-            textAnchor="middle"
-            dominantBaseline="hanging"
-            className="fill-muted-foreground font-heading text-[11px]"
-          >
-            {MAX_TEMP}°
-          </text>
-        </svg>
+        <path d={trackPath} fill="none" stroke="var(--color-border)" strokeWidth={STROKE} strokeLinecap="round" />
+        {fillPath && (
+          <path d={fillPath} fill="none" stroke="var(--color-frost)" strokeWidth={STROKE} strokeLinecap="round" />
+        )}
+        <motion.circle
+          cx={handlePos.x}
+          cy={handlePos.y}
+          r={STROKE / 2 + 4}
+          fill="var(--color-background)"
+          stroke="var(--color-frost)"
+          strokeWidth={2.5}
+          animate={{ cx: handlePos.x, cy: handlePos.y }}
+          transition={settleTransition}
+        />
+      </svg>
 
-        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-          <AnimatePresence mode="popLayout">
-            <motion.div
-              key={displayValue}
-              initial={{ opacity: 0, y: 14, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -14, scale: 0.9 }}
-              transition={{ type: "spring", stiffness: 380, damping: 28 }}
-              className="font-heading text-7xl font-bold tabular-nums sm:text-8xl"
-            >
-              {displayValue}
-              <span className="text-muted-foreground align-top text-2xl font-medium">°</span>
-            </motion.div>
-          </AnimatePresence>
-          <p className="text-muted-foreground mt-1 text-xs font-light">Drag the ring to adjust</p>
-        </div>
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={displayValue}
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="font-heading text-4xl font-bold tabular-nums sm:text-5xl"
+          >
+            {displayValue}
+            <span className="text-muted-foreground align-top text-base font-medium">°</span>
+          </motion.div>
+        </AnimatePresence>
+        <p className="text-muted-foreground mt-0.5 text-[10px]">{MIN_TEMP}°–{MAX_TEMP}°C</p>
       </div>
     </div>
   )

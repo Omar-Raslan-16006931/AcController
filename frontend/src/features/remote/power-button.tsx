@@ -4,7 +4,7 @@ import { Power, PowerOff } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 /**
- * Two independent, minimal pills instead of one toggle. IR is a one-way,
+ * Two independent, compact buttons instead of one toggle. IR is a one-way,
  * occasionally-lossy signal, so the user needs to be able to mash
  * "Power On" or "Power Off" repeatedly to make sure the AC actually
  * receives the command — neither is ever disabled while a request is in
@@ -22,22 +22,20 @@ export function PowerButtons({
   onPowerOff: () => void
 }) {
   return (
-    <div className="flex items-center gap-2.5">
+    <div className="flex items-center gap-2">
       <motion.button
         type="button"
         disabled={!connected}
         onClick={onPowerOn}
         whileTap={{ scale: 0.96 }}
         className={cn(
-          "flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-medium transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-40",
-          on
-            ? "bg-frost/15 text-frost border-frost/30 border"
-            : "bg-secondary/60 text-muted-foreground hover:text-foreground border border-transparent"
+          "flex h-9 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg text-xs font-medium transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-40",
+          on ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"
         )}
         aria-pressed={on}
         aria-label="Turn AC on"
       >
-        <Power className="size-4" strokeWidth={2.25} />
+        <Power className="size-3.5" strokeWidth={2.25} />
         On
       </motion.button>
 
@@ -47,15 +45,13 @@ export function PowerButtons({
         onClick={onPowerOff}
         whileTap={{ scale: 0.96 }}
         className={cn(
-          "flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-medium transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-40",
-          !on
-            ? "bg-secondary text-foreground border-border border"
-            : "bg-secondary/60 text-muted-foreground hover:text-foreground border border-transparent"
+          "flex h-9 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg text-xs font-medium transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-40",
+          !on ? "bg-foreground text-background" : "bg-secondary text-muted-foreground hover:text-foreground"
         )}
         aria-pressed={!on}
         aria-label="Turn AC off"
       >
-        <PowerOff className="size-4" strokeWidth={2.25} />
+        <PowerOff className="size-3.5" strokeWidth={2.25} />
         Off
       </motion.button>
     </div>
