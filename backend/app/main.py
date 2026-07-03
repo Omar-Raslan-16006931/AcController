@@ -3,12 +3,13 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import get_settings
-from app.routers import fan, history, mode, power, scheduler, settings as settings_router, status, system, temperature
+from app.routers import command, fan, history, mode, power, scheduler, settings as settings_router, status, system, temperature
 from app.scheduler_worker import run_scheduler_loop
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)s: %(message)s")
@@ -53,9 +54,19 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     # request body) are rejected here with a 400 before ever reaching the
     # CarrierAC/IR layer — FastAPI's default is 422, overridden to 400 per
     # the API contract this app uses for "bad request" errors.
+    #
+    # Cross-field validators (e.g. CommandRequest's "at least one field"
+    # check) raise a plain ValueError, and Pydantic embeds that exception
+    # *object* (not a string) in error["ctx"]["error"] -- which json.dumps
+    # can't serialize on its own. Stringify it before encoding.
+    errors = exc.errors()
+    for error in errors:
+        ctx = error.get("ctx")
+        if ctx and "error" in ctx:
+            ctx["error"] = str(ctx["error"])
     return JSONResponse(
         status_code=400,
-        content={"detail": exc.errors()},
+        content={"detail": jsonable_encoder(errors)},
     )
 
 
@@ -69,6 +80,7 @@ app.include_router(power.router)
 app.include_router(temperature.router)
 app.include_router(mode.router)
 app.include_router(fan.router)
+app.include_router(command.router)
 app.include_router(scheduler.router)
 app.include_router(history.router)
 app.include_router(settings_router.router)

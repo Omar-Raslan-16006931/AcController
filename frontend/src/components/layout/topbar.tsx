@@ -5,7 +5,6 @@ import { navItems } from "@/components/layout/nav-items"
 import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { ConnectionBadge } from "@/components/layout/connection-badge"
 import { UserMenu } from "@/components/layout/user-menu"
-import { MobileSidebar } from "@/components/layout/mobile-sidebar"
 
 export function Topbar({ onOpenPalette }: { onOpenPalette: () => void }) {
   const location = useLocation()
@@ -15,8 +14,6 @@ export function Topbar({ onOpenPalette }: { onOpenPalette: () => void }) {
 
   return (
     <header className="bg-background/80 sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b px-4 backdrop-blur-md sm:px-6">
-      <MobileSidebar />
-
       <h1 className="text-lg font-semibold">{current?.title ?? "AcController"}</h1>
 
       <button

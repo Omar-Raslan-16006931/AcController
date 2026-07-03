@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion"
 
 import { SidebarNav } from "@/components/layout/sidebar"
 import { Topbar } from "@/components/layout/topbar"
+import { BottomNav } from "@/components/layout/bottom-nav"
 import { CommandPalette } from "@/components/layout/command-palette"
 import { OfflineBanner } from "@/components/offline-banner"
 import { ErrorBoundary } from "@/components/error-boundary"
@@ -30,6 +31,7 @@ export function AppLayout() {
 
   return (
     <div className="bg-background flex h-svh overflow-hidden">
+      {/* Desktop/tablet: persistent side rail. Mobile: bottom tab bar below. */}
       <SidebarNav
         collapsed={collapsed}
         onToggle={toggleCollapsed}
@@ -40,7 +42,7 @@ export function AppLayout() {
         <OfflineBanner />
         <Topbar onOpenPalette={() => setPaletteOpen(true)} />
 
-        <main className="no-scrollbar flex-1 overflow-y-auto">
+        <main className="no-scrollbar flex-1 overflow-y-auto pb-20 md:pb-0">
           <ErrorBoundary key={location.pathname}>
             <AnimatePresence mode="wait">
               <motion.div
@@ -60,6 +62,7 @@ export function AppLayout() {
         </main>
       </div>
 
+      <BottomNav />
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
     </div>
   )
