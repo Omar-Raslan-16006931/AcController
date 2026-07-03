@@ -13,7 +13,7 @@ export function TimerCard({ timer, onCancel }: { timer: Timer; onCancel: () => v
   return (
     <motion.div layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
       <Card>
-        <CardContent className="flex items-center gap-4 pt-6">
+        <CardContent className="flex items-center gap-3.5">
           <div
             className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${
               isOff ? "bg-destructive/10 text-destructive" : "bg-success/10 text-success"

@@ -2,60 +2,90 @@ import { formatDistanceToNow } from "date-fns"
 import { motion } from "framer-motion"
 import { Power, Wind, CheckCircle2, XCircle } from "lucide-react"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
+import { Card } from "@/components/ui/card"
 import { modeConfig, fanConfig } from "@/lib/ac-labels"
 import type { StatusResponse } from "@/features/dashboard/use-status"
 
+/**
+ * Hero status card, styled like an iOS Home-app accessory tile: soft brand
+ * wash when the unit is running, a big centred temperature, and mode/fan as
+ * compact pills.
+ */
 export function AcStatusCard({ status }: { status: StatusResponse }) {
   const { ac_state: ac, last_command_result, last_command_at } = status
   const mode = modeConfig[ac.mode]
   const ModeIcon = mode.icon
 
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="flex-row items-center justify-between space-y-0">
-        <CardTitle className="text-base">Air Conditioner</CardTitle>
-        <Badge variant={ac.power ? "success" : "secondary"} className="gap-1.5">
-          <Power className="size-3" />
-          {ac.power ? "On" : "Off"}
-        </Badge>
-      </CardHeader>
-      <CardContent className="space-y-5">
-        <div className="flex items-center gap-5">
-          <motion.div
-            key={ac.temperature}
-            initial={{ scale: 0.92, opacity: 0.6 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="text-5xl font-semibold tabular-nums"
-          >
-            {ac.temperature}°
-          </motion.div>
-          <div className="flex flex-col gap-1.5">
-            <div className={`flex items-center gap-1.5 text-sm font-medium ${mode.className}`}>
-              <ModeIcon className="size-4" />
-              {mode.label}
-            </div>
-            <div className="text-muted-foreground flex items-center gap-1.5 text-sm">
-              <Wind className="size-4" />
-              Fan: {fanConfig[ac.fan].label}
-            </div>
-          </div>
-        </div>
+    <Card className="relative gap-0 overflow-hidden p-4">
+      {/* Ambient wash while powered on */}
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(120% 90% at 50% -20%, color-mix(in oklch, var(--frost) 16%, transparent), transparent 70%)",
+        }}
+        animate={{ opacity: ac.power ? 1 : 0 }}
+        transition={{ duration: 0.6, ease: "easeInOut" }}
+      />
 
-        {last_command_at && (
-          <div className="text-muted-foreground flex items-center gap-1.5 border-t pt-3 text-xs">
-            {last_command_result === "success" ? (
-              <CheckCircle2 className="text-success size-3.5" />
-            ) : (
-              <XCircle className="text-destructive size-3.5" />
+      <div className="relative flex items-center justify-between">
+        <p className="text-muted-foreground text-[11px] font-semibold tracking-[0.06em] uppercase">
+          Air Conditioner
+        </p>
+        <span
+          className={cn(
+            "flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold",
+            ac.power ? "bg-success/15 text-success" : "bg-secondary text-muted-foreground"
+          )}
+        >
+          <Power className="size-3" strokeWidth={2.5} />
+          {ac.power ? "On" : "Off"}
+        </span>
+      </div>
+
+      <div className="relative mt-2 flex items-center justify-between gap-4">
+        <motion.p
+          key={ac.temperature}
+          initial={{ scale: 0.9, opacity: 0.5 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 320, damping: 22 }}
+          className="font-heading text-[56px] font-bold leading-none tracking-tight tabular-nums"
+        >
+          {ac.temperature}
+          <span className="text-muted-foreground align-top text-2xl font-semibold">°</span>
+        </motion.p>
+
+        <div className="flex flex-col items-end gap-1.5">
+          <span
+            className={cn(
+              "bg-secondary flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-semibold",
+              mode.className
             )}
-            Last command {formatDistanceToNow(new Date(last_command_at), { addSuffix: true })}
-            {last_command_result === "failure" && " · failed"}
-          </div>
-        )}
-      </CardContent>
+          >
+            <ModeIcon className="size-4" />
+            {mode.label}
+          </span>
+          <span className="bg-secondary text-muted-foreground flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium">
+            <Wind className="size-4" />
+            Fan {fanConfig[ac.fan].label}
+          </span>
+        </div>
+      </div>
+
+      {last_command_at && (
+        <div className="text-muted-foreground border-border/60 relative mt-3.5 flex items-center gap-1.5 border-t pt-3 text-xs">
+          {last_command_result === "success" ? (
+            <CheckCircle2 className="text-success size-3.5" />
+          ) : (
+            <XCircle className="text-destructive size-3.5" />
+          )}
+          Last command {formatDistanceToNow(new Date(last_command_at), { addSuffix: true })}
+          {last_command_result === "failure" && " · failed"}
+        </div>
+      )}
     </Card>
   )
 }

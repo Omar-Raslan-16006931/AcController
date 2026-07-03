@@ -2,12 +2,19 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * iOS "inset grouped" card: borderless white/#1C1C1E surface with a large
+ * continuous radius. Definition comes from a soft ambient shadow in light
+ * mode and a faint inner ring in dark mode - never a hard 1px border.
+ */
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card"
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-4 rounded-2xl border shadow-sm",
+        "bg-card text-card-foreground flex flex-col gap-3 rounded-[1.25rem] py-4",
+        "shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_-12px_rgb(0_0_0/0.12)]",
+        "dark:shadow-none dark:ring-1 dark:ring-white/[0.07]",
         className
       )}
       {...props}
@@ -20,7 +27,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-header"
       className={cn(
-        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1 px-5 pt-5 has-[data-slot=card-action]:grid-cols-[1fr_auto]",
+        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1 px-4 has-[data-slot=card-action]:grid-cols-[1fr_auto]",
         className
       )}
       {...props}
@@ -63,7 +70,7 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
 
 function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div data-slot="card-content" className={cn("px-5", className)} {...props} />
+    <div data-slot="card-content" className={cn("px-4", className)} {...props} />
   )
 }
 
@@ -71,7 +78,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-footer"
-      className={cn("flex items-center px-5 pb-5 [.border-t]:pt-5", className)}
+      className={cn("flex items-center px-4 [.border-t]:pt-4", className)}
       {...props}
     />
   )

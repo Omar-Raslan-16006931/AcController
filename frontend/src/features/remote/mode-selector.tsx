@@ -14,7 +14,7 @@ export function ModeSelector({
   onChange: (mode: AcMode) => void
 }) {
   return (
-    <div className="bg-secondary flex items-center gap-0.5 rounded-lg p-0.5">
+    <div className="bg-secondary flex items-center gap-0.5 rounded-xl p-1">
       {modeOrder.map((mode) => {
         const config = modeConfig[mode]
         const Icon = config.icon
@@ -26,7 +26,7 @@ export function ModeSelector({
             disabled={disabled}
             onClick={() => onChange(mode)}
             className={cn(
-              "relative flex-1 cursor-pointer rounded-md py-1.5 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+              "relative flex-1 cursor-pointer rounded-[9px] py-2 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50",
               active ? "text-foreground" : "text-muted-foreground hover:text-foreground/80"
             )}
             aria-pressed={active}
@@ -34,7 +34,7 @@ export function ModeSelector({
             {active && (
               <motion.span
                 layoutId="mode-active-pill"
-                className="bg-background absolute inset-0 rounded-md shadow-sm"
+                className="bg-card absolute inset-0 rounded-[9px] shadow-sm dark:bg-white/12"
                 transition={{ type: "spring", stiffness: 420, damping: 34 }}
               />
             )}

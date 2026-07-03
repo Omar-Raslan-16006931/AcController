@@ -1,39 +1,31 @@
-import { Search } from "lucide-react"
-import { useLocation } from "react-router-dom"
+import { Snowflake } from "lucide-react"
 
-import { navItems } from "@/components/layout/nav-items"
-import { NavDrawer } from "@/components/layout/nav-drawer"
 import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { ConnectionBadge } from "@/components/layout/connection-badge"
 import { UserMenu } from "@/components/layout/user-menu"
 
-export function Topbar({ onOpenPalette }: { onOpenPalette: () => void }) {
-  const location = useLocation()
-  const current = navItems.find((item) =>
-    item.href === "/" ? location.pathname === "/" : location.pathname.startsWith(item.href)
-  )
-
+/**
+ * Slim iOS-style navigation bar: brand mark on the left, status + actions on
+ * the right. The page itself owns its large title (see PageHeader), so the
+ * bar never duplicates it. Primary navigation lives in the bottom TabBar.
+ */
+export function Topbar() {
   return (
-    <header className="bg-background/70 sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b px-3 backdrop-blur-md sm:px-5">
-      <NavDrawer />
+    <header
+      className="ios-bar hairline-b sticky top-0 z-30 shrink-0"
+      style={{ paddingTop: "env(safe-area-inset-top)" }}
+    >
+      <div className="mx-auto flex h-12 w-full max-w-7xl items-center gap-2 px-4">
+        <div className="brand-gradient text-primary-foreground flex size-7 items-center justify-center rounded-[8px]">
+          <Snowflake className="size-4" />
+        </div>
+        <span className="text-[15px] font-semibold tracking-tight">AcController</span>
 
-      <h1 className="font-heading text-lg font-semibold">{current?.title ?? "AcController"}</h1>
-
-      <button
-        onClick={onOpenPalette}
-        className="text-muted-foreground hover:bg-accent/60 ml-2 hidden max-w-xs flex-1 cursor-pointer items-center gap-2 rounded-xl border px-3 py-1.5 text-sm transition-colors sm:flex"
-      >
-        <Search className="size-4" />
-        <span>Search…</span>
-        <kbd className="bg-muted ml-auto rounded-md px-1.5 py-0.5 text-[10px] font-medium">
-          ⌘K
-        </kbd>
-      </button>
-
-      <div className="ml-auto flex items-center gap-1.5">
-        <ConnectionBadge />
-        <ThemeToggle />
-        <UserMenu />
+        <div className="ml-auto flex items-center gap-1">
+          <ConnectionBadge />
+          <ThemeToggle />
+          <UserMenu />
+        </div>
       </div>
     </header>
   )

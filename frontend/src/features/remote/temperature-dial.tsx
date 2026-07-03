@@ -131,7 +131,7 @@ export function TemperatureDial({
       <svg
         ref={svgRef}
         viewBox={`0 0 ${SIZE} ${SIZE}`}
-        className="size-44 cursor-pointer sm:size-48"
+        className="size-52 cursor-pointer sm:size-56"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
