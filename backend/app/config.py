@@ -18,6 +18,19 @@ class Settings(BaseSettings):
 
     cors_origins: str = "http://localhost:5173"
 
+    # --- Shortcuts / personal-automation auth (see app/dependencies.py) ------
+    # A long random secret Siri/iPhone Shortcuts sends as `X-API-Key` instead
+    # of a Supabase JWT. Optional so the app still boots before it's set;
+    # the /api/shortcuts endpoints simply 401 until both of these are
+    # configured. Generate one with e.g. `openssl rand -hex 32`.
+    shortcut_api_key: str | None = None
+    # The Supabase auth.users UUID that Shortcuts-triggered commands are
+    # attributed to (command_history.user_id has a NOT NULL FK to
+    # auth.users, and timers/schedules rows need a real owner) -- this is a
+    # single-user household app, so this is just "your" account's user id,
+    # found in Supabase -> Authentication -> Users.
+    shortcut_user_id: str | None = None
+
     # gpio_pin/carrier_frequency/duty_cycle were removed — the production
     # CarrierAC library (app/services/carrier_ac.py) ignores all three; its
     # IR timing is derived directly from a captured base.txt file, not from

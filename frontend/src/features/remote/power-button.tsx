@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
  * Two independent, compact buttons instead of one toggle. IR is a one-way,
  * occasionally-lossy signal, so the user needs to be able to mash
  * "Power On" or "Power Off" repeatedly to make sure the AC actually
- * receives the command — neither is ever disabled while a request is in
+ * receives the command - neither is ever disabled while a request is in
  * flight, and clicking doesn't depend on the current reported state.
  */
 export function PowerButtons({
