@@ -1,13 +1,19 @@
+import secrets
 from functools import lru_cache
 
 import jwt
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi.security import APIKeyHeader, HTTPAuthorizationCredentials, HTTPBearer
 from jwt import PyJWKClient
 
 from app.config import get_settings
 
 _bearer_scheme = HTTPBearer(auto_error=False)
+# auto_error=False here too: a missing X-API-Key must fall through to the
+# "no credentials at all" 401 in get_shortcut_or_current_user below, not
+# raise its own separate error before we've had a chance to check for a
+# Supabase Bearer token instead.
+_api_key_scheme = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 # Supabase Auth signs access tokens with one of two systems:
 #  - JWT signing keys (current default): an asymmetric key (ES256 or RS256)
@@ -93,3 +99,51 @@ def get_current_user(
         )
 
     return CurrentUser(user_id=user_id, email=payload.get("email"))
+
+
+def get_shortcut_or_current_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(_bearer_scheme),
+    api_key: str | None = Depends(_api_key_scheme),
+) -> CurrentUser:
+    """
+    Auth dependency for /api/shortcuts only -- every other router keeps using
+    `get_current_user` directly and is completely unaffected by this.
+
+    Accepts either:
+      - `Authorization: Bearer <Supabase JWT>` -- verified exactly the same
+        way as every other endpoint (delegates straight to
+        `get_current_user`, no separate/looser code path). If this header
+        is present but the token is invalid or expired, that failure is
+        never demoted to a soft-fallback onto the API key.
+      - `X-API-Key: <SHORTCUT_API_KEY>` -- only ever consulted when
+        `Authorization` is absent entirely. Compared with
+        `secrets.compare_digest` to avoid a timing side-channel, and only
+        matches if SHORTCUT_API_KEY is actually configured (an unset env
+        var must never act as an "any key works" wildcard).
+
+    This does not weaken existing auth: the JWT path is byte-for-byte the
+    same function used everywhere else, and the API key path is additive,
+    gated on the JWT header being absent rather than merely invalid.
+    """
+    if credentials is not None:
+        return get_current_user(credentials)
+
+    settings = get_settings()
+    if (
+        api_key
+        and settings.shortcut_api_key
+        and secrets.compare_digest(api_key, settings.shortcut_api_key)
+    ):
+        if not settings.shortcut_user_id:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="SHORTCUT_API_KEY is set but SHORTCUT_USER_ID is not -- "
+                "set it to your Supabase auth.users id before using /api/shortcuts.",
+            )
+        return CurrentUser(user_id=settings.shortcut_user_id, email=None)
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Missing or invalid credentials -- provide a Supabase Bearer token "
+        "or a valid X-API-Key",
+    )

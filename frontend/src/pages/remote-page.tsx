@@ -113,9 +113,9 @@ export function RemotePage() {
       {isLoading && (
         <Card className="mx-auto w-full max-w-sm">
           <CardContent className="flex flex-col items-center gap-4">
-            <Skeleton className="size-44 rounded-full sm:size-48" />
-            <Skeleton className="h-9 w-full rounded-lg" />
-            <Skeleton className="h-16 w-full rounded-lg" />
+            <Skeleton className="size-52 rounded-full sm:size-56" />
+            <Skeleton className="h-11 w-full rounded-full" />
+            <Skeleton className="h-20 w-full rounded-xl" />
           </CardContent>
         </Card>
       )}
