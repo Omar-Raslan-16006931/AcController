@@ -10,7 +10,8 @@ import type { StatusResponse } from "@/features/dashboard/use-status"
 /**
  * Hero status card, styled like an iOS Home-app accessory tile: soft brand
  * wash when the unit is running, a big centred temperature, and mode/fan as
- * compact pills.
+ * compact pills. Tightened (smaller temp, less padding) as part of the
+ * dashboard compaction pass so it doesn't dominate the fold on mobile.
  */
 export function AcStatusCard({ status }: { status: StatusResponse }) {
   const { ac_state: ac, last_command_result, last_command_at } = status
@@ -18,7 +19,7 @@ export function AcStatusCard({ status }: { status: StatusResponse }) {
   const ModeIcon = mode.icon
 
   return (
-    <Card className="relative gap-0 overflow-hidden p-4">
+    <Card className="relative gap-0 overflow-hidden p-3.5">
       {/* Ambient wash while powered on */}
       <motion.div
         aria-hidden
@@ -37,7 +38,7 @@ export function AcStatusCard({ status }: { status: StatusResponse }) {
         </p>
         <span
           className={cn(
-            "flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold",
+            "flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
             ac.power ? "bg-success/15 text-success" : "bg-secondary text-muted-foreground"
           )}
         >
@@ -46,37 +47,37 @@ export function AcStatusCard({ status }: { status: StatusResponse }) {
         </span>
       </div>
 
-      <div className="relative mt-2 flex items-center justify-between gap-4">
+      <div className="relative mt-1.5 flex items-center justify-between gap-3">
         <motion.p
           key={ac.temperature}
           initial={{ scale: 0.9, opacity: 0.5 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 320, damping: 22 }}
-          className="font-heading text-[56px] font-bold leading-none tracking-tight tabular-nums"
+          className="font-heading text-[42px] font-bold leading-none tracking-tight tabular-nums"
         >
           {ac.temperature}
-          <span className="text-muted-foreground align-top text-2xl font-semibold">°</span>
+          <span className="text-muted-foreground align-top text-xl font-semibold">°</span>
         </motion.p>
 
-        <div className="flex flex-col items-end gap-1.5">
+        <div className="flex flex-col items-end gap-1">
           <span
             className={cn(
-              "bg-secondary flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-semibold",
+              "bg-secondary flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold",
               mode.className
             )}
           >
-            <ModeIcon className="size-4" />
+            <ModeIcon className="size-3.5" />
             {mode.label}
           </span>
-          <span className="bg-secondary text-muted-foreground flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium">
-            <Wind className="size-4" />
+          <span className="bg-secondary text-muted-foreground flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium">
+            <Wind className="size-3.5" />
             Fan {fanConfig[ac.fan].label}
           </span>
         </div>
       </div>
 
       {last_command_at && (
-        <div className="text-muted-foreground border-border/60 relative mt-3.5 flex items-center gap-1.5 border-t pt-3 text-xs">
+        <div className="text-muted-foreground border-border/60 relative mt-2.5 flex items-center gap-1.5 border-t pt-2.5 text-[11px]">
           {last_command_result === "success" ? (
             <CheckCircle2 className="text-success size-3.5" />
           ) : (

@@ -3,7 +3,7 @@ import { motion } from "framer-motion"
 
 import { cn } from "@/lib/utils"
 
-interface StatCardProps {
+interface StatRowProps {
   icon: LucideIcon
   label: string
   value: string
@@ -13,18 +13,26 @@ interface StatCardProps {
   index?: number
 }
 
-const accentClasses: Record<NonNullable<StatCardProps["accent"]>, string> = {
+const accentClasses: Record<NonNullable<StatRowProps["accent"]>, string> = {
   default: "bg-primary/12 text-primary",
   success: "bg-success/12 text-success",
   warning: "bg-warning/15 text-warning",
   destructive: "bg-destructive/12 text-destructive",
 }
 
+const barClasses: Record<NonNullable<StatRowProps["accent"]>, string> = {
+  default: "bg-primary",
+  success: "bg-success",
+  warning: "bg-warning",
+  destructive: "bg-destructive",
+}
+
 /**
- * Compact iOS widget-style tile: fixed internal rhythm (icon row, value,
- * detail) so every tile in the grid lines up regardless of content.
+ * Compact single-line metric row: icon chip, label, value, and (for
+ * percent-based metrics) a short inline progress bar -- replaces the old
+ * 104px StatCard tiles so 8 metrics fit in the space 3-4 used to take.
  */
-export function StatCard({
+export function StatRow({
   icon: Icon,
   label,
   value,
@@ -32,44 +40,38 @@ export function StatCard({
   accent = "default",
   progress,
   index = 0,
-}: StatCardProps) {
+}: StatRowProps) {
+  const barColor = progress !== undefined && progress > 85 ? "destructive" : progress !== undefined && progress > 65 ? "warning" : accent
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ type: "spring", stiffness: 420, damping: 30, delay: index * 0.03 }}
-      whileTap={{ scale: 0.97 }}
-      className={cn(
-        "bg-card flex flex-col rounded-[1.25rem] p-3.5",
-        "shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_-12px_rgb(0_0_0/0.12)]",
-        "dark:shadow-none dark:ring-1 dark:ring-white/[0.07]"
-      )}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 460, damping: 32, delay: index * 0.025 }}
+      whileTap={{ scale: 0.98 }}
+      className="flex items-center gap-2.5 py-2 first:pt-0 last:pb-0"
     >
-      <div className="flex items-center gap-2">
-        <span className={cn("flex size-7 items-center justify-center rounded-[9px]", accentClasses[accent])}>
-          <Icon className="size-4" />
-        </span>
-        <p className="text-muted-foreground truncate text-xs font-medium">{label}</p>
+      <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-[9px]", accentClasses[accent])}>
+        <Icon className="size-3.5" />
+      </span>
+
+      <div className="min-w-0 flex-1">
+        <p className="text-muted-foreground truncate text-[11px] leading-tight font-medium">{label}</p>
+        {progress !== undefined ? (
+          <div className="bg-secondary mt-1 h-1 w-full max-w-24 overflow-hidden rounded-full">
+            <motion.div
+              className={cn("h-full rounded-full", barClasses[barColor as keyof typeof barClasses])}
+              initial={{ width: 0 }}
+              animate={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+              transition={{ type: "spring", stiffness: 140, damping: 26, delay: 0.1 }}
+            />
+          </div>
+        ) : sub ? (
+          <p className="text-muted-foreground/80 truncate text-[10.5px] leading-tight">{sub}</p>
+        ) : null}
       </div>
 
-      <p className="mt-2 truncate text-[22px] font-bold leading-none tracking-tight tabular-nums">
-        {value}
-      </p>
-      <p className="text-muted-foreground mt-1 h-4 truncate text-[11px] leading-4">{sub ?? ""}</p>
-
-      {progress !== undefined && (
-        <div className="bg-secondary mt-1.5 h-1 w-full overflow-hidden rounded-full">
-          <motion.div
-            className={cn(
-              "h-full rounded-full",
-              progress > 85 ? "bg-destructive" : progress > 65 ? "bg-warning" : "bg-success"
-            )}
-            initial={{ width: 0 }}
-            animate={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
-            transition={{ type: "spring", stiffness: 120, damping: 24, delay: 0.15 }}
-          />
-        </div>
-      )}
+      <p className="shrink-0 text-right text-[13px] leading-none font-bold tabular-nums">{value}</p>
     </motion.div>
   )
 }

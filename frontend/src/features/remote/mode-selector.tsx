@@ -20,11 +20,13 @@ export function ModeSelector({
         const Icon = config.icon
         const active = value === mode
         return (
-          <button
+          <motion.button
             key={mode}
             type="button"
             disabled={disabled}
             onClick={() => onChange(mode)}
+            whileTap={disabled ? undefined : { scale: 0.94 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30 }}
             className={cn(
               "relative flex-1 cursor-pointer rounded-[9px] py-2 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50",
               active ? "text-foreground" : "text-muted-foreground hover:text-foreground/80"
@@ -38,11 +40,20 @@ export function ModeSelector({
                 transition={{ type: "spring", stiffness: 420, damping: 34 }}
               />
             )}
-            <span className="relative flex items-center justify-center gap-1">
-              <Icon className={cn("size-3.5", active && "text-frost")} />
-              {config.label}
+            <span className="relative flex flex-col items-center justify-center gap-0.5">
+              <span className="flex items-center gap-1">
+                <Icon className={cn("size-3.5", active && "text-frost")} />
+                {config.label}
+              </span>
+              <motion.span
+                className="bg-frost h-[3px] w-[3px] rounded-full"
+                initial={false}
+                animate={{ opacity: active ? 1 : 0, scale: active ? 1 : 0.3 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                aria-hidden
+              />
             </span>
-          </button>
+          </motion.button>
         )
       })}
     </div>
