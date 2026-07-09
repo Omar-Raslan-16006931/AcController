@@ -7,7 +7,7 @@ import { UserMenu } from "@/components/layout/user-menu"
 /**
  * Slim iOS-style navigation bar: brand mark on the left, status + actions on
  * the right. The page itself owns its large title (see PageHeader), so the
- * bar never duplicates it. Primary navigation lives in the bottom TabBar.
+ * bar never duplicates it. Primary navigation lives in the bottom MobileMenu.
  */
 export function Topbar() {
   return (
