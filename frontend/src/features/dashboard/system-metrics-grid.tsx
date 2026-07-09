@@ -9,7 +9,7 @@ import type { SystemMetrics } from "@/features/dashboard/use-status"
  * Compact two-column list of system metrics inside a single bordered card --
  * replaces the old 8-tile grid (each ~104px tall) with tight single-line
  * rows so the whole dashboard reads at a glance instead of requiring a
- * scroll on mobile.
+ * scroll on mobile. WiFi SSID intentionally not shown (signal % only).
  */
 export function SystemMetricsGrid({ system }: { system: SystemMetrics }) {
   return (
@@ -54,7 +54,6 @@ export function SystemMetricsGrid({ system }: { system: SystemMetrics }) {
             icon={Wifi}
             label="WiFi signal"
             value={system.wifi_signal_percent != null ? `${system.wifi_signal_percent}%` : "—"}
-            sub={system.wifi_ssid ?? "Not connected"}
           />
           <StatRow index={5} icon={Clock} label="Uptime" value={formatUptime(system.uptime_seconds)} />
           <StatRow index={6} icon={Tag} label="Hostname" value={system.hostname} />

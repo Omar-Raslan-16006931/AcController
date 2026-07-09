@@ -55,7 +55,7 @@ export function HistoryPage() {
     <div>
       <PageHeader
         title="History"
-        description="Every command sent to the AC, with its result."
+        description="Every command sent to the AC, with its result. Auto-trimmed to the last 7 days."
         actions={
           <Button
             variant="outline"
@@ -70,18 +70,18 @@ export function HistoryPage() {
         }
       />
 
-      <div className="mb-4 flex flex-wrap gap-3">
+      <div className="mb-3 flex flex-wrap gap-2">
         <div className="relative max-w-xs flex-1">
-          <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+          <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2" />
           <Input
             placeholder="Search mode, fan, source…"
-            className="pl-9"
+            className="h-9 pl-8 text-xs"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
           />
         </div>
         <Select value={result} onValueChange={(v) => { setResult(v as typeof result); setPage(0) }}>
-          <SelectTrigger className="w-40">
+          <SelectTrigger className="h-9 w-36 text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -93,9 +93,9 @@ export function HistoryPage() {
       </div>
 
       {isLoading && (
-        <div className="space-y-2">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-12 w-full" />
+        <div className="space-y-1.5">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Skeleton key={i} className="h-9 w-full" />
           ))}
         </div>
       )}
@@ -116,50 +116,51 @@ export function HistoryPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Date &amp; time</TableHead>
-                <TableHead>Power</TableHead>
-                <TableHead>Temp</TableHead>
-                <TableHead>Mode</TableHead>
-                <TableHead>Fan</TableHead>
-                <TableHead>Source</TableHead>
-                <TableHead>Result</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="h-8 px-2.5 text-[11px]">Date &amp; time</TableHead>
+                <TableHead className="h-8 px-2.5 text-[11px]">Power</TableHead>
+                <TableHead className="h-8 px-2.5 text-[11px]">Temp</TableHead>
+                <TableHead className="h-8 px-2.5 text-[11px]">Mode</TableHead>
+                <TableHead className="h-8 px-2.5 text-[11px]">Fan</TableHead>
+                <TableHead className="h-8 px-2.5 text-[11px]">Source</TableHead>
+                <TableHead className="h-8 px-2.5 text-[11px]">Result</TableHead>
+                <TableHead className="h-8 px-2.5 text-right text-[11px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {data?.items.map((entry) => (
                 <TableRow key={entry.id}>
-                  <TableCell className="text-muted-foreground">
-                    {format(new Date(entry.created_at), "MMM d, yyyy · h:mm:ss a")}
+                  <TableCell className="text-muted-foreground p-2.5 text-xs">
+                    {format(new Date(entry.created_at), "MMM d, h:mm:ss a")}
                   </TableCell>
-                  <TableCell>
-                    <Badge variant={entry.power ? "success" : "secondary"}>
+                  <TableCell className="p-2.5">
+                    <Badge variant={entry.power ? "success" : "secondary"} className="text-[11px]">
                       {entry.power ? "On" : "Off"}
                     </Badge>
                   </TableCell>
-                  <TableCell>{entry.temperature != null ? `${entry.temperature}°` : "—"}</TableCell>
-                  <TableCell>{entry.mode ? modeConfig[entry.mode].label : "—"}</TableCell>
-                  <TableCell>{entry.fan ? fanConfig[entry.fan].label : "—"}</TableCell>
-                  <TableCell className="text-muted-foreground capitalize">{entry.source}</TableCell>
-                  <TableCell>
+                  <TableCell className="p-2.5 text-xs">{entry.temperature != null ? `${entry.temperature}°` : "—"}</TableCell>
+                  <TableCell className="p-2.5 text-xs">{entry.mode ? modeConfig[entry.mode].label : "—"}</TableCell>
+                  <TableCell className="p-2.5 text-xs">{entry.fan ? fanConfig[entry.fan].label : "—"}</TableCell>
+                  <TableCell className="text-muted-foreground p-2.5 text-xs capitalize">{entry.source}</TableCell>
+                  <TableCell className="p-2.5">
                     {entry.result === "success" ? (
-                      <span className="text-success flex items-center gap-1.5 text-sm">
-                        <CheckCircle2 className="size-3.5" /> Success
+                      <span className="text-success flex items-center gap-1 text-xs">
+                        <CheckCircle2 className="size-3" /> Success
                       </span>
                     ) : (
-                      <span className="text-destructive flex items-center gap-1.5 text-sm" title={entry.error ?? undefined}>
-                        <XCircle className="size-3.5" /> Failed
+                      <span className="text-destructive flex items-center gap-1 text-xs" title={entry.error ?? undefined}>
+                        <XCircle className="size-3" /> Failed
                       </span>
                     )}
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="p-2.5 text-right">
                     <Button
                       variant="ghost"
                       size="icon"
+                      className="size-7"
                       onClick={() => deleteEntry.mutate(entry.id)}
                       aria-label="Delete entry"
                     >
-                      <Trash2 className="size-4" />
+                      <Trash2 className="size-3.5" />
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -167,26 +168,28 @@ export function HistoryPage() {
             </TableBody>
           </Table>
 
-          <div className="flex items-center justify-between border-t p-3">
-            <p className="text-muted-foreground text-xs">
+          <div className="flex items-center justify-between border-t p-2.5">
+            <p className="text-muted-foreground text-[11px]">
               {total} command{total === 1 ? "" : "s"} · page {page + 1} of {totalPages}
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-1.5">
               <Button
                 variant="outline"
                 size="icon"
+                className="size-7"
                 disabled={page === 0}
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
               >
-                <ChevronLeft className="size-4" />
+                <ChevronLeft className="size-3.5" />
               </Button>
               <Button
                 variant="outline"
                 size="icon"
+                className="size-7"
                 disabled={page >= totalPages - 1}
                 onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
               >
-                <ChevronRight className="size-4" />
+                <ChevronRight className="size-3.5" />
               </Button>
             </div>
           </div>

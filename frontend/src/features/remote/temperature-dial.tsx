@@ -9,10 +9,12 @@ const START_ANGLE = -135
 const END_ANGLE = 135
 const SWEEP = END_ANGLE - START_ANGLE
 
-const SIZE = 220
+// Shrunk from 220/92/10 as part of the Remote-page compaction pass -- the
+// dial was the single tallest element on the page.
+const SIZE = 168
 const CENTER = SIZE / 2
-const RADIUS = 92
-const STROKE = 10
+const RADIUS = 70
+const STROKE = 8
 
 function angleForValue(value: number) {
   const t = (value - MIN_TEMP) / (MAX_TEMP - MIN_TEMP)
@@ -131,7 +133,7 @@ export function TemperatureDial({
       <svg
         ref={svgRef}
         viewBox={`0 0 ${SIZE} ${SIZE}`}
-        className="size-52 cursor-pointer sm:size-56"
+        className="size-40 cursor-pointer sm:size-44"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -161,7 +163,7 @@ export function TemperatureDial({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="font-heading text-4xl font-bold tabular-nums sm:text-5xl"
+            className="font-heading text-3xl font-bold tabular-nums sm:text-4xl"
           >
             {displayValue}
             <span className="text-muted-foreground align-top text-base font-medium">°</span>

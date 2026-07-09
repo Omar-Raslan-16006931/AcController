@@ -34,7 +34,7 @@ export function PowerButtons({
         whileTap={{ scale: 0.94 }}
         transition={{ type: "spring", stiffness: 500, damping: 30 }}
         className={cn(
-          "relative flex h-11 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full text-[13px] font-semibold transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-40",
+          "relative flex h-10 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full text-[13px] font-semibold transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-40",
           on
             ? "bg-primary text-primary-foreground shadow-[0_4px_14px_-4px_var(--frost)]"
             : "bg-secondary text-muted-foreground hover:text-foreground"
@@ -69,7 +69,7 @@ export function PowerButtons({
         whileTap={{ scale: 0.94 }}
         transition={{ type: "spring", stiffness: 500, damping: 30 }}
         className={cn(
-          "relative flex h-11 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full text-[13px] font-semibold transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-40",
+          "relative flex h-10 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full text-[13px] font-semibold transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-40",
           !on ? "bg-foreground text-background" : "bg-secondary text-muted-foreground hover:text-foreground"
         )}
         aria-pressed={!on}

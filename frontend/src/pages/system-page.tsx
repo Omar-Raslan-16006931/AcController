@@ -45,7 +45,7 @@ export function SystemPage() {
   } as const
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader title="System" description="Raspberry Pi diagnostics and power controls." />
 
       {isLoading && (
@@ -74,21 +74,21 @@ export function SystemPage() {
           <CardTitle className="text-base">Power controls</CardTitle>
           <CardDescription>These take effect immediately — use with care.</CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-3 sm:grid-cols-3">
-          <Button variant="outline" className="h-16 gap-2" onClick={() => setPending("restart")}>
-            <RefreshCw className="size-5" />
+        <CardContent className="grid gap-2.5 sm:grid-cols-3">
+          <Button variant="outline" className="h-12 gap-2" onClick={() => setPending("restart")}>
+            <RefreshCw className="size-4" />
             Restart backend
           </Button>
-          <Button variant="outline" className="h-16 gap-2" onClick={() => setPending("reboot")}>
-            <RotateCw className="size-5" />
+          <Button variant="outline" className="h-12 gap-2" onClick={() => setPending("reboot")}>
+            <RotateCw className="size-4" />
             Restart Pi
           </Button>
           <Button
             variant="outline"
-            className="text-destructive hover:text-destructive h-16 gap-2"
+            className="text-destructive hover:text-destructive h-12 gap-2"
             onClick={() => setPending("shutdown")}
           >
-            <Power className="size-5" />
+            <Power className="size-4" />
             Shutdown Pi
           </Button>
         </CardContent>

@@ -60,14 +60,14 @@ function PasskeyRow({ passkey, onDelete, deleting }: { passkey: Passkey; onDelet
   const [confirmOpen, setConfirmOpen] = React.useState(false)
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border px-4 py-3">
-      <div className="flex items-center gap-3 overflow-hidden">
-        <div className="bg-muted flex size-9 shrink-0 items-center justify-center rounded-full">
-          <ScanFace className="text-muted-foreground size-4" />
+    <div className="flex items-center justify-between gap-3 rounded-xl border px-3 py-2">
+      <div className="flex items-center gap-2.5 overflow-hidden">
+        <div className="bg-muted flex size-7 shrink-0 items-center justify-center rounded-full">
+          <ScanFace className="text-muted-foreground size-3.5" />
         </div>
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium">{passkey.friendly_name ?? "Passkey"}</p>
-          <p className="text-muted-foreground truncate text-xs">
+          <p className="truncate text-xs font-medium">{passkey.friendly_name ?? "Passkey"}</p>
+          <p className="text-muted-foreground truncate text-[11px]">
             Added {format(new Date(passkey.created_at), "MMM d, yyyy")}
             {passkey.last_used_at &&
               ` · last used ${format(new Date(passkey.last_used_at), "MMM d, yyyy")}`}
@@ -78,11 +78,12 @@ function PasskeyRow({ passkey, onDelete, deleting }: { passkey: Passkey; onDelet
         type="button"
         variant="ghost"
         size="icon"
+        className="size-7"
         disabled={deleting}
         onClick={() => setConfirmOpen(true)}
         aria-label="Remove passkey"
       >
-        {deleting ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+        {deleting ? <Loader2 className="size-3.5 animate-spin" /> : <Trash2 className="size-3.5" />}
       </Button>
       <ConfirmDialog
         open={confirmOpen}
@@ -112,10 +113,9 @@ function PasskeysCard() {
     <Card className="lg:col-span-2">
       <CardHeader className="flex-row items-start justify-between space-y-0">
         <div>
-          <CardTitle className="text-base">Passkeys</CardTitle>
-          <CardDescription>
-            Sign in with Face ID, Touch ID, Windows Hello, or a security key instead of a
-            password.
+          <CardTitle className="text-sm">Passkeys</CardTitle>
+          <CardDescription className="text-xs">
+            Sign in with Face ID, Touch ID, Windows Hello, or a security key.
           </CardDescription>
         </div>
         <Button
@@ -123,24 +123,24 @@ function PasskeysCard() {
           size="sm"
           onClick={() => registerPasskey.mutate()}
           disabled={registerPasskey.isPending}
-          className="bg-foreground text-background hover:bg-foreground/90 shrink-0 gap-2 rounded-full"
+          className="bg-foreground text-background hover:bg-foreground/90 h-8 shrink-0 gap-1.5 rounded-full px-3 text-xs"
         >
           {registerPasskey.isPending ? (
-            <Loader2 className="size-4 animate-spin" />
+            <Loader2 className="size-3.5 animate-spin" />
           ) : (
-            <Plus className="size-4" />
+            <Plus className="size-3.5" />
           )}
-          Add passkey
+          Add
         </Button>
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="space-y-2">
-            <Skeleton className="h-14 w-full" />
-            <Skeleton className="h-14 w-full" />
+          <div className="space-y-1.5">
+            <Skeleton className="h-11 w-full" />
+            <Skeleton className="h-11 w-full" />
           </div>
         ) : passkeys && passkeys.length > 0 ? (
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             {passkeys.map((passkey) => (
               <PasskeyRow
                 key={passkey.id}
@@ -151,7 +151,7 @@ function PasskeysCard() {
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-xs">
             No passkeys yet. Add one so you can sign in without typing a password.
           </p>
         )}
@@ -165,16 +165,16 @@ function SystemLinkCard() {
     <Card className="lg:col-span-2">
       <Link
         to="/system"
-        className="hover:bg-accent/40 flex items-center gap-3 rounded-[inherit] px-4 py-3.5 transition-colors"
+        className="hover:bg-accent/40 flex items-center gap-2.5 rounded-[inherit] px-3 py-2.5 transition-colors"
       >
-        <div className="bg-secondary text-foreground/80 flex size-9 items-center justify-center rounded-xl">
-          <Cpu className="size-4" />
+        <div className="bg-secondary text-foreground/80 flex size-7 items-center justify-center rounded-xl">
+          <Cpu className="size-3.5" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium">System diagnostics</p>
-          <p className="text-muted-foreground text-xs">Pi metrics, restart, and shutdown</p>
+          <p className="text-xs font-medium">System diagnostics</p>
+          <p className="text-muted-foreground text-[11px]">Pi metrics, restart, and shutdown</p>
         </div>
-        <ChevronRight className="text-muted-foreground/60 size-4" />
+        <ChevronRight className="text-muted-foreground/60 size-3.5" />
       </Link>
     </Card>
   )
@@ -209,10 +209,10 @@ export function SettingsPage() {
     return (
       <div>
         <PageHeader title="Settings" description="Theme, defaults, and account security." />
-        <div className="space-y-4">
-          <Skeleton className="h-48 w-full" />
-          <Skeleton className="h-48 w-full" />
-          <Skeleton className="h-48 w-full" />
+        <div className="space-y-3">
+          <Skeleton className="h-40 w-full" />
+          <Skeleton className="h-40 w-full" />
+          <Skeleton className="h-16 w-full" />
         </div>
       </div>
     )
@@ -224,45 +224,63 @@ export function SettingsPage() {
         title="Settings"
         description="Theme, defaults, and account security."
         actions={
-          <Button type="submit" disabled={updateSettings.isPending} className="gap-2">
-            {updateSettings.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-            Save changes
+          <Button type="submit" size="sm" disabled={updateSettings.isPending} className="gap-1.5">
+            {updateSettings.isPending ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />}
+            Save
           </Button>
         }
       />
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-3 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Appearance &amp; locale</CardTitle>
-            <CardDescription>How the app looks, and your timezone/language.</CardDescription>
+            <CardTitle className="text-sm">Appearance &amp; locale</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="theme">Theme</Label>
-              <Controller
-                control={control}
-                name="theme"
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger id="theme" className="w-full"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="light">Light</SelectItem>
-                      <SelectItem value="dark">Dark</SelectItem>
-                      <SelectItem value="system">System</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
+          <CardContent className="space-y-2.5">
+            <div className="grid grid-cols-2 gap-2.5">
+              <div className="space-y-1">
+                <Label htmlFor="theme" className="text-xs">Theme</Label>
+                <Controller
+                  control={control}
+                  name="theme"
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger id="theme" className="h-9 w-full text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="light">Light</SelectItem>
+                        <SelectItem value="dark">Dark</SelectItem>
+                        <SelectItem value="system">System</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="language" className="text-xs">Language</Label>
+                <Controller
+                  control={control}
+                  name="language"
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger id="language" className="h-9 w-full text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {LANGUAGES.map((lang) => (
+                          <SelectItem key={lang.value} value={lang.value}>{lang.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="timezone">Timezone</Label>
+            <div className="space-y-1">
+              <Label htmlFor="timezone" className="text-xs">Timezone</Label>
               <Controller
                 control={control}
                 name="timezone"
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger id="timezone" className="w-full"><SelectValue /></SelectTrigger>
+                    <SelectTrigger id="timezone" className="h-9 w-full text-xs"><SelectValue /></SelectTrigger>
                     <SelectContent className="max-h-72">
                       {timezones.map((tz) => (
                         <SelectItem key={tz} value={tz}>{tz}</SelectItem>
@@ -271,71 +289,55 @@ export function SettingsPage() {
                   </Select>
                 )}
               />
-              <p className="text-muted-foreground text-xs">Used to evaluate when your schedules should fire.</p>
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="language">Language</Label>
-              <Controller
-                control={control}
-                name="language"
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger id="language" className="w-full"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {LANGUAGES.map((lang) => (
-                        <SelectItem key={lang.value} value={lang.value}>{lang.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
+              <p className="text-muted-foreground text-[11px]">Used to evaluate when schedules fire.</p>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Default AC state</CardTitle>
-            <CardDescription>Applied when turning the AC on without other instructions.</CardDescription>
+            <CardTitle className="text-sm">Default AC state</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="default_temperature">Default temperature (°C)</Label>
-              <Input id="default_temperature" type="number" min={20} max={28} {...register("default_temperature")} />
+          <CardContent className="space-y-2.5">
+            <div className="space-y-1">
+              <Label htmlFor="default_temperature" className="text-xs">Default temperature (°C)</Label>
+              <Input id="default_temperature" type="number" min={20} max={28} className="h-9 text-xs" {...register("default_temperature")} />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="default_mode">Default mode</Label>
-              <Controller
-                control={control}
-                name="default_mode"
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger id="default_mode" className="w-full"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {modeOrder.map((mode) => (
-                        <SelectItem key={mode} value={mode}>{modeConfig[mode].label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="default_fan">Default fan speed</Label>
-              <Controller
-                control={control}
-                name="default_fan"
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger id="default_fan" className="w-full"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {fanOrder.map((fan) => (
-                        <SelectItem key={fan} value={fan}>{fanConfig[fan].label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
+            <div className="grid grid-cols-2 gap-2.5">
+              <div className="space-y-1">
+                <Label htmlFor="default_mode" className="text-xs">Mode</Label>
+                <Controller
+                  control={control}
+                  name="default_mode"
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger id="default_mode" className="h-9 w-full text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {modeOrder.map((mode) => (
+                          <SelectItem key={mode} value={mode}>{modeConfig[mode].label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="default_fan" className="text-xs">Fan</Label>
+                <Controller
+                  control={control}
+                  name="default_fan"
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger id="default_fan" className="h-9 w-full text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {fanOrder.map((fan) => (
+                          <SelectItem key={fan} value={fan}>{fanConfig[fan].label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>

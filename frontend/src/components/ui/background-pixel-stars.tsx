@@ -28,6 +28,18 @@ const percentToRegenerate = 0.12 // Percentage of stars to regenerate at each in
 const shootingStarPixelSize = 2
 const targetFps = 16 // 16 FPS for that retro feel
 
+// Grid-line overlay -- draws faint vertical/horizontal lines (each with its
+// own fixed-but-random opacity, generated once) so the "pixel grid" itself
+// reads as a grid, not just scattered stars. Rendered onto its own static
+// canvas (see gridCanvasRef below) that's only redrawn on mount/resize --
+// NOT every animation frame -- since perf profiling showed re-stroking
+// ~100 lines every frame was a needless, avoidable cost on top of the
+// star/shooting-star redraw that actually needs to run every frame.
+const gridLineSpacing = pixelSize * 5 // px between lines
+const gridLineMinOpacity = 0.025
+const gridLineMaxOpacity = 0.09
+const gridLineColor = "148, 163, 184" // slate-400 rgb, subtle on light + dark
+
 // Type definitions
 type BackgroundStar = {
   x: number
@@ -67,6 +79,7 @@ type StartPoint = {
 export const BackgroundPixelStars = memo(
   () => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
+    const gridCanvasRef = useRef<HTMLCanvasElement | null>(null)
     const animationFrameRef = useRef<number | null>(null)
 
     // State references
@@ -74,6 +87,41 @@ export const BackgroundPixelStars = memo(
     const shootingStarsRef = useRef<ShootingStar[]>([])
     const lastRenderTimeRef = useRef<number>(0)
     const frameInterval: number = 1000 / targetFps
+
+    // Draw the faint pixel-grid lines once onto the dedicated static
+    // canvas -- called on mount and on resize only, never per-frame.
+    const drawGridLines = useCallback((): void => {
+      if (!gridCanvasRef.current) return
+      const canvas = gridCanvasRef.current
+      const ctx = canvas.getContext("2d")
+      if (!ctx) return
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.lineWidth = 1
+
+      const randomOpacity = () =>
+        gridLineMinOpacity + Math.random() * (gridLineMaxOpacity - gridLineMinOpacity)
+
+      const verticalCount = Math.ceil(canvas.width / gridLineSpacing) + 1
+      for (let i = 0; i < verticalCount; i++) {
+        const x = i * gridLineSpacing
+        ctx.strokeStyle = `rgba(${gridLineColor}, ${randomOpacity()})`
+        ctx.beginPath()
+        ctx.moveTo(x, 0)
+        ctx.lineTo(x, canvas.height)
+        ctx.stroke()
+      }
+
+      const horizontalCount = Math.ceil(canvas.height / gridLineSpacing) + 1
+      for (let i = 0; i < horizontalCount; i++) {
+        const y = i * gridLineSpacing
+        ctx.strokeStyle = `rgba(${gridLineColor}, ${randomOpacity()})`
+        ctx.beginPath()
+        ctx.moveTo(0, y)
+        ctx.lineTo(canvas.width, y)
+        ctx.stroke()
+      }
+    }, [])
 
     // Get random starting point for shooting stars
     const getRandomStartPoint = useCallback((): StartPoint => {
@@ -166,7 +214,10 @@ export const BackgroundPixelStars = memo(
       }
     }, [])
 
-    // Main animation loop
+    // Main animation loop -- only draws stars + shooting stars each frame;
+    // the grid lines live on their own static canvas underneath (see
+    // drawGridLines) so this loop's per-frame cost didn't grow when the
+    // grid overlay was added.
     const animateCanvas = useCallback(
       (timestamp: number): void => {
         // Skip frames to limit to target FPS
@@ -307,14 +358,17 @@ export const BackgroundPixelStars = memo(
 
     // Initialize the component
     useEffect(() => {
-      if (!canvasRef.current) return
+      if (!canvasRef.current || !gridCanvasRef.current) return
 
       // Set canvas dimensions
       canvasRef.current.width = window.innerWidth
       canvasRef.current.height = window.innerHeight
+      gridCanvasRef.current.width = window.innerWidth
+      gridCanvasRef.current.height = window.innerHeight
 
-      // Initialize background stars
+      // Initialize background stars + draw the (static) grid once
       initBackgroundStars()
+      drawGridLines()
 
       // Start animation loop
       animationFrameRef.current = requestAnimationFrame(animateCanvas)
@@ -337,10 +391,13 @@ export const BackgroundPixelStars = memo(
 
       // Handle window resize
       const handleResize = (): void => {
-        if (canvasRef.current) {
+        if (canvasRef.current && gridCanvasRef.current) {
           canvasRef.current.width = window.innerWidth
           canvasRef.current.height = window.innerHeight
+          gridCanvasRef.current.width = window.innerWidth
+          gridCanvasRef.current.height = window.innerHeight
           initBackgroundStars()
+          drawGridLines()
         }
       }
       window.addEventListener("resize", handleResize)
@@ -353,9 +410,22 @@ export const BackgroundPixelStars = memo(
         clearInterval(regenerationInterval)
         window.removeEventListener("resize", handleResize)
       }
-    }, [animateCanvas, createNewShootingStar, initBackgroundStars, regenerateBackgroundStars])
+    }, [animateCanvas, createNewShootingStar, drawGridLines, initBackgroundStars, regenerateBackgroundStars])
 
-    return <canvas ref={canvasRef} className="pointer-events-none fixed inset-0" />
+    return (
+      <>
+        <canvas
+          ref={gridCanvasRef}
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-0 -z-20"
+        />
+        <canvas
+          ref={canvasRef}
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-0 -z-10"
+        />
+      </>
+    )
   },
   () => true
 )
