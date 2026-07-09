@@ -1,4 +1,4 @@
-import { Snowflake, Flame, Droplets, Fan, type LucideIcon } from "lucide-react"
+import { Snowflake, Flame, Droplets, Fan, Leaf, type LucideIcon } from "lucide-react"
 
 import type { AcMode, FanSpeed, CommandSource } from "@/types/database"
 
@@ -22,12 +22,15 @@ export const modeConfig: Record<AcMode, { label: string; icon: LucideIcon; class
 
 // Same Fan icon for every speed -- differentiated by icon size (see
 // fan-selector.tsx) so low/medium/high still read as visually distinct
-// without needing three unrelated icon glyphs.
+// without needing three unrelated icon glyphs. Eco gets its own Leaf icon
+// since it's not actually a "speed" on the same scale -- it's a distinct
+// low-power mode (confirmed via IR recapture, see carrier_ac.py).
 export const fanConfig: Record<FanSpeed, { label: string; icon: LucideIcon; iconSize: string }> = {
+  eco: { label: "Eco", icon: Leaf, iconSize: "size-3" },
   low: { label: "Low", icon: Fan, iconSize: "size-3" },
   medium: { label: "Medium", icon: Fan, iconSize: "size-3.5" },
   high: { label: "High", icon: Fan, iconSize: "size-4" },
 }
 
 export const modeOrder: AcMode[] = ["cool", "heat", "dry"]
-export const fanOrder: FanSpeed[] = ["low", "medium", "high"]
+export const fanOrder: FanSpeed[] = ["eco", "low", "medium", "high"]

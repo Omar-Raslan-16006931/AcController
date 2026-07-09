@@ -1,6 +1,6 @@
 import * as React from "react"
 import { format } from "date-fns"
-import { Timer, TrendingUp, ChevronRight } from "lucide-react"
+import { Timer, TrendingUp, ChevronRight, Layers, Thermometer } from "lucide-react"
 import { motion } from "framer-motion"
 
 import { cn } from "@/lib/utils"
@@ -13,7 +13,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog"
 import { useAcUsage } from "@/features/dashboard/use-ac-usage"
-import { useAcUsageDetail } from "@/features/dashboard/use-ac-usage-detail"
+import { useAcUsageDetail, type AcUsageDayDetail, type AcUsageInterval } from "@/features/dashboard/use-ac-usage-detail"
 import { modeConfig, fanConfig } from "@/lib/ac-labels"
 
 function formatDuration(totalSeconds: number): string {
@@ -107,6 +107,137 @@ export function AcUsageCard() {
   )
 }
 
+function dayStatsFor(day: AcUsageDayDetail | undefined) {
+  if (!day) return { totalSeconds: 0, sessions: 0, avgTemp: null as number | null }
+  const totalSeconds = day.intervals.reduce((sum, iv) => sum + (iv.endMs - iv.startMs) / 1000, 0)
+  const sessions = day.intervals.length
+  const weighted = day.intervals.filter((iv) => iv.temperature != null)
+  const weightMs = weighted.reduce((sum, iv) => sum + (iv.endMs - iv.startMs), 0)
+  const avgTemp =
+    weightMs > 0
+      ? Math.round(
+          weighted.reduce((sum, iv) => sum + iv.temperature! * (iv.endMs - iv.startMs), 0) / weightMs
+        )
+      : null
+  return { totalSeconds, sessions, avgTemp }
+}
+
+const HOUR_MARKS = [
+  { hour: 0, label: "12a" },
+  { hour: 6, label: "6a" },
+  { hour: 12, label: "12p" },
+  { hour: 18, label: "6p" },
+]
+
+/** Horizontal 24h strip -- shaded segments show exactly when the AC was
+ * running that day, colored to match the mode active during each segment,
+ * so a busy day reads at a glance instead of requiring a scroll through
+ * a list of times. */
+function DayTimeline({ day }: { day: AcUsageDayDetail }) {
+  const dayStartMs = new Date(`${day.date}T00:00:00`).getTime()
+  const dayLengthMs = 24 * 60 * 60 * 1000
+
+  return (
+    <div>
+      <div className="bg-secondary/70 relative h-5 w-full overflow-hidden rounded-full">
+        {day.intervals.map((iv, i) => {
+          const leftPct = Math.max(0, ((iv.startMs - dayStartMs) / dayLengthMs) * 100)
+          const widthPct = Math.max(((iv.endMs - iv.startMs) / dayLengthMs) * 100, 0.8)
+          const modeClassName = iv.mode ? modeConfig[iv.mode].className : "text-frost"
+          return (
+            <div
+              key={i}
+              className={cn(
+                "absolute inset-y-0 rounded-full opacity-90",
+                modeClassName.replace("text-", "bg-")
+              )}
+              style={{ left: `${leftPct}%`, width: `${Math.min(widthPct, 100 - leftPct)}%` }}
+            />
+          )
+        })}
+      </div>
+      <div className="text-muted-foreground/70 mt-1 flex justify-between text-[9px] font-medium">
+        {HOUR_MARKS.map((mark) => (
+          <span key={mark.hour}>{mark.label}</span>
+        ))}
+        <span>12a</span>
+      </div>
+    </div>
+  )
+}
+
+function DayStatChip({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof Timer
+  label: string
+  value: string
+}) {
+  return (
+    <div className="flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5">
+      <div className="text-muted-foreground flex items-center gap-1">
+        <Icon className="size-3" />
+        <span className="text-[10px] font-medium">{label}</span>
+      </div>
+      <p className="text-[13px] font-bold tabular-nums">{value}</p>
+    </div>
+  )
+}
+
+function IntervalRow({ interval }: { interval: AcUsageInterval }) {
+  const durationSeconds = (interval.endMs - interval.startMs) / 1000
+  const mode = interval.mode ? modeConfig[interval.mode] : null
+  const fan = interval.fan ? fanConfig[interval.fan] : null
+  const ModeIcon = mode?.icon
+
+  return (
+    <div className="border-border/50 bg-card/60 flex items-center gap-3 rounded-xl border px-3 py-2.5">
+      <span
+        className={cn(
+          "flex size-8 shrink-0 items-center justify-center rounded-full",
+          mode ? mode.className.replace("text-", "bg-") + "/15" : "bg-frost/15",
+          mode?.className ?? "text-frost"
+        )}
+      >
+        {ModeIcon ? <ModeIcon className="size-4" /> : <Thermometer className="size-4" />}
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-[13px] leading-tight font-semibold">
+          {formatClock(interval.startMs)} – {interval.ongoing ? "now" : formatClock(interval.endMs)}
+        </p>
+        <p className="text-muted-foreground mt-0.5 flex items-center gap-1 text-[11px] leading-tight">
+          <span>{formatDuration(durationSeconds)}</span>
+          {interval.temperature != null && (
+            <>
+              <span aria-hidden>·</span>
+              <span className="tabular-nums">{interval.temperature}°</span>
+            </>
+          )}
+          {mode && (
+            <>
+              <span aria-hidden>·</span>
+              <span>{mode.label}</span>
+            </>
+          )}
+          {fan && (
+            <>
+              <span aria-hidden>·</span>
+              <span>{fan.label} fan</span>
+            </>
+          )}
+        </p>
+      </div>
+      {interval.ongoing && (
+        <span className="bg-success/15 text-success shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold">
+          Live
+        </span>
+      )}
+    </div>
+  )
+}
+
 function AcUsageDetailDialog({
   open,
   onOpenChange,
@@ -124,6 +255,7 @@ function AcUsageDetailDialog({
   }, [days, selectedDate])
 
   const activeDay = days?.find((d) => d.date === selectedDate) ?? days?.[days.length - 1]
+  const stats = dayStatsFor(activeDay)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -161,7 +293,23 @@ function AcUsageDetailDialog({
           })}
         </div>
 
-        <div className="max-h-72 space-y-1.5 overflow-y-auto">
+        {!isLoading && activeDay && (
+          <>
+            <DayTimeline day={activeDay} />
+
+            <div className="bg-secondary/40 flex items-stretch divide-x divide-border/60 rounded-xl">
+              <DayStatChip icon={Timer} label="Total on" value={formatDuration(stats.totalSeconds)} />
+              <DayStatChip icon={Layers} label="Sessions" value={String(stats.sessions)} />
+              <DayStatChip
+                icon={Thermometer}
+                label="Avg temp"
+                value={stats.avgTemp != null ? `${stats.avgTemp}°` : "—"}
+              />
+            </div>
+          </>
+        )}
+
+        <div className="max-h-64 space-y-1.5 overflow-y-auto">
           {isLoading && (
             <p className="text-muted-foreground py-6 text-center text-xs">Loading…</p>
           )}
@@ -171,27 +319,7 @@ function AcUsageDetailDialog({
             </p>
           )}
           {!isLoading &&
-            activeDay?.intervals.map((interval, i) => {
-              const ModeIcon = interval.mode ? modeConfig[interval.mode].icon : null
-              const FanIcon = interval.fan ? fanConfig[interval.fan].icon : null
-              return (
-                <div
-                  key={i}
-                  className="bg-secondary/60 flex items-center justify-between gap-2 rounded-xl px-3 py-2"
-                >
-                  <p className="text-xs font-semibold">
-                    {formatClock(interval.startMs)} – {interval.ongoing ? "now" : formatClock(interval.endMs)}
-                  </p>
-                  <div className="text-muted-foreground flex items-center gap-2 text-[11px]">
-                    {interval.temperature != null && (
-                      <span className="font-medium tabular-nums">{interval.temperature}°</span>
-                    )}
-                    {ModeIcon && <ModeIcon className="size-3.5" />}
-                    {FanIcon && interval.fan && <FanIcon className={fanConfig[interval.fan].iconSize} />}
-                  </div>
-                </div>
-              )
-            })}
+            activeDay?.intervals.map((interval, i) => <IntervalRow key={i} interval={interval} />)}
         </div>
       </DialogContent>
     </Dialog>
