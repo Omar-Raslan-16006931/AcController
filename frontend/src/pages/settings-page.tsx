@@ -40,7 +40,7 @@ const settingsSchema = z.object({
   // entirely since the production CarrierAC library ignores them.
   default_temperature: z.coerce.number().min(20).max(28),
   default_mode: z.enum(["cool", "heat", "dry"]),
-  default_fan: z.enum(["low", "medium", "high"]),
+  default_fan: z.enum(["eco", "low", "medium", "high"]),
 })
 
 type SettingsFormInput = z.input<typeof settingsSchema>

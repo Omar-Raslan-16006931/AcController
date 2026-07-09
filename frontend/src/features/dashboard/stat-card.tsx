@@ -13,13 +13,6 @@ interface StatRowProps {
   index?: number
 }
 
-const accentClasses: Record<NonNullable<StatRowProps["accent"]>, string> = {
-  default: "bg-primary/12 text-primary",
-  success: "bg-success/12 text-success",
-  warning: "bg-warning/15 text-warning",
-  destructive: "bg-destructive/12 text-destructive",
-}
-
 const barClasses: Record<NonNullable<StatRowProps["accent"]>, string> = {
   default: "bg-primary",
   success: "bg-success",
@@ -51,8 +44,10 @@ export function StatRow({
       whileTap={{ scale: 0.98 }}
       className="flex items-center gap-2.5 py-2 first:pt-0 last:pb-0"
     >
-      <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-[9px]", accentClasses[accent])}>
-        <Icon className="size-3.5" />
+      {/* No colored box behind the icon anymore -- just the glyph itself,
+          plain white/foreground regardless of accent, per user request. */}
+      <span className="flex size-7 shrink-0 items-center justify-center">
+        <Icon className="text-foreground size-4" />
       </span>
 
       <div className="min-w-0 flex-1">

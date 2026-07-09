@@ -4,13 +4,14 @@ from pydantic import BaseModel, Field, model_validator
 
 # Restricted to exactly what the real Carrier hardware supports, confirmed
 # via IR capture analysis in carrier_ac.py (see MODE_CODES/FAN_CODES/
-# TEMP_TABLE there). There is no "fan-only" mode, no confirmed "eco" bit,
-# no "auto" fan speed exposed to users, and no temperature outside 20-28C.
-# FastAPI/Pydantic rejects anything else with a 400 before it ever reaches
-# the IR transmission layer — see the RequestValidationError handler in
-# app/main.py.
+# TEMP_TABLE there). There is no "fan-only" mode, no "auto" fan speed
+# exposed to users, and no temperature outside 20-28C. FastAPI/Pydantic
+# rejects anything else with a 400 before it ever reaches the IR
+# transmission layer — see the RequestValidationError handler in
+# app/main.py. "eco" is a confirmed 5th fan-speed bitmask value (see
+# carrier_ac.py's FAN_CODES + module docstring for the capture evidence).
 AcMode = Literal["cool", "heat", "dry"]
-FanSpeed = Literal["low", "medium", "high"]
+FanSpeed = Literal["eco", "low", "medium", "high"]
 
 
 class AcState(BaseModel):

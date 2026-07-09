@@ -15,7 +15,7 @@ FRAME LAYOUT
     byte1 = ~byte0
     byte2 = state byte:
         bit 5        (mask 0x20)  POWER        1=on, 0=off      [CONFIRMED]
-        bits [2:0]   (mask 0x07)  FAN          0=auto 1=low 2=medium 4=high [CONFIRMED]
+        bits [2:0]   (mask 0x07)  FAN          0=auto 1=low 2=medium 4=high 5=eco [CONFIRMED]
         bits 7,6,4,3 (mask 0xD8)  reserved, always observed as 1  [constant]
     byte3 = ~byte2
     byte4 = temp/mode byte:
@@ -27,10 +27,23 @@ FRAME LAYOUT
 CONFIDENCE — see output/bitmask_report.md for the full per-bit evidence
 table. Short version: power, fan, mode, and temperature are each
 confirmed by captures that changed ONLY that field's bits and nothing
-else — genuine single-variable isolation, not inference. Eco is
-explicitly NOT implemented as a bit, because the data doesn't support
-one: eco.txt decoded to a payload byte-identical to power_on.txt and
-mode_cool.txt. Calling set_eco() raises rather than pretending.
+else — genuine single-variable isolation, not inference.
+
+ECO (added, see raw/ac_codes/eco.txt): a prior capture attempt was
+inconclusive (decoded byte-identical to power_on.txt/mode_cool.txt), but
+a fresh controlled recapture — baseline reset to base.txt's exact state
+(power on, cool, 24C, fan low), then ONLY the eco button pressed —
+decoded cleanly. Frames 2 and 3 of that 3-frame capture are byte-for-byte
+identical to each other (a strong self-consistency check) and their
+complement bytes (byte3 = ~byte2, byte5 = ~byte4) check out perfectly.
+Result: mode and temperature were unchanged from baseline, but the FAN
+field (byte2 bits [2:0]) came back as 0b101 (5) instead of baseline's
+0b001 (low) — a value never seen in any prior capture. So "eco" is not a
+separate toggle bit at all: it's simply a 5th fan-speed code, exactly
+like low/medium/high, just with an unused 3-bit value. (The capture's
+first/leading frame decoded to something that doesn't satisfy the
+reserved-bits-always-1 invariant the other frames do, so it's treated as
+capture noise around the button-press onset rather than authoritative.)
 """
 
 from __future__ import annotations
@@ -55,6 +68,9 @@ FAN_CODES = {
     "low": 0b001,
     "medium": 0b010,
     "high": 0b100,
+    # Confirmed via a clean isolated recapture (raw/ac_codes/eco.txt) —
+    # see the module docstring's ECO section for the full evidence.
+    "eco": 0b101,
 }
 
 # --- byte4 bit masks (confirmed) ------------------------------------------
@@ -134,15 +150,6 @@ class CarrierAC:
             raise ValueError(f"fan speed must be one of {list(FAN_CODES)}")
         self.state.fan = speed
         return self
-
-    def set_eco(self, enabled: bool) -> "CarrierAC":
-        raise NotImplementedError(
-            "No eco bit was isolated in byte2 or byte4 — eco.txt decoded to a payload "
-            "byte-identical to power_on.txt and mode_cool.txt (see output/bitmask_report.md, "
-            "'ECO — NOT FOUND'). Implementing this would mean guessing a bit with zero "
-            "supporting evidence. Recapture eco with a controlled baseline (reset to a known "
-            "state, press ONLY eco, capture) and rerun bitmask_analysis.py to add it properly."
-        )
 
     # --- bit-level construction + automatic complement generation -----
 

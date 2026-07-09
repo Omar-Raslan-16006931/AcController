@@ -365,32 +365,32 @@
   }
 
   .menu__text {
-    /* height: 0 (not just max-width: 0) so an inactive label reserves no
-       vertical space at all -- previously every item, active or not,
-       always reserved ~1 line of height for its label even though only
-       the active item ever shows one, which read as a band of empty
-       space below the icon row inside the pill. */
+    /* height + margin-top are now ALWAYS applied (not just on .active) --
+       only max-width/opacity toggle. Previously height/margin-top only
+       appeared once a label went active, which grew the item's total
+       content height at that exact moment and pushed the icon upward
+       (since the column is centered via `justify-content: center` on
+       .menu__item) -- reads as the icon "jumping" on selection. Reserving
+       this small fixed slot unconditionally keeps the icon's position
+       constant whether or not a label is currently shown. */
     display: block;
-    height: 0;
+    height: 0.75rem;
     max-width: 0;
     overflow: hidden;
     opacity: 0;
     white-space: nowrap;
     font-size: 0.625rem;
     font-weight: 600;
-    line-height: 1;
+    line-height: 0.75rem;
     text-transform: capitalize;
+    margin-top: 0.125rem;
     transition:
       max-width 0.3s ease,
-      opacity 0.2s ease,
-      margin-top 0.3s ease,
-      height 0.2s ease;
+      opacity 0.2s ease;
   }
 
   .menu__text.active {
-    height: auto;
     max-width: var(--lineWidth, 6rem);
     opacity: 1;
-    margin-top: 0.125rem;
   }
 }

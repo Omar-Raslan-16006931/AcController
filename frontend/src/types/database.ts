@@ -13,9 +13,10 @@ export type Json = string | number | boolean | null | { [key: string]: Json } | 
 
 export type ThemePreference = "light" | "dark" | "system"
 // Restricted to exactly what the real Carrier hardware supports: no
-// fan-only mode, no confirmed eco bit, no auto fan speed.
+// fan-only mode, no auto fan speed. "eco" confirmed via a clean IR
+// recapture -- see backend/app/services/carrier_ac.py's FAN_CODES.
 export type AcMode = "cool" | "heat" | "dry"
-export type FanSpeed = "low" | "medium" | "high"
+export type FanSpeed = "eco" | "low" | "medium" | "high"
 export type RepeatRule = "once" | "daily" | "weekdays" | "weekends" | "custom"
 export type CommandSource = "manual" | "schedule" | "timer" | "system"
 export type CommandResult = "success" | "failure"

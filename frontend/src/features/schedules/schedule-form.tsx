@@ -38,7 +38,7 @@ const scheduleSchema = z
     // Restricted to exactly what the real Carrier hardware supports.
     temperature: z.coerce.number().min(20).max(28),
     mode: z.enum(["cool", "heat", "dry"]),
-    fan: z.enum(["low", "medium", "high"]),
+    fan: z.enum(["eco", "low", "medium", "high"]),
   })
   .refine((v) => v.repeat !== "custom" || v.customDays.length > 0, {
     message: "Pick at least one day",
