@@ -5,7 +5,6 @@ import { Send, Undo2, WifiOff, Zap } from "lucide-react"
 import { PageHeader } from "@/components/page-header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -113,10 +112,10 @@ export function RemotePage() {
 
       {isLoading && (
         <Card className="mx-auto w-full max-w-sm">
-          <CardContent className="flex flex-col items-center gap-4">
-            <Skeleton className="size-52 rounded-full sm:size-56" />
-            <Skeleton className="h-11 w-full rounded-full" />
-            <Skeleton className="h-20 w-full rounded-xl" />
+          <CardContent className="flex flex-col items-center gap-3">
+            <Skeleton className="size-40 rounded-full sm:size-44" />
+            <Skeleton className="h-10 w-full rounded-full" />
+            <Skeleton className="h-16 w-full rounded-xl" />
           </CardContent>
         </Card>
       )}
@@ -136,8 +135,8 @@ export function RemotePage() {
       )}
 
       {status && (
-        <Card className="mx-auto w-full max-w-sm">
-          <CardContent className="flex flex-col items-center gap-4 pt-1">
+        <Card className="mx-auto w-full max-w-sm gap-0">
+          <CardContent className="flex flex-col items-center gap-2.5 pt-0.5 pb-3">
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <Zap className={autoSend ? "text-frost size-3.5" : "text-muted-foreground size-3.5"} />
@@ -147,8 +146,6 @@ export function RemotePage() {
               </div>
               <Switch id="auto-send" checked={autoSend} onCheckedChange={applyAutoSendChange} />
             </div>
-
-            <Separator />
 
             <TemperatureDial
               value={draft.temperature ?? status.ac_state.temperature}
@@ -162,7 +159,7 @@ export function RemotePage() {
               onPowerOff={() => setPower.mutate(false)}
             />
 
-            <div className="w-full space-y-2">
+            <div className="w-full space-y-1.5">
               <ModeSelector
                 value={draft.mode ?? status.ac_state.mode}
                 disabled={!status.ac_state.power || busy}
@@ -193,12 +190,10 @@ export function RemotePage() {
               </div>
             )}
           </CardContent>
-        </Card>
-      )}
 
-      {status && (
-        <Card className="mx-auto mt-3 w-full max-w-sm">
-          <CardContent className="pt-1">
+          <div className="border-border/60 border-t" />
+
+          <CardContent className="pt-3">
             <TimerControls />
           </CardContent>
         </Card>

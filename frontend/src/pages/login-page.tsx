@@ -93,7 +93,8 @@ export function LoginPage() {
     // No bg-background here: BackgroundPixelStars is mounted once at the
     // App.tsx root and needs this page to stay transparent to show through
     // (the card itself is already translucent via backdrop-blur-sm).
-    <div className="relative flex min-h-svh items-center justify-center overflow-hidden px-4 py-10 sm:p-6">
+    // `z-0` guarantees this stacking context paints above the canvas's -z-10.
+    <div className="relative z-0 flex min-h-svh items-center justify-center overflow-hidden px-4 py-10 sm:p-6">
       <div
         aria-hidden
         className="bg-glow-orb absolute top-[18%] left-1/2 size-[26rem] -translate-x-1/2 blur-3xl sm:size-[36rem]"

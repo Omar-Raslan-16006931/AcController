@@ -7,11 +7,15 @@ import { Button } from "@/components/ui/button"
 import { useStatus } from "@/features/dashboard/use-status"
 import { AcStatusCard } from "@/features/dashboard/ac-status-card"
 import { SystemMetricsGrid } from "@/features/dashboard/system-metrics-grid"
+import { AcUsageCard } from "@/features/dashboard/ac-usage-card"
 
 function DashboardSkeleton() {
   return (
     <div className="space-y-3 lg:grid lg:grid-cols-[380px_1fr] lg:items-start lg:gap-4 lg:space-y-0">
-      <Skeleton className="h-[168px] w-full rounded-[1.25rem]" />
+      <div className="space-y-3">
+        <Skeleton className="h-[168px] w-full rounded-[1.25rem]" />
+        <Skeleton className="h-16 w-full rounded-[1.25rem]" />
+      </div>
       <Skeleton className="h-[240px] w-full rounded-[1.25rem]" />
     </div>
   )
@@ -61,7 +65,10 @@ export function DashboardPage() {
 
       {status && (
         <div className="space-y-3 lg:grid lg:grid-cols-[380px_1fr] lg:items-start lg:gap-4 lg:space-y-0">
-          <AcStatusCard status={status} />
+          <div className="space-y-3">
+            <AcStatusCard status={status} />
+            <AcUsageCard />
+          </div>
           <div>
             <p className="text-muted-foreground mb-1.5 px-1 text-[11px] font-semibold tracking-[0.04em] uppercase lg:hidden">
               System

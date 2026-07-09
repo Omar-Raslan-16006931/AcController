@@ -233,7 +233,11 @@
 
   /* Reserve room for the fixed bottom tab bar (+ home indicator). */
   .pb-tabbar {
-    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+    /* Tightened from 5.5rem -- the InteractiveMenu pill dock (.menu +
+       .menu__item padding + icon + label) plus its own wrapper padding
+       measures out to ~4.75rem, so 5rem leaves a small intentional buffer
+       instead of an oversized gap between page content and the nav. */
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
   }
 }
 
@@ -248,18 +252,22 @@
    --------------------------------------------------------------------- */
 :root {
   --component-inactive-color: var(--muted-foreground);
-  --component-bg: var(--card);
+  /* Liquid-glass redesign: translucent card tint instead of an opaque
+     surface, meant to be used with backdrop-filter blur on .menu below. */
+  --component-bg: color-mix(in oklch, var(--card) 55%, transparent);
   --component-shadow: var(--border);
-  --component-active-bg: var(--secondary);
+  --component-active-bg: color-mix(in oklch, var(--primary) 16%, transparent);
+  --component-active-border: color-mix(in oklch, var(--primary) 32%, transparent);
   --component-line-inactive-color: var(--border);
   --component-active-color-default: var(--accent-foreground);
 }
 
 .dark {
   --component-inactive-color: var(--muted-foreground);
-  --component-bg: var(--card);
+  --component-bg: color-mix(in oklch, var(--card) 45%, transparent);
   --component-shadow: var(--border);
-  --component-active-bg: var(--secondary);
+  --component-active-bg: color-mix(in oklch, var(--primary) 22%, transparent);
+  --component-active-border: color-mix(in oklch, var(--primary) 38%, transparent);
   --component-line-inactive-color: var(--muted-foreground);
   --component-active-color-default: var(--accent-foreground);
 }
@@ -285,17 +293,23 @@
 
 @layer components {
   .menu {
+    /* Simple liquid-glass style: heavy blur + saturation over a translucent
+       tint, a hairline border, and a soft inner top highlight to read as a
+       glass surface rather than a flat opaque bar. */
     display: flex;
     align-items: center;
     gap: 0.125rem;
     width: 100%;
     padding: 0.3rem;
     background: var(--component-bg);
-    border: 1px solid var(--component-shadow);
+    backdrop-filter: blur(22px) saturate(180%);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+    border: 1px solid color-mix(in oklch, var(--foreground) 10%, transparent);
     border-radius: 9999px;
     box-shadow:
-      0 1px 2px color-mix(in oklch, var(--component-shadow) 70%, transparent),
-      0 10px 28px -12px color-mix(in oklch, var(--foreground) 18%, transparent);
+      inset 0 1px 0 0 color-mix(in oklch, white 22%, transparent),
+      0 1px 2px color-mix(in oklch, var(--component-shadow) 60%, transparent),
+      0 12px 32px -14px color-mix(in oklch, var(--foreground) 20%, transparent);
   }
 
   .menu__item {
@@ -326,6 +340,8 @@
   .menu__item.active {
     color: var(--component-active-color, var(--component-active-color-default));
     background: var(--component-active-bg);
+    border: 1px solid var(--component-active-border);
+    backdrop-filter: blur(6px);
   }
 
   .menu__item.active .menu__icon .icon {

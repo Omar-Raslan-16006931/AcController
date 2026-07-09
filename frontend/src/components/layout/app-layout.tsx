@@ -20,8 +20,10 @@ export function AppLayout() {
     // (above the router, so it covers /login too and never remounts on
     // navigation) -- leaving this div transparent lets that fixed starfield
     // canvas show through page gaps/margins instead of being hidden behind
-    // an opaque layer of its own.
-    <div className="flex h-svh flex-col overflow-hidden">
+    // an opaque layer of its own. `relative z-0` establishes a stacking
+    // context above the canvas's `-z-10` so the whole app shell is
+    // guaranteed to paint in front of it, never behind.
+    <div className="relative z-0 flex h-svh flex-col overflow-hidden">
       <OfflineBanner />
       <Topbar />
 
