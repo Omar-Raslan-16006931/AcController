@@ -48,7 +48,7 @@ export function SystemMetricsGrid({ system }: { system: SystemMetrics }) {
             }
           />
         </div>
-        <div className="divide-border/60 flex flex-col divide-y">
+        <div className="divide-border/60 border-border/60 mt-1 flex flex-col divide-y border-t pt-1 sm:mt-0 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-3">
           <StatRow
             index={4}
             icon={Wifi}

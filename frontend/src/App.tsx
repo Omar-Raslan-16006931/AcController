@@ -8,6 +8,7 @@ import { AuthProvider } from "@/context/auth-context"
 import { ErrorBoundary } from "@/components/error-boundary"
 import { Toaster } from "@/components/ui/sonner"
 import { BackgroundPixelStars } from "@/components/ui/background-pixel-stars"
+import { GlassFilter } from "@/components/ui/glass-filter"
 import { router } from "@/routes/router"
 
 function App() {
@@ -20,6 +21,10 @@ function App() {
                 the authenticated app shell alike, and never remounts/resets
                 its star field or animation loop on navigation. */}
             <BackgroundPixelStars />
+            {/* Shared liquid-glass SVG filter (#container-glass), referenced
+                by the navbar and glass Cards via backdrop-filter: url(...).
+                Mounted once, globally, same reasoning as the star field. */}
+            <GlassFilter />
             <RouterProvider router={router} />
             <Toaster />
             {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}

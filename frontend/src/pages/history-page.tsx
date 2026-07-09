@@ -25,7 +25,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { useHistory, useDeleteHistoryEntry, useClearHistory } from "@/features/history/use-history"
-import { modeConfig, fanConfig } from "@/lib/ac-labels"
+import { modeConfig, fanConfig, commandSourceLabels } from "@/lib/ac-labels"
 
 const PAGE_SIZE = 20
 
@@ -140,7 +140,7 @@ export function HistoryPage() {
                   <TableCell className="p-2.5 text-xs">{entry.temperature != null ? `${entry.temperature}°` : "—"}</TableCell>
                   <TableCell className="p-2.5 text-xs">{entry.mode ? modeConfig[entry.mode].label : "—"}</TableCell>
                   <TableCell className="p-2.5 text-xs">{entry.fan ? fanConfig[entry.fan].label : "—"}</TableCell>
-                  <TableCell className="text-muted-foreground p-2.5 text-xs capitalize">{entry.source}</TableCell>
+                  <TableCell className="text-muted-foreground p-2.5 text-xs">{commandSourceLabels[entry.source]}</TableCell>
                   <TableCell className="p-2.5">
                     {entry.result === "success" ? (
                       <span className="text-success flex items-center gap-1 text-xs">
