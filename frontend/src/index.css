@@ -236,3 +236,132 @@
     padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
   }
 }
+
+/* ---------------------------------------------------------------------
+   Modern Mobile Menu (components/ui/modern-mobile-menu.tsx)
+   Tokens below are from the component's own integration snippet; the
+   .menu* selector rules are this app's own -- the snippet only shipped
+   CSS variables + the iconBounce keyframe, not the actual layout/visual
+   rules, so this is a from-scratch pill-dock implementation matching the
+   component's stated behavior (active item gets a colored pill + its
+   label reveals via the JS-measured --lineWidth).
+   --------------------------------------------------------------------- */
+:root {
+  --component-inactive-color: var(--muted-foreground);
+  --component-bg: var(--card);
+  --component-shadow: var(--border);
+  --component-active-bg: var(--secondary);
+  --component-line-inactive-color: var(--border);
+  --component-active-color-default: var(--accent-foreground);
+}
+
+.dark {
+  --component-inactive-color: var(--muted-foreground);
+  --component-bg: var(--card);
+  --component-shadow: var(--border);
+  --component-active-bg: var(--secondary);
+  --component-line-inactive-color: var(--muted-foreground);
+  --component-active-color-default: var(--accent-foreground);
+}
+
+@keyframes iconBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-0.3em);
+  }
+  40% {
+    transform: translateY(0);
+  }
+  60% {
+    transform: translateY(-0.1em);
+  }
+  80% {
+    transform: translateY(0);
+  }
+}
+
+@layer components {
+  .menu {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    width: 100%;
+    padding: 0.3rem;
+    background: var(--component-bg);
+    border: 1px solid var(--component-shadow);
+    border-radius: 9999px;
+    box-shadow:
+      0 1px 2px color-mix(in oklch, var(--component-shadow) 70%, transparent),
+      0 10px 28px -12px color-mix(in oklch, var(--foreground) 18%, transparent);
+  }
+
+  .menu__item {
+    position: relative;
+    display: flex;
+    flex: 1 1 0%;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.125rem;
+    padding: 0.5rem 0.25rem;
+    border: none;
+    background: transparent;
+    border-radius: 9999px;
+    color: var(--component-inactive-color);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      color 0.25s ease,
+      background-color 0.25s ease;
+  }
+
+  .menu__item:hover {
+    color: var(--foreground);
+  }
+
+  .menu__item.active {
+    color: var(--component-active-color, var(--component-active-color-default));
+    background: var(--component-active-bg);
+  }
+
+  .menu__item.active .menu__icon .icon {
+    animation: iconBounce 0.5s ease;
+  }
+
+  .menu__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .menu__icon .icon {
+    width: 1.35rem;
+    height: 1.35rem;
+  }
+
+  .menu__text {
+    display: block;
+    max-width: 0;
+    overflow: hidden;
+    opacity: 0;
+    white-space: nowrap;
+    font-size: 0.625rem;
+    font-weight: 600;
+    line-height: 1;
+    text-transform: capitalize;
+    transition:
+      max-width 0.3s ease,
+      opacity 0.2s ease,
+      margin-top 0.3s ease;
+  }
+
+  .menu__text.active {
+    max-width: var(--lineWidth, 6rem);
+    opacity: 1;
+    margin-top: 0.125rem;
+  }
+}

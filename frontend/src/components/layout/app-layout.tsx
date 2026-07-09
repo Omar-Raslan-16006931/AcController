@@ -4,7 +4,7 @@ import { Outlet, useLocation } from "react-router-dom"
 import { AnimatePresence, motion } from "framer-motion"
 
 import { Topbar } from "@/components/layout/topbar"
-import { TabBar } from "@/components/layout/tab-bar"
+import { MobileMenu } from "@/components/layout/mobile-menu"
 import { CommandPalette } from "@/components/layout/command-palette"
 import { OfflineBanner } from "@/components/offline-banner"
 import { ErrorBoundary } from "@/components/error-boundary"
@@ -15,7 +15,13 @@ export function AppLayout() {
   const [paletteOpen, setPaletteOpen] = React.useState(false)
 
   return (
-    <div className="bg-background flex h-svh flex-col overflow-hidden">
+    // No bg-background here on purpose: body already supplies that solid
+    // color, and BackgroundPixelStars is mounted once at the App.tsx root
+    // (above the router, so it covers /login too and never remounts on
+    // navigation) -- leaving this div transparent lets that fixed starfield
+    // canvas show through page gaps/margins instead of being hidden behind
+    // an opaque layer of its own.
+    <div className="flex h-svh flex-col overflow-hidden">
       <OfflineBanner />
       <Topbar />
 
@@ -38,7 +44,7 @@ export function AppLayout() {
         </ErrorBoundary>
       </main>
 
-      <TabBar />
+      <MobileMenu />
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
     </div>
   )
