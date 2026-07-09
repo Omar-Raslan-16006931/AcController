@@ -135,7 +135,7 @@ export function RemotePage() {
       )}
 
       {status && (
-        <Card className="mx-auto w-full max-w-sm gap-0">
+        <Card glass className="mx-auto w-full max-w-sm gap-0">
           <CardContent className="flex flex-col items-center gap-2.5 pt-0.5 pb-3">
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-1.5">

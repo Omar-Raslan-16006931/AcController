@@ -35,7 +35,7 @@ const targetFps = 16 // 16 FPS for that retro feel
 // NOT every animation frame -- since perf profiling showed re-stroking
 // ~100 lines every frame was a needless, avoidable cost on top of the
 // star/shooting-star redraw that actually needs to run every frame.
-const gridLineSpacing = pixelSize * 5 // px between lines
+const gridLineSpacing = pixelSize // px between lines -- matches the size of the lit star pixels themselves
 const gridLineMinOpacity = 0.025
 const gridLineMaxOpacity = 0.09
 const gridLineColor = "148, 163, 184" // slate-400 rgb, subtle on light + dark

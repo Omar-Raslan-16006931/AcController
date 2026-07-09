@@ -19,7 +19,7 @@ export function AcStatusCard({ status }: { status: StatusResponse }) {
   const ModeIcon = mode.icon
 
   return (
-    <Card className="relative gap-0 overflow-hidden p-3.5">
+    <Card glass className="relative gap-0 overflow-hidden p-3.5">
       {/* Ambient wash while powered on */}
       <motion.div
         aria-hidden
