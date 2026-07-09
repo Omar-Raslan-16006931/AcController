@@ -12,13 +12,17 @@ const STAR_COLORS = [
 ] as const
 
 // Configuration constants
-const starDensity = 0.00004 // Reduced density for larger stars
-const twinkleProbability = 0.7
+// Bumped density + opacity + pixel size from the original pasted values --
+// the original settings produced a very sparse, dim field that read as
+// "noise" rather than a legible pixel grid. This keeps the same retro
+// low-fps pixel-art approach but makes the grid actually visible.
+const starDensity = 0.00014 // ~3.5x denser so the grid pattern reads clearly
+const twinkleProbability = 0.6
 const minTwinkleSpeed = 2
-const maxTwinkleSpeed = 4
-const pixelSize = 5
+const maxTwinkleSpeed = 4.5
+const pixelSize = 4
 const starRegenerationInterval = 5000 // Interval to regenerate stars (in ms)
-const percentToRegenerate = 0.15 // Percentage of stars to regenerate at each interval
+const percentToRegenerate = 0.12 // Percentage of stars to regenerate at each interval
 
 // Shooting star configuration
 const shootingStarPixelSize = 2
@@ -113,8 +117,8 @@ export const BackgroundPixelStars = memo(
         const shouldTwinkle = Math.random() < twinkleProbability
         const gridX = Math.floor(Math.random() * (canvas.width / pixelSize)) * pixelSize
         const gridY = Math.floor(Math.random() * (canvas.height / pixelSize)) * pixelSize
-        const colorIndex = Math.floor(Math.random() * STAR_COLORS.length)
-        const baseOpacity = Math.random() * 0.5 + 0.5
+        const colorIndex = Math.random() < 0.55 ? 0 : Math.floor(Math.random() * STAR_COLORS.length)
+        const baseOpacity = Math.random() * 0.4 + 0.6
 
         backgroundStarsRef.current.push({
           x: gridX,
@@ -145,8 +149,8 @@ export const BackgroundPixelStars = memo(
         const shouldTwinkle = Math.random() < twinkleProbability
         const gridX = Math.floor(Math.random() * (canvas.width / pixelSize)) * pixelSize
         const gridY = Math.floor(Math.random() * (canvas.height / pixelSize)) * pixelSize
-        const colorIndex = Math.floor(Math.random() * STAR_COLORS.length)
-        const baseOpacity = Math.random() * 0.5 + 0.5
+        const colorIndex = Math.random() < 0.55 ? 0 : Math.floor(Math.random() * STAR_COLORS.length)
+        const baseOpacity = Math.random() * 0.4 + 0.6
 
         backgroundStarsRef.current[randomIndex] = {
           x: gridX,
@@ -205,10 +209,10 @@ export const BackgroundPixelStars = memo(
             const progress = star.twinkleTimer / star.twinkleSpeed
             if (progress < 0.5) {
               star.currentOpacity =
-                star.twinkleDirection < 0 ? star.baseOpacity : star.baseOpacity * 0.3
+                star.twinkleDirection < 0 ? star.baseOpacity : star.baseOpacity * 0.45
             } else {
               star.currentOpacity =
-                star.twinkleDirection < 0 ? star.baseOpacity * 0.3 : star.baseOpacity
+                star.twinkleDirection < 0 ? star.baseOpacity * 0.45 : star.baseOpacity
             }
           }
         })

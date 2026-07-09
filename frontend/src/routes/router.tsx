@@ -15,15 +15,15 @@ const RemotePage = lazy(() =>
 const SchedulesPage = lazy(() =>
   import("@/pages/schedules-page").then((m) => ({ default: m.SchedulesPage }))
 )
-const TimersPage = lazy(() =>
-  import("@/pages/timers-page").then((m) => ({ default: m.TimersPage }))
-)
 const HistoryPage = lazy(() =>
   import("@/pages/history-page").then((m) => ({ default: m.HistoryPage }))
 )
 const SettingsPage = lazy(() =>
   import("@/pages/settings-page").then((m) => ({ default: m.SettingsPage }))
 )
+// Not in the primary nav (kept out to keep the bottom menu to 5 items), but
+// still a real route -- linked from the Settings page instead of removed
+// outright, since deleting Pi diagnostics/restart/shutdown wasn't asked for.
 const SystemPage = lazy(() =>
   import("@/pages/system-page").then((m) => ({ default: m.SystemPage }))
 )
@@ -44,10 +44,9 @@ export const router = createBrowserRouter([
       { index: true, element: <DashboardPage /> },
       { path: "remote", element: <RemotePage /> },
       { path: "schedules", element: <SchedulesPage /> },
-      { path: "timers", element: <TimersPage /> },
       { path: "history", element: <HistoryPage /> },
-      { path: "system", element: <SystemPage /> },
       { path: "settings", element: <SettingsPage /> },
+      { path: "system", element: <SystemPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },

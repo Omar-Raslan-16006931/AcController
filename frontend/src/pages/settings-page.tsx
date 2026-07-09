@@ -1,9 +1,10 @@
 import * as React from "react"
+import { Link } from "react-router-dom"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { format } from "date-fns"
-import { Loader2, Plus, Save, ScanFace, Trash2 } from "lucide-react"
+import { ChevronRight, Cpu, Loader2, Plus, Save, ScanFace, Trash2 } from "lucide-react"
 
 import { PageHeader } from "@/components/page-header"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -155,6 +156,26 @@ function PasskeysCard() {
           </p>
         )}
       </CardContent>
+    </Card>
+  )
+}
+
+function SystemLinkCard() {
+  return (
+    <Card className="lg:col-span-2">
+      <Link
+        to="/system"
+        className="hover:bg-accent/40 flex items-center gap-3 rounded-[inherit] px-4 py-3.5 transition-colors"
+      >
+        <div className="bg-secondary text-foreground/80 flex size-9 items-center justify-center rounded-xl">
+          <Cpu className="size-4" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium">System diagnostics</p>
+          <p className="text-muted-foreground text-xs">Pi metrics, restart, and shutdown</p>
+        </div>
+        <ChevronRight className="text-muted-foreground/60 size-4" />
+      </Link>
     </Card>
   )
 }
@@ -320,6 +341,7 @@ export function SettingsPage() {
         </Card>
 
         <PasskeysCard />
+        <SystemLinkCard />
       </div>
     </form>
   )

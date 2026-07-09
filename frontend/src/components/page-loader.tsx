@@ -1,15 +1,14 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { WifiLoader } from "@/components/ui/wifi-loader"
 
+/**
+ * Suspense fallback shown for the brief moment a lazy-loaded route chunk is
+ * still downloading. Swapped the old skeleton-grid placeholder for the
+ * wifi-style loading animation the user asked for.
+ */
 export function PageLoader() {
   return (
-    <div className="space-y-4">
-      <Skeleton className="h-8 w-48" />
-      <Skeleton className="h-32 w-full" />
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
-      </div>
+    <div className="flex min-h-[50vh] items-center justify-center pb-10">
+      <WifiLoader text="Loading" />
     </div>
   )
 }

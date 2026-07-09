@@ -22,6 +22,7 @@ import { PowerButtons } from "@/features/remote/power-button"
 import { TemperatureDial } from "@/features/remote/temperature-dial"
 import { ModeSelector } from "@/features/remote/mode-selector"
 import { FanSelector } from "@/features/remote/fan-selector"
+import { TimerControls } from "@/features/remote/timer-controls"
 import type { AcMode, FanSpeed } from "@/types/database"
 
 const AUTO_SEND_STORAGE_KEY = "ac-controller-auto-send"
@@ -191,6 +192,14 @@ export function RemotePage() {
                 </div>
               </div>
             )}
+          </CardContent>
+        </Card>
+      )}
+
+      {status && (
+        <Card className="mx-auto mt-3 w-full max-w-sm">
+          <CardContent className="pt-1">
+            <TimerControls />
           </CardContent>
         </Card>
       )}

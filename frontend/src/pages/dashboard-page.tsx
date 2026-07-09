@@ -10,13 +10,9 @@ import { SystemMetricsGrid } from "@/features/dashboard/system-metrics-grid"
 
 function DashboardSkeleton() {
   return (
-    <div className="space-y-3">
-      <Skeleton className="h-44 w-full rounded-[1.25rem]" />
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <Skeleton key={i} className="h-[104px] w-full rounded-[1.25rem]" />
-        ))}
-      </div>
+    <div className="space-y-3 lg:grid lg:grid-cols-[380px_1fr] lg:items-start lg:gap-4 lg:space-y-0">
+      <Skeleton className="h-[168px] w-full rounded-[1.25rem]" />
+      <Skeleton className="h-[240px] w-full rounded-[1.25rem]" />
     </div>
   )
 }
@@ -67,8 +63,8 @@ export function DashboardPage() {
         <div className="space-y-3 lg:grid lg:grid-cols-[380px_1fr] lg:items-start lg:gap-4 lg:space-y-0">
           <AcStatusCard status={status} />
           <div>
-            <p className="text-muted-foreground mb-2 px-1 text-[13px] font-semibold tracking-[0.02em] uppercase lg:hidden">
-              Raspberry Pi
+            <p className="text-muted-foreground mb-1.5 px-1 text-[11px] font-semibold tracking-[0.04em] uppercase lg:hidden">
+              System
             </p>
             <SystemMetricsGrid system={status.system} />
           </div>
