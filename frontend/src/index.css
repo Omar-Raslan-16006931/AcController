@@ -242,6 +242,22 @@
 }
 
 /* ---------------------------------------------------------------------
+   Card grid-line texture -- applied app-wide (every Card everywhere,
+   not just the Dashboard) via the shared `data-slot="card"` attribute
+   every Card instance renders with. Two 1px hairline grids (horizontal +
+   vertical) at very low opacity against `--foreground`, so it stays
+   subtle and adapts automatically to light/dark and to any themed
+   surface (this file's other overrides, e.g. `.dashboard-flat`, are
+   free to layer more on top -- see below).
+   --------------------------------------------------------------------- */
+[data-slot="card"] {
+  background-image:
+    linear-gradient(color-mix(in oklch, var(--foreground) 5%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklch, var(--foreground) 5%, transparent) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+/* ---------------------------------------------------------------------
    Modern Mobile Menu (components/ui/modern-mobile-menu.tsx)
    Tokens below are from the component's own integration snippet; the
    .menu* selector rules are this app's own -- the snippet only shipped
@@ -428,20 +444,28 @@
   --border: rgba(255, 255, 255, 0.06);
   --input: rgba(255, 255, 255, 0.08);
   --ring: rgba(76, 158, 240, 0.4);
+  /* Darker navy-blue base for the card wash below -- mixing the bright
+     accent blue with black instead of using it at full saturation, so
+     the glow reads as a deep ambient shadow-blue rather than a bright
+     highlight. */
+  --glow-blue-dark: color-mix(in oklch, #4c9ef0 45%, black 55%);
 }
 
-/* Subtle dark-to-light blue wash on every card in this screen (top-left,
-   fading to the card's own flat fill) -- applied once here via the
-   shared `data-slot="card"` attribute every Card instance renders with,
-   instead of repeating a gradient style on each individual card
-   component. Layers as a background-image over the existing bg-card
-   color, so it doesn't fight with any card-specific overlay (e.g. the
-   hero card's own power-state glow). */
+/* Card texture for this screen specifically: the same hairline grid as
+   the app-wide `[data-slot="card"]` rule above, plus a darker dark-to-
+   light blue wash (top-left, fading into the card's own flat fill).
+   Declared as extra background-image layers (grid, grid, gradient) so
+   dashboard cards keep the grid AND get the wash, rather than the wash
+   replacing the grid outright. */
 .dashboard-flat [data-slot="card"] {
-  background-image: linear-gradient(
-    160deg,
-    color-mix(in oklch, var(--primary) 20%, transparent) 0%,
-    color-mix(in oklch, var(--primary) 4%, transparent) 45%,
-    transparent 75%
-  );
+  background-image:
+    linear-gradient(color-mix(in oklch, var(--foreground) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklch, var(--foreground) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(
+      160deg,
+      color-mix(in oklch, var(--glow-blue-dark) 55%, transparent) 0%,
+      color-mix(in oklch, var(--glow-blue-dark) 14%, transparent) 45%,
+      transparent 75%
+    );
+  background-size: 14px 14px, 14px 14px, auto;
 }
