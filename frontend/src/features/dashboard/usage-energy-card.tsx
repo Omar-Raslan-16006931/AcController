@@ -25,7 +25,7 @@ function UsageRow({
       transition={{ type: "spring", stiffness: 460, damping: 32, delay: index * 0.03 }}
       className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0"
     >
-      <span className="bg-primary/15 text-primary flex size-8 shrink-0 items-center justify-center rounded-full">
+      <span className="text-foreground flex size-8 shrink-0 items-center justify-center">
         <Icon className="size-4" />
       </span>
       <p className="text-muted-foreground min-w-0 flex-1 truncate text-[13px] font-medium">{label}</p>
