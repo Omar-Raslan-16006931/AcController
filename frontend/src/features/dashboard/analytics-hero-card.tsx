@@ -1,6 +1,6 @@
 import * as React from "react"
-import { formatDistanceToNowStrict } from "date-fns"
-import { CheckCircle2 } from "lucide-react"
+import { formatDistanceToNow } from "date-fns"
+import { CheckCircle2, XCircle } from "lucide-react"
 import { motion, useSpring } from "framer-motion"
 
 import { Card } from "@/components/ui/card"
@@ -30,11 +30,11 @@ function useCountUp(value: number, decimals: number) {
 interface AcHeroCardProps {
   acState: AcState
   todayHours: number
-  todaySessions: number
   lastCommandAt: string | null
+  lastCommandResult: "success" | "failure" | null
 }
 
-export function AcHeroCard({ acState, todayHours, todaySessions, lastCommandAt }: AcHeroCardProps) {
+export function AcHeroCard({ acState, todayHours, lastCommandAt, lastCommandResult }: AcHeroCardProps) {
   const displayHours = useCountUp(todayHours, 1)
   const mode = modeConfig[acState.mode]
   const ModeIcon = mode.icon
@@ -59,23 +59,24 @@ export function AcHeroCard({ acState, todayHours, todaySessions, lastCommandAt }
         <p className="text-muted-foreground pb-1 text-[12px]">cooling today</p>
       </div>
 
-      <div className="border-border mt-1 border-t pt-2.5">
-        <motion.p
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="text-muted-foreground flex items-center gap-1.5 text-[12px]"
-        >
-          <CheckCircle2 className="size-3.5 text-emerald-400" />
-          {todaySessions} session{todaySessions === 1 ? "" : "s"}
-          {lastCommandAt && (
-            <>
-              {" "}
-              · last active {formatDistanceToNowStrict(new Date(lastCommandAt))} ago
-            </>
-          )}
-        </motion.p>
-      </div>
+      {lastCommandAt && (
+        <div className="border-border mt-1 border-t pt-2.5">
+          <motion.p
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="text-muted-foreground flex items-center gap-1.5 text-[12px]"
+          >
+            {lastCommandResult === "failure" ? (
+              <XCircle className="text-destructive size-3.5" />
+            ) : (
+              <CheckCircle2 className="text-emerald-400 size-3.5" />
+            )}
+            Last command {formatDistanceToNow(new Date(lastCommandAt), { addSuffix: true })}
+            {lastCommandResult === "failure" && " · failed"}
+          </motion.p>
+        </div>
+      )}
     </Card>
   )
 }
