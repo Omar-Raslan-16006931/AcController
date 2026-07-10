@@ -1,7 +1,9 @@
 import * as React from "react"
 import { AnimatePresence, motion } from "framer-motion"
+import { Minus, Plus } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 
 const MIN_TEMP = 20
 const MAX_TEMP = 28
@@ -44,6 +46,8 @@ function describeArc(startAngle: number, endAngle: number) {
  * Drag (or tap) anywhere on the ring to preview a temperature in real time,
  * release to commit it. Committing only on release/keypress — not on every
  * pointermove — keeps this from firing a flood of requests mid-drag.
+ * Flanking +/- buttons commit immediately (no drag preview needed) for a
+ * quick one-degree nudge without touching the ring.
  */
 export function TemperatureDial({
   value,
@@ -114,63 +118,94 @@ export function TemperatureDial({
     ? { duration: 0 }
     : { type: "spring" as const, stiffness: 340, damping: 30 }
 
-  return (
-    <div
-      role="slider"
-      tabIndex={disabled ? -1 : 0}
-      aria-label="Temperature"
-      aria-valuemin={MIN_TEMP}
-      aria-valuemax={MAX_TEMP}
-      aria-valuenow={displayValue}
-      aria-valuetext={`${displayValue} degrees Celsius`}
-      aria-disabled={disabled}
-      onKeyDown={handleKeyDown}
-      className={cn(
-        "relative touch-none select-none rounded-full focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
-        disabled && "pointer-events-none opacity-40"
-      )}
-    >
-      <svg
-        ref={svgRef}
-        viewBox={`0 0 ${SIZE} ${SIZE}`}
-        className="size-40 cursor-pointer sm:size-44"
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-      >
-        <path d={trackPath} fill="none" stroke="var(--color-border)" strokeWidth={STROKE} strokeLinecap="round" />
-        {fillPath && (
-          <path d={fillPath} fill="none" stroke="var(--color-frost)" strokeWidth={STROKE} strokeLinecap="round" />
-        )}
-        <motion.circle
-          cx={handlePos.x}
-          cy={handlePos.y}
-          r={STROKE / 2 + 4}
-          fill="var(--color-background)"
-          stroke="var(--color-frost)"
-          strokeWidth={2.5}
-          animate={{ cx: handlePos.x, cy: handlePos.y }}
-          transition={settleTransition}
-        />
-      </svg>
+  const step = (delta: number) => {
+    if (disabled) return
+    onChange(Math.max(MIN_TEMP, Math.min(MAX_TEMP, value + delta)))
+  }
 
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-        <AnimatePresence mode="popLayout">
-          <motion.div
-            key={displayValue}
-            initial={{ opacity: 0, y: 10, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="font-heading text-3xl font-bold tabular-nums sm:text-4xl"
-          >
-            {displayValue}
-            <span className="text-muted-foreground align-top text-base font-medium">°</span>
-          </motion.div>
-        </AnimatePresence>
-        <p className="text-muted-foreground mt-0.5 text-[10px]">{MIN_TEMP}°–{MAX_TEMP}°C</p>
+  return (
+    <div className="flex items-center gap-3">
+      <Button
+        type="button"
+        variant="secondary"
+        size="icon"
+        disabled={disabled || value <= MIN_TEMP}
+        onClick={() => step(-1)}
+        aria-label="Decrease temperature"
+        className="size-9 shrink-0 rounded-full"
+      >
+        <Minus className="size-4" />
+      </Button>
+
+      <div
+        role="slider"
+        tabIndex={disabled ? -1 : 0}
+        aria-label="Temperature"
+        aria-valuemin={MIN_TEMP}
+        aria-valuemax={MAX_TEMP}
+        aria-valuenow={displayValue}
+        aria-valuetext={`${displayValue} degrees Celsius`}
+        aria-disabled={disabled}
+        onKeyDown={handleKeyDown}
+        className={cn(
+          "relative touch-none select-none rounded-full focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
+          disabled && "pointer-events-none opacity-40"
+        )}
+      >
+        <svg
+          ref={svgRef}
+          viewBox={`0 0 ${SIZE} ${SIZE}`}
+          className="size-40 cursor-pointer sm:size-44"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+        >
+          <path d={trackPath} fill="none" stroke="var(--color-border)" strokeWidth={STROKE} strokeLinecap="round" />
+          {fillPath && (
+            <path d={fillPath} fill="none" stroke="var(--color-frost)" strokeWidth={STROKE} strokeLinecap="round" />
+          )}
+          <motion.circle
+            cx={handlePos.x}
+            cy={handlePos.y}
+            r={STROKE / 2 + 4}
+            fill="var(--color-background)"
+            stroke="var(--color-frost)"
+            strokeWidth={2.5}
+            animate={{ cx: handlePos.x, cy: handlePos.y }}
+            transition={settleTransition}
+          />
+        </svg>
+
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+          <AnimatePresence mode="popLayout">
+            <motion.div
+              key={displayValue}
+              initial={{ opacity: 0, y: 10, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              className="font-heading text-3xl font-bold tabular-nums sm:text-4xl"
+            >
+              {displayValue}
+              <span className="text-muted-foreground align-top text-base font-medium">°</span>
+            </motion.div>
+          </AnimatePresence>
+          <p className="text-muted-foreground mt-0.5 text-[10px]">{MIN_TEMP}°–{MAX_TEMP}°C</p>
+        </div>
       </div>
+
+      <Button
+        type="button"
+        variant="secondary"
+        size="icon"
+        disabled={disabled || value >= MAX_TEMP}
+        onClick={() => step(1)}
+        aria-label="Increase temperature"
+        className="size-9 shrink-0 rounded-full"
+      >
+        <Plus className="size-4" />
+      </Button>
     </div>
   )
 }
