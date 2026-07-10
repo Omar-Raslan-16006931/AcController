@@ -32,14 +32,15 @@ create table if not exists public.settings (
   language             text not null default 'en',
   -- Mode/fan/temperature are restricted to exactly what the real Carrier
   -- hardware supports (confirmed via IR capture analysis) — no fan-only
-  -- mode, no confirmed eco bit, no auto fan speed, no temperature outside
-  -- 20-28C. carrier_frequency/duty_cycle/gpio_pin were removed entirely:
-  -- the production CarrierAC library ignores them (it derives timing from
-  -- a captured base.txt), so they were never real, user-controllable
-  -- settings.
+  -- mode, no auto fan speed, no temperature outside 20-28C. "eco" is a
+  -- confirmed 5th fan-speed bitmask value (see backend carrier_ac.py's
+  -- FAN_CODES + module docstring for the capture evidence).
+  -- carrier_frequency/duty_cycle/gpio_pin were removed entirely: the
+  -- production CarrierAC library ignores them (it derives timing from a
+  -- captured base.txt), so they were never real, user-controllable settings.
   default_temperature  integer not null default 24 check (default_temperature between 20 and 28),
   default_mode         text not null default 'cool' check (default_mode in ('cool', 'heat', 'dry')),
-  default_fan          text not null default 'low' check (default_fan in ('low', 'medium', 'high')),
+  default_fan          text not null default 'low' check (default_fan in ('eco', 'low', 'medium', 'high')),
   created_at           timestamptz not null default now(),
   updated_at           timestamptz not null default now(),
   unique (user_id)
@@ -164,7 +165,7 @@ create table if not exists public.command_history (
   power        boolean not null,
   temperature  integer check (temperature between 20 and 28 or temperature is null),
   mode         text check (mode in ('cool', 'heat', 'dry') or mode is null),
-  fan          text check (fan in ('low', 'medium', 'high') or fan is null),
+  fan          text check (fan in ('eco', 'low', 'medium', 'high') or fan is null),
   source       text not null default 'manual' check (source in ('manual', 'schedule', 'timer', 'system')),
   result       text not null check (result in ('success', 'failure')),
   error        text,
@@ -238,7 +239,4 @@ begin
 end;
 $$;
 
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute function public.handle_new_user();
+drop trigger if exists on_auth_user_created on auth
