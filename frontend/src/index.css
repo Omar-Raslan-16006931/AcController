@@ -318,15 +318,21 @@
   }
 
   .menu__item {
+    /* Fixed height + absolutely-positioned icon/label (below) instead of a
+       flex column that reserves the label's box at all times. That earlier
+       approach fixed the "icon jumps on selection" bug but traded it for a
+       new problem: every INACTIVE item still reserved the label's full
+       height (invisible), which read as a dead gap of empty space below
+       the icon. Pinning both icon and label to fixed offsets inside a
+       fixed-height item removes that reserved gap entirely while keeping
+       the icon's position 100% constant regardless of active state --
+       fixes both issues at once. */
     position: relative;
-    display: flex;
+    display: block;
     flex: 1 1 0%;
     min-width: 0;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.125rem;
-    padding: 0.4rem 0.25rem;
+    height: 3rem;
+    padding: 0;
     border: none;
     background: transparent;
     border-radius: 9999px;
@@ -354,6 +360,10 @@
   }
 
   .menu__icon {
+    position: absolute;
+    top: 0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -365,16 +375,10 @@
   }
 
   .menu__text {
-    /* height + margin-top are now ALWAYS applied (not just on .active) --
-       only max-width/opacity toggle. Previously height/margin-top only
-       appeared once a label went active, which grew the item's total
-       content height at that exact moment and pushed the icon upward
-       (since the column is centered via `justify-content: center` on
-       .menu__item) -- reads as the icon "jumping" on selection. Reserving
-       this small fixed slot unconditionally keeps the icon's position
-       constant whether or not a label is currently shown. */
-    display: block;
-    height: 0.75rem;
+    position: absolute;
+    bottom: 0.35rem;
+    left: 50%;
+    transform: translateX(-50%);
     max-width: 0;
     overflow: hidden;
     opacity: 0;
@@ -383,7 +387,7 @@
     font-weight: 600;
     line-height: 0.75rem;
     text-transform: capitalize;
-    margin-top: 0.125rem;
+    pointer-events: none;
     transition:
       max-width 0.3s ease,
       opacity 0.2s ease;
