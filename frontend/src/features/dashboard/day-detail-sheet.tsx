@@ -1,7 +1,7 @@
 import * as React from "react"
 import { format } from "date-fns"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { AnimatePresence, motion, type PanInfo } from "framer-motion"
+import { AnimatePresence, motion, useDragControls, type PanInfo } from "framer-motion"
 
 import { fanConfig } from "@/lib/ac-labels"
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet"
@@ -166,6 +166,16 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
   // Tracks swipe direction so the outgoing/incoming day content slides the
   // correct way -- 1 = moving to a later day, -1 = moving to an earlier day.
   const [direction, setDirection] = React.useState(0)
+  // Drag is started manually (dragListener={false}) from only the header/dial
+  // row's onPointerDown below -- not the whole day-content block. That's the
+  // fix for the interval list's vertical scroll getting eaten by the swipe
+  // gesture: framer-motion still applies its drag machinery (and the
+  // touch-action tweak that comes with it) to the whole motion.div so the
+  // slide animation keeps working, but it never actually STARTS a drag
+  // unless the touch began on the header, so a touch/scroll starting
+  // anywhere in the interval list is never claimed by the gesture recognizer
+  // in the first place and the browser scrolls it completely natively.
+  const dragControls = useDragControls()
 
   React.useEffect(() => {
     if (open) {
@@ -246,13 +256,17 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
               exit="exit"
               transition={{ type: "spring", stiffness: 280, damping: 30, mass: 0.85 }}
               drag="x"
-              dragDirectionLock
+              dragListener={false}
+              dragControls={dragControls}
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.2}
               onDragEnd={handleDragEnd}
               className="touch-pan-y"
             >
-              <div className="flex items-start justify-between gap-3 px-5 pt-2">
+              <div
+                className="flex items-start justify-between gap-3 px-5 pt-2"
+                onPointerDown={(e) => dragControls.start(e)}
+              >
                 <DayRadialDial day={activeDay} totalHours={stats.hours} />
                 <div className="min-w-0 flex-1 pt-1 text-right">
                   <SheetTitle className="text-[17px]">
