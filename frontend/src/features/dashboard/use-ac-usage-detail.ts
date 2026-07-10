@@ -70,6 +70,34 @@ function splitIntervalByDay(
   }
 }
 
+/** Collapses back-to-back intervals that carry the exact same
+ * temperature/mode/fan into a single interval. A "repeated" button press
+ * (e.g. tapping Low three times in a row) is still logged as its own
+ * command_history row, but it's not a real state change -- without this,
+ * every no-op tap showed up as its own separate entry in the timeline.
+ * Only merges when the two intervals are truly back-to-back (no gap),
+ * so a real off-then-on-again session that happens to reuse the same
+ * settings later is kept as two distinct sessions. */
+function mergeNoOpIntervals(intervals: AcUsageInterval[]): AcUsageInterval[] {
+  const merged: AcUsageInterval[] = []
+  for (const iv of intervals) {
+    const last = merged[merged.length - 1]
+    const sameState =
+      last &&
+      last.temperature === iv.temperature &&
+      last.mode === iv.mode &&
+      last.fan === iv.fan &&
+      last.endMs === iv.startMs
+    if (sameState && last) {
+      last.endMs = iv.endMs
+      last.ongoing = iv.ongoing
+    } else {
+      merged.push({ ...iv })
+    }
+  }
+  return merged
+}
+
 /**
  * Powers the "Details" view on the dashboard's AC usage card -- unlike
  * use-ac-usage.ts (which only needs total on-seconds per day), this keeps
@@ -149,8 +177,8 @@ export function useAcUsageDetail(enabled = true) {
       for (let i = TRAILING_DAYS - 1; i >= 0; i--) {
         const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i)
         const key = dayKey(d)
-        const intervals = (byDay.get(key) ?? []).sort((a, b) => a.startMs - b.startMs)
-        days.push({ date: key, intervals })
+        const rawIntervals = (byDay.get(key) ?? []).sort((a, b) => a.startMs - b.startMs)
+        days.push({ date: key, intervals: mergeNoOpIntervals(rawIntervals) })
       }
 
       return days
