@@ -1,7 +1,7 @@
 import * as React from "react"
 import { format } from "date-fns"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { motion, type PanInfo } from "framer-motion"
+import { AnimatePresence, motion, type PanInfo } from "framer-motion"
 
 import { fanConfig } from "@/lib/ac-labels"
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet"
@@ -149,16 +149,29 @@ interface DayDetailSheetProps {
 const SWIPE_DISTANCE_THRESHOLD = 60
 const SWIPE_VELOCITY_THRESHOLD = 400
 
+// Slide direction variants for the day-swap transition: `dir` is +1 when
+// moving to a later day (content travels right-to-left) and -1 when moving
+// to an earlier day (content travels left-to-right) -- matches the finger's
+// swipe direction so the motion feels directly manipulated rather than
+// just a generic fade.
+const dayVariants = {
+  enter: (dir: number) => ({ x: dir === 0 ? 0 : dir > 0 ? 36 : -36, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (dir: number) => ({ x: dir > 0 ? -36 : 36, opacity: 0 }),
+}
+
 export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailSheetProps) {
   const { data: days } = useAcUsageDetail(open)
   const [selectedDate, setSelectedDate] = React.useState<string | null>(initialDate)
-  // Tracks swipe direction so the content can slide in from the correct
-  // side -- 1 = moving to a later day (content enters from the right),
-  // -1 = moving to an earlier day (content enters from the left).
+  // Tracks swipe direction so the outgoing/incoming day content slides the
+  // correct way -- 1 = moving to a later day, -1 = moving to an earlier day.
   const [direction, setDirection] = React.useState(0)
 
   React.useEffect(() => {
-    if (open) setSelectedDate(initialDate)
+    if (open) {
+      setSelectedDate(initialDate)
+      setDirection(0)
+    }
   }, [open, initialDate])
 
   const activeIndex = days?.findIndex((d) => d.date === selectedDate) ?? -1
@@ -207,7 +220,7 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
             aria-label="Previous day"
             disabled={!hasPrev}
             onClick={() => goToOffset(-1)}
-            className="text-muted-foreground flex size-7 items-center justify-center rounded-full disabled:opacity-0"
+            className="text-muted-foreground flex size-7 items-center justify-center rounded-full transition-opacity disabled:opacity-0"
           >
             <ChevronLeft className="size-4" />
           </button>
@@ -216,56 +229,63 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
             aria-label="Next day"
             disabled={!hasNext}
             onClick={() => goToOffset(1)}
-            className="text-muted-foreground flex size-7 items-center justify-center rounded-full disabled:opacity-0"
+            className="text-muted-foreground flex size-7 items-center justify-center rounded-full transition-opacity disabled:opacity-0"
           >
             <ChevronRight className="size-4" />
           </button>
         </div>
 
-        <motion.div
-          key={activeDay?.date ?? "empty"}
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.15}
-          onDragEnd={handleDragEnd}
-          initial={{ opacity: 0, x: direction > 0 ? 24 : direction < 0 ? -24 : 0 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ type: "spring", stiffness: 380, damping: 34 }}
-          className="touch-pan-y"
-        >
-          <div className="flex items-start justify-between gap-3 px-5 pt-2">
-            <DayRadialDial day={activeDay} totalHours={stats.hours} />
-            <div className="min-w-0 flex-1 pt-1 text-right">
-              <SheetTitle className="text-[17px]">
-                {isToday
-                  ? "Today"
-                  : activeDay
-                    ? format(new Date(`${activeDay.date}T00:00:00`), "EEEE, MMM d")
-                    : ""}
-              </SheetTitle>
-              <SheetDescription className="mt-0.5 text-[13px]">
-                {formatDuration(stats.hours)} cooling
-                {stats.avgTemp != null && ` · avg ${stats.avgTemp}°C`}
-              </SheetDescription>
-            </div>
-          </div>
+        <div className="overflow-hidden">
+          <AnimatePresence initial={false} mode="popLayout" custom={direction}>
+            <motion.div
+              key={activeDay?.date ?? "empty"}
+              custom={direction}
+              variants={dayVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ type: "spring", stiffness: 380, damping: 34 }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.15}
+              onDragEnd={handleDragEnd}
+              className="touch-pan-y"
+            >
+              <div className="flex items-start justify-between gap-3 px-5 pt-2">
+                <DayRadialDial day={activeDay} totalHours={stats.hours} />
+                <div className="min-w-0 flex-1 pt-1 text-right">
+                  <SheetTitle className="text-[17px]">
+                    {isToday
+                      ? "Today"
+                      : activeDay
+                        ? format(new Date(`${activeDay.date}T00:00:00`), "EEEE, MMM d")
+                        : ""}
+                  </SheetTitle>
+                  <SheetDescription className="mt-0.5 text-[13px]">
+                    {formatDuration(stats.hours)} cooling
+                    {stats.avgTemp != null && ` · avg ${stats.avgTemp}°C`}
+                  </SheetDescription>
+                </div>
+              </div>
 
-          <div className="px-5 pt-4">
-            {activeDay && activeDay.intervals.length === 0 && (
-              <p className="text-muted-foreground py-8 text-center text-[13px]">
-                The AC wasn't used this day.
-              </p>
-            )}
-            {activeDay?.intervals.map((interval, i) => (
-              <IntervalRow
-                key={i}
-                interval={interval}
-                index={i}
-                isLast={i === activeDay.intervals.length - 1}
-              />
-            ))}
-          </div>
-        </motion.div>
+              <div className="px-5 pt-4">
+                {activeDay && activeDay.intervals.length === 0 && (
+                  <p className="text-muted-foreground py-8 text-center text-[13px]">
+                    The AC wasn't used this day.
+                  </p>
+                )}
+                {activeDay?.intervals.map((interval, i) => (
+                  <IntervalRow
+                    key={i}
+                    interval={interval}
+                    index={i}
+                    isLast={i === activeDay.intervals.length - 1}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
         {days && days.length > 1 && (
           <div className="flex items-center justify-center gap-1.5 pt-1 pb-3" aria-hidden>
