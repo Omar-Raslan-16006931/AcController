@@ -18,8 +18,17 @@ interface WeekBarChartProps {
 
 /** 7-bar chart, height proportional to that day's on-hours, today's bar in
  * the accent color and every other bar neutral -- tapping any bar opens
- * that day's detail sheet. A dashed line marks the 7-day average so each
- * bar's height reads relative to a reference, not just to its neighbors. */
+ * that day's detail sheet. A dashed line marks the 7-day average.
+ *
+ * Structured as three stacked rows (hour labels / bar track / weekday
+ * labels) instead of one column per bar -- the bar track is a `flex-1`
+ * row with its own definite computed height, so both the bars' height%
+ * and the average line's bottom% resolve against that SAME height. Doing
+ * it as one flex column per bar (labels + bar together, justify-end)
+ * made the bars' own visual "zero point" sit above the container's true
+ * bottom (pushed up by the weekday label + gap below it), while the
+ * average line was computed against the full container height -- so the
+ * line always landed lower than the bars' actual scale implied. */
 export function WeekBarChart({ bars, onSelectDay }: WeekBarChartProps) {
   const maxHours = Math.max(1, ...bars.map((b) => b.hours))
   const avgHours = bars.length > 0 ? bars.reduce((sum, b) => sum + b.hours, 0) / bars.length : 0
@@ -29,19 +38,33 @@ export function WeekBarChart({ bars, onSelectDay }: WeekBarChartProps) {
     <Card className="gap-3 p-4">
       <p className="text-[15px] font-semibold">This week</p>
 
-      <div className="relative h-36">
-        {avgHours > 0 && (
-          <div
-            className="border-muted-foreground/35 pointer-events-none absolute inset-x-0 z-10 border-t border-dashed"
-            style={{ bottom: `${avgHeightPct}%` }}
-          >
-            <span className="text-muted-foreground bg-card absolute -top-2 right-0 pl-1.5 text-[9px] font-semibold tracking-wide uppercase">
-              avg {formatBarHours(avgHours)}
+      <div className="flex h-36 flex-col gap-1.5">
+        <div className="flex justify-between gap-2">
+          {bars.map((bar) => (
+            <span
+              key={bar.date}
+              className={cn(
+                "flex-1 text-center text-[10px] font-semibold tabular-nums",
+                bar.isToday ? "text-primary" : "text-muted-foreground"
+              )}
+            >
+              {formatBarHours(bar.hours)}
             </span>
-          </div>
-        )}
+          ))}
+        </div>
 
-        <div className="flex h-full items-end justify-between gap-2">
+        <div className="relative flex flex-1 items-end justify-between gap-2">
+          {avgHours > 0 && (
+            <div
+              className="border-muted-foreground/35 pointer-events-none absolute inset-x-0 z-10 border-t border-dashed"
+              style={{ bottom: `${avgHeightPct}%` }}
+            >
+              <span className="text-muted-foreground bg-card absolute -top-2 right-0 pl-1.5 text-[9px] font-semibold tracking-wide uppercase">
+                avg {formatBarHours(avgHours)}
+              </span>
+            </div>
+          )}
+
           {bars.map((bar, i) => {
             const heightPct = Math.max((bar.hours / maxHours) * 100, bar.hours > 0 ? 4 : 2)
             return (
@@ -51,17 +74,9 @@ export function WeekBarChart({ bars, onSelectDay }: WeekBarChartProps) {
                 onClick={() => onSelectDay(bar.date)}
                 whileTap={{ scale: 0.92 }}
                 transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                className="flex h-full flex-1 flex-col items-center justify-end gap-1.5"
+                className="flex h-full flex-1 items-end justify-center"
                 aria-label={`${format(new Date(`${bar.date}T00:00:00`), "EEEE")}, ${formatBarHours(bar.hours)}`}
               >
-                <span
-                  className={cn(
-                    "text-[10px] font-semibold tabular-nums",
-                    bar.isToday ? "text-primary" : "text-muted-foreground"
-                  )}
-                >
-                  {formatBarHours(bar.hours)}
-                </span>
                 <motion.span
                   initial={{ height: 0 }}
                   animate={{ height: `${heightPct}%` }}
@@ -71,17 +86,23 @@ export function WeekBarChart({ bars, onSelectDay }: WeekBarChartProps) {
                     bar.isToday ? "bg-primary" : "bg-secondary"
                   )}
                 />
-                <span
-                  className={cn(
-                    "text-[11px] font-medium",
-                    bar.isToday ? "text-primary" : "text-muted-foreground"
-                  )}
-                >
-                  {format(new Date(`${bar.date}T00:00:00`), "EEEEE")}
-                </span>
               </motion.button>
             )
           })}
+        </div>
+
+        <div className="flex justify-between gap-2">
+          {bars.map((bar) => (
+            <span
+              key={bar.date}
+              className={cn(
+                "flex-1 text-center text-[11px] font-medium",
+                bar.isToday ? "text-primary" : "text-muted-foreground"
+              )}
+            >
+              {format(new Date(`${bar.date}T00:00:00`), "EEEEE")}
+            </span>
+          ))}
         </div>
       </div>
     </Card>

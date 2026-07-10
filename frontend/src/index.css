@@ -429,3 +429,19 @@
   --input: rgba(255, 255, 255, 0.08);
   --ring: rgba(76, 158, 240, 0.4);
 }
+
+/* Subtle dark-to-light blue wash on every card in this screen (top-left,
+   fading to the card's own flat fill) -- applied once here via the
+   shared `data-slot="card"` attribute every Card instance renders with,
+   instead of repeating a gradient style on each individual card
+   component. Layers as a background-image over the existing bg-card
+   color, so it doesn't fight with any card-specific overlay (e.g. the
+   hero card's own power-state glow). */
+.dashboard-flat [data-slot="card"] {
+  background-image: linear-gradient(
+    160deg,
+    color-mix(in oklch, var(--primary) 20%, transparent) 0%,
+    color-mix(in oklch, var(--primary) 4%, transparent) 45%,
+    transparent 75%
+  );
+}
