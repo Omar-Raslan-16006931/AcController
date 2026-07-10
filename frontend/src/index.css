@@ -448,7 +448,7 @@
      accent blue with black instead of using it at full saturation, so
      the glow reads as a deep ambient shadow-blue rather than a bright
      highlight. */
-  --glow-blue-dark: color-mix(in oklch, #4c9ef0 45%, black 55%);
+  --glow-blue-dark: color-mix(in oklch, #4c9ef0 32%, black 68%);
 }
 
 /* Card texture for this screen specifically: the same hairline grid as
@@ -463,9 +463,9 @@
     linear-gradient(90deg, color-mix(in oklch, var(--foreground) 2%, transparent) 1px, transparent 1px),
     linear-gradient(
       160deg,
-      color-mix(in oklch, var(--glow-blue-dark) 55%, transparent) 0%,
-      color-mix(in oklch, var(--glow-blue-dark) 14%, transparent) 45%,
-      transparent 75%
+      color-mix(in oklch, var(--glow-blue-dark) 28%, transparent) 0%,
+      color-mix(in oklch, var(--glow-blue-dark) 7%, transparent) 45%,
+      transparent 70%
     );
   background-size: 14px 14px, 14px 14px, auto;
 }
