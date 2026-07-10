@@ -252,8 +252,8 @@
    --------------------------------------------------------------------- */
 [data-slot="card"] {
   background-image:
-    linear-gradient(color-mix(in oklch, var(--foreground) 5%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in oklch, var(--foreground) 5%, transparent) 1px, transparent 1px);
+    linear-gradient(color-mix(in oklch, var(--foreground) 2%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklch, var(--foreground) 2%, transparent) 1px, transparent 1px);
   background-size: 14px 14px;
 }
 
@@ -459,8 +459,8 @@
    replacing the grid outright. */
 .dashboard-flat [data-slot="card"] {
   background-image:
-    linear-gradient(color-mix(in oklch, var(--foreground) 6%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in oklch, var(--foreground) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(color-mix(in oklch, var(--foreground) 2%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklch, var(--foreground) 2%, transparent) 1px, transparent 1px),
     linear-gradient(
       160deg,
       color-mix(in oklch, var(--glow-blue-dark) 55%, transparent) 0%,
