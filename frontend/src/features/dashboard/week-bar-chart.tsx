@@ -1,6 +1,5 @@
 import { format } from "date-fns"
 import { motion } from "framer-motion"
-import { ChevronRight } from "lucide-react"
 
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
@@ -25,22 +24,18 @@ export function WeekBarChart({ bars, onSelectDay }: WeekBarChartProps) {
 
   return (
     <Card className="gap-3 p-4">
-      <div className="flex items-center justify-between">
-        <p className="text-[15px] font-semibold">This week</p>
-        <span className="text-primary flex items-center gap-0.5 text-[12px] font-medium">
-          tap a day
-          <ChevronRight className="size-3" />
-        </span>
-      </div>
+      <p className="text-[15px] font-semibold">This week</p>
 
       <div className="flex h-36 items-end justify-between gap-2">
         {bars.map((bar, i) => {
           const heightPct = Math.max((bar.hours / maxHours) * 100, bar.hours > 0 ? 4 : 2)
           return (
-            <button
+            <motion.button
               key={bar.date}
               type="button"
               onClick={() => onSelectDay(bar.date)}
+              whileTap={{ scale: 0.92 }}
+              transition={{ type: "spring", stiffness: 500, damping: 25 }}
               className="flex h-full flex-1 flex-col items-center justify-end gap-1.5"
               aria-label={`${format(new Date(`${bar.date}T00:00:00`), "EEEE")}, ${formatBarHours(bar.hours)}`}
             >
@@ -55,7 +50,7 @@ export function WeekBarChart({ bars, onSelectDay }: WeekBarChartProps) {
               <motion.span
                 initial={{ height: 0 }}
                 animate={{ height: `${heightPct}%` }}
-                transition={{ type: "spring", stiffness: 140, damping: 22, delay: i * 0.03 }}
+                transition={{ type: "spring", stiffness: 130, damping: 20, delay: i * 0.04 }}
                 className={cn(
                   "w-full min-h-[3px] rounded-full",
                   bar.isToday ? "bg-primary" : "bg-secondary"
@@ -69,7 +64,7 @@ export function WeekBarChart({ bars, onSelectDay }: WeekBarChartProps) {
               >
                 {format(new Date(`${bar.date}T00:00:00`), "EEEEE")}
               </span>
-            </button>
+            </motion.button>
           )
         })}
       </div>
