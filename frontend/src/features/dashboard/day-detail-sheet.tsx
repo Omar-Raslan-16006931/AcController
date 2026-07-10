@@ -246,6 +246,7 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
               exit="exit"
               transition={{ type: "spring", stiffness: 280, damping: 30, mass: 0.85 }}
               drag="x"
+              dragDirectionLock
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.2}
               onDragEnd={handleDragEnd}

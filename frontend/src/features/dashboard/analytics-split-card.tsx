@@ -26,7 +26,7 @@ export function AnalyticsSplitCard({ todayHours, weekAverageHours }: AnalyticsSp
         transition={{ type: "spring", stiffness: 460, damping: 32 }}
         className="flex flex-1 items-center gap-2.5 p-3.5"
       >
-        <span className="bg-primary/15 text-primary flex size-8 shrink-0 items-center justify-center rounded-full">
+        <span className="text-foreground flex size-8 shrink-0 items-center justify-center">
           <Timer className="size-4" />
         </span>
         <div className="min-w-0">
@@ -41,7 +41,7 @@ export function AnalyticsSplitCard({ todayHours, weekAverageHours }: AnalyticsSp
         transition={{ type: "spring", stiffness: 460, damping: 32, delay: 0.04 }}
         className="flex flex-1 items-center gap-2.5 p-3.5"
       >
-        <span className="bg-emerald-500/15 text-emerald-400 flex size-8 shrink-0 items-center justify-center rounded-full">
+        <span className="text-foreground flex size-8 shrink-0 items-center justify-center">
           <TrendingUp className="size-4" />
         </span>
         <div className="min-w-0">
