@@ -38,13 +38,12 @@ function DashboardSkeleton() {
 }
 
 /**
- * The Dashboard's own analytics screen -- a deliberately flatter, darker
- * design than the rest of the app (no glass/frost/starfield), scoped to
- * this page via the `dashboard-flat` + `dark` classes on the root wrapper
- * (see index.css). Every card below is an existing app component (Card,
- * Button, Skeleton) rendering unmodified -- they just pick up the new
- * palette because it's expressed as the same CSS custom properties those
- * components already read.
+ * The Dashboard's own analytics screen -- cards use a deliberately flatter,
+ * darker palette than the rest of the app (via the `dashboard-flat` + `dark`
+ * classes scoping Card/Button/etc.'s CSS custom properties, see index.css),
+ * but the page itself no longer overrides the background -- the app's
+ * fixed starfield canvas shows through here the same as on every other
+ * page, per the user's request to drop the solid-black page cover.
  */
 export function DashboardPage() {
   const { data: status, isLoading: statusLoading, isError, refetch, isFetching } = useStatus()
@@ -55,13 +54,7 @@ export function DashboardPage() {
   const isLoading = statusLoading || analyticsLoading
 
   return (
-    <div className="dashboard-flat dark bg-background text-foreground -mx-4 -mt-3 -mb-20 min-h-[calc(100svh-3rem)] px-4 pt-5 pb-tabbar sm:-mx-6 sm:px-6">
-      {/* -mx/-mt/-mb bleed past AppLayout's own page padding (which leaves
-          the fixed starfield canvas visible through the gap on every other
-          page) so this opaque background fully covers it, edge to edge,
-          matching the "no starfield" requirement for this screen
-          specifically -- pb-tabbar on this div itself re-establishes the
-          bottom-nav clearance that the cancelled parent padding removed. */}
+    <div className="dashboard-flat dark text-foreground">
       <motion.div
         initial={{ opacity: 0, y: -4 }}
         animate={{ opacity: 1, y: 0 }}
