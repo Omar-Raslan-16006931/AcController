@@ -14,6 +14,17 @@ import { FanModeCard } from "@/features/dashboard/fan-mode-card"
 import { UsageEnergyCard } from "@/features/dashboard/usage-energy-card"
 import { DayDetailSheet } from "@/features/dashboard/day-detail-sheet"
 
+// Stagger the card list in on mount -- each card fades/slides up ~50ms
+// after the previous one instead of all popping in at once.
+const cardListVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06 } },
+}
+const cardItemVariants = {
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 320, damping: 30 } },
+}
+
 function DashboardSkeleton() {
   return (
     <div className="space-y-3">
@@ -92,35 +103,50 @@ export function DashboardPage() {
       )}
 
       {status && analytics && !isLoading && (
-        <div className="space-y-3">
-          <AcHeroCard
-            acState={status.ac_state}
-            lastCommandAt={status.last_command_at}
-            lastCommandResult={status.last_command_result}
-          />
+        <motion.div
+          variants={cardListVariants}
+          initial="hidden"
+          animate="show"
+          className="space-y-3"
+        >
+          <motion.div variants={cardItemVariants}>
+            <AcHeroCard
+              acState={status.ac_state}
+              lastCommandAt={status.last_command_at}
+              lastCommandResult={status.last_command_result}
+            />
+          </motion.div>
 
-          <AnalyticsSplitCard
-            todayHours={analytics.todayHours}
-            weekAverageHours={analytics.weekAverageHours}
-          />
+          <motion.div variants={cardItemVariants}>
+            <AnalyticsSplitCard
+              todayHours={analytics.todayHours}
+              weekAverageHours={analytics.weekAverageHours}
+            />
+          </motion.div>
 
-          <WeekBarChart
-            bars={analytics.weekBars}
-            onSelectDay={(date) => {
-              setSelectedDate(date)
-              setSheetOpen(true)
-            }}
-          />
+          <motion.div variants={cardItemVariants}>
+            <WeekBarChart
+              bars={analytics.weekBars}
+              onSelectDay={(date) => {
+                setSelectedDate(date)
+                setSheetOpen(true)
+              }}
+            />
+          </motion.div>
 
-          <FanModeCard distribution={analytics.fanDistribution} />
+          <motion.div variants={cardItemVariants}>
+            <FanModeCard distribution={analytics.fanDistribution} />
+          </motion.div>
 
-          <UsageEnergyCard
-            weekKwh={analytics.weekKwh}
-            weekCostEgp={analytics.weekCostEgp}
-            peakHourLabel={analytics.peakHourLabel}
-            weekAvgTemp={analytics.weekAvgTemp}
-          />
-        </div>
+          <motion.div variants={cardItemVariants}>
+            <UsageEnergyCard
+              weekKwh={analytics.weekKwh}
+              weekCostEgp={analytics.weekCostEgp}
+              peakHourLabel={analytics.peakHourLabel}
+              weekAvgTemp={analytics.weekAvgTemp}
+            />
+          </motion.div>
+        </motion.div>
       )}
 
       <DayDetailSheet open={sheetOpen} onOpenChange={setSheetOpen} initialDate={selectedDate} />

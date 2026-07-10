@@ -244,10 +244,10 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ type: "spring", stiffness: 380, damping: 34 }}
+              transition={{ type: "spring", stiffness: 280, damping: 30, mass: 0.85 }}
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.15}
+              dragElastic={0.2}
               onDragEnd={handleDragEnd}
               className="touch-pan-y"
             >
