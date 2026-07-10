@@ -398,3 +398,34 @@
     opacity: 1;
   }
 }
+
+/* ---------------------------------------------------------------------
+   Dashboard analytics screen -- a deliberately different, flatter dark
+   design system than the rest of the app (no glass/frost/starfield),
+   scoped to just this page. Rather than hardcoding new hex values into
+   every component, this overrides the same CSS custom properties the
+   whole app's components already consume (Card, Button, etc. all read
+   var(--card)/var(--foreground)/etc.), so existing components render
+   correctly here for free just by nesting under this class + `dark`
+   (Tailwind's `dark:` variant just checks for a `.dark` ancestor, so this
+   works regardless of the user's actual light/dark/system preference).
+   --------------------------------------------------------------------- */
+.dashboard-flat {
+  --background: #0a0a0c;
+  --foreground: #f4f4f6;
+  --card: #161719;
+  --card-foreground: #f4f4f6;
+  --popover: #161719;
+  --popover-foreground: #f4f4f6;
+  --primary: #4c9ef0;
+  --primary-foreground: #ffffff;
+  --secondary: #1f2023;
+  --secondary-foreground: #f4f4f6;
+  --muted: #1f2023;
+  --muted-foreground: #86868b;
+  --accent: color-mix(in oklch, #4c9ef0 16%, transparent);
+  --accent-foreground: #4c9ef0;
+  --border: rgba(255, 255, 255, 0.06);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: rgba(76, 158, 240, 0.4);
+}
