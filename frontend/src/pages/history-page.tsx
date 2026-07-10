@@ -51,6 +51,21 @@ export function HistoryPage() {
   const total = data?.total ?? 0
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
+  // Rows are newest-first, so `items[i + 1]` is the chronologically-earlier
+  // neighbor. A "power: false" row only means something if the AC was
+  // actually on right before it -- schedules/timers/duplicate taps can
+  // fire "off" again while it's already off, and command_executor.py logs
+  // every request regardless, so those repeats pile up as pure noise.
+  // Hide a "false" row when we can see (from this same page) that the
+  // entry right before it was ALSO already off; if we can't see that far
+  // back (last row on the page), default to showing it.
+  const visibleItems = (data?.items ?? []).filter((entry, i, arr) => {
+    if (entry.power) return true
+    const earlierNeighbor = arr[i + 1]
+    if (earlierNeighbor && earlierNeighbor.power === false) return false
+    return true
+  })
+
   return (
     <div>
       <PageHeader
@@ -127,7 +142,7 @@ export function HistoryPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data?.items.map((entry) => (
+              {visibleItems.map((entry) => (
                 <TableRow key={entry.id}>
                   <TableCell className="text-muted-foreground p-2.5 text-xs">
                     {format(new Date(entry.created_at), "MMM d, h:mm:ss a")}
