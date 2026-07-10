@@ -32,7 +32,7 @@ export function AcHeroCard({ acState, lastCommandAt, lastCommandResult }: AcHero
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(120% 90% at 50% -20%, color-mix(in oklch, var(--primary) 22%, transparent), transparent 70%)",
+            "radial-gradient(120% 90% at 50% -20%, color-mix(in oklch, var(--primary) 38%, transparent), transparent 65%)",
         }}
         animate={{ opacity: acState.power ? 1 : 0 }}
         transition={{ duration: 0.6, ease: "easeInOut" }}
