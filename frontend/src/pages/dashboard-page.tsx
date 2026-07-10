@@ -96,8 +96,8 @@ export function DashboardPage() {
           <AcHeroCard
             acState={status.ac_state}
             todayHours={analytics.todayHours}
-            todaySessions={analytics.todaySessions}
             lastCommandAt={status.last_command_at}
+            lastCommandResult={status.last_command_result}
           />
 
           <AnalyticsSplitCard
