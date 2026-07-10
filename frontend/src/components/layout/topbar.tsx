@@ -16,7 +16,7 @@ export function Topbar() {
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
       <div className="mx-auto flex h-12 w-full max-w-7xl items-center gap-2 px-4">
-        <div className="brand-gradient text-primary-foreground flex size-7 items-center justify-center rounded-[8px]">
+        <div className="text-foreground flex size-7 items-center justify-center">
           <Snowflake className="size-4" />
         </div>
         <span className="text-[15px] font-semibold tracking-tight">AcController</span>

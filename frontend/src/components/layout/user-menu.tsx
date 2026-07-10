@@ -21,7 +21,7 @@ export function UserMenu() {
       <DropdownMenuTrigger asChild>
         <button className="focus-visible:ring-ring/50 rounded-full outline-none focus-visible:ring-[3px]">
           <Avatar>
-            <AvatarFallback className="bg-primary text-primary-foreground">
+            <AvatarFallback className="bg-transparent text-foreground">
               <UserIcon className="size-4" />
             </AvatarFallback>
           </Avatar>
