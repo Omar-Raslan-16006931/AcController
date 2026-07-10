@@ -95,7 +95,6 @@ export function DashboardPage() {
         <div className="space-y-3">
           <AcHeroCard
             acState={status.ac_state}
-            todayHours={analytics.todayHours}
             lastCommandAt={status.last_command_at}
             lastCommandResult={status.last_command_result}
           />
