@@ -429,9 +429,9 @@
 .dashboard-flat {
   --background: #0a0a0c;
   --foreground: #f4f4f6;
-  --card: #161719;
+  --card: #0e0e10;
   --card-foreground: #f4f4f6;
-  --popover: #161719;
+  --popover: #0e0e10;
   --popover-foreground: #f4f4f6;
   --primary: #4c9ef0;
   --primary-foreground: #ffffff;
