@@ -1,10 +1,10 @@
 import * as React from "react"
 import { format } from "date-fns"
-import { motion } from "framer-motion"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { motion, type PanInfo } from "framer-motion"
 
-import { cn } from "@/lib/utils"
-import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { fanConfig } from "@/lib/ac-labels"
+import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { tempRampColor } from "@/lib/temp-ramp"
 import { useAcUsageDetail, type AcUsageDayDetail, type AcUsageInterval } from "@/features/dashboard/use-ac-usage-detail"
 
@@ -146,17 +146,50 @@ interface DayDetailSheetProps {
   initialDate: string | null
 }
 
+const SWIPE_DISTANCE_THRESHOLD = 60
+const SWIPE_VELOCITY_THRESHOLD = 400
+
 export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailSheetProps) {
   const { data: days } = useAcUsageDetail(open)
   const [selectedDate, setSelectedDate] = React.useState<string | null>(initialDate)
+  // Tracks swipe direction so the content can slide in from the correct
+  // side -- 1 = moving to a later day (content enters from the right),
+  // -1 = moving to an earlier day (content enters from the left).
+  const [direction, setDirection] = React.useState(0)
 
   React.useEffect(() => {
     if (open) setSelectedDate(initialDate)
   }, [open, initialDate])
 
-  const activeDay = days?.find((d) => d.date === selectedDate) ?? days?.[days.length - 1]
+  const activeIndex = days?.findIndex((d) => d.date === selectedDate) ?? -1
+  const activeDay = activeIndex >= 0 ? days?.[activeIndex] : days?.[days.length - 1]
   const stats = dayStats(activeDay)
   const isToday = activeDay?.date === days?.[days.length - 1]?.date
+
+  const resolvedIndex = days && activeDay ? days.findIndex((d) => d.date === activeDay.date) : -1
+  const hasPrev = !!days && resolvedIndex > 0
+  const hasNext = !!days && resolvedIndex >= 0 && resolvedIndex < days.length - 1
+
+  const goToOffset = (delta: number) => {
+    if (!days || resolvedIndex < 0) return
+    const nextIndex = resolvedIndex + delta
+    if (nextIndex < 0 || nextIndex >= days.length) return
+    setDirection(delta)
+    setSelectedDate(days[nextIndex].date)
+  }
+
+  const handleDragEnd = (_: unknown, info: PanInfo) => {
+    const { offset, velocity } = info
+    const passedDistance = Math.abs(offset.x) > SWIPE_DISTANCE_THRESHOLD
+    const passedVelocity = Math.abs(velocity.x) > SWIPE_VELOCITY_THRESHOLD
+    if (!passedDistance && !passedVelocity) return
+
+    // Swipe left (negative offset) = advance to the next (later) day;
+    // swipe right (positive offset) = go back to the previous day --
+    // matches the standard "swipe left for next" convention.
+    if (offset.x < 0) goToOffset(1)
+    else goToOffset(-1)
+  }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -168,61 +201,84 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
           <div className="bg-muted-foreground/40 h-1 w-9 rounded-full" />
         </div>
 
-        <div className="flex items-start justify-between gap-3 px-5 pt-2">
-          <DayRadialDial day={activeDay} totalHours={stats.hours} />
-          <div className="min-w-0 flex-1 pt-1 text-right">
-            <SheetTitle className="text-[17px]">
-              {isToday
-                ? "Today"
-                : activeDay
-                  ? format(new Date(`${activeDay.date}T00:00:00`), "EEEE, MMM d")
-                  : ""}
-            </SheetTitle>
-            <SheetDescription className="mt-0.5 text-[13px]">
-              {formatDuration(stats.hours)} cooling
-              {stats.avgTemp != null && ` · avg ${stats.avgTemp}°C`}
-            </SheetDescription>
-          </div>
+        <div className="flex items-center justify-between px-3">
+          <button
+            type="button"
+            aria-label="Previous day"
+            disabled={!hasPrev}
+            onClick={() => goToOffset(-1)}
+            className="text-muted-foreground flex size-7 items-center justify-center rounded-full disabled:opacity-0"
+          >
+            <ChevronLeft className="size-4" />
+          </button>
+          <button
+            type="button"
+            aria-label="Next day"
+            disabled={!hasNext}
+            onClick={() => goToOffset(1)}
+            className="text-muted-foreground flex size-7 items-center justify-center rounded-full disabled:opacity-0"
+          >
+            <ChevronRight className="size-4" />
+          </button>
         </div>
+
+        <motion.div
+          key={activeDay?.date ?? "empty"}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.15}
+          onDragEnd={handleDragEnd}
+          initial={{ opacity: 0, x: direction > 0 ? 24 : direction < 0 ? -24 : 0 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ type: "spring", stiffness: 380, damping: 34 }}
+          className="touch-pan-y"
+        >
+          <div className="flex items-start justify-between gap-3 px-5 pt-2">
+            <DayRadialDial day={activeDay} totalHours={stats.hours} />
+            <div className="min-w-0 flex-1 pt-1 text-right">
+              <SheetTitle className="text-[17px]">
+                {isToday
+                  ? "Today"
+                  : activeDay
+                    ? format(new Date(`${activeDay.date}T00:00:00`), "EEEE, MMM d")
+                    : ""}
+              </SheetTitle>
+              <SheetDescription className="mt-0.5 text-[13px]">
+                {formatDuration(stats.hours)} cooling
+                {stats.avgTemp != null && ` · avg ${stats.avgTemp}°C`}
+              </SheetDescription>
+            </div>
+          </div>
+
+          <div className="px-5 pt-4">
+            {activeDay && activeDay.intervals.length === 0 && (
+              <p className="text-muted-foreground py-8 text-center text-[13px]">
+                The AC wasn't used this day.
+              </p>
+            )}
+            {activeDay?.intervals.map((interval, i) => (
+              <IntervalRow
+                key={i}
+                interval={interval}
+                index={i}
+                isLast={i === activeDay.intervals.length - 1}
+              />
+            ))}
+          </div>
+        </motion.div>
 
         {days && days.length > 1 && (
-          <div className="flex gap-1.5 overflow-x-auto px-5 pt-4 pb-1">
-            {days.map((day) => {
-              const isSelected = activeDay?.date === day.date
-              return (
-                <button
-                  key={day.date}
-                  type="button"
-                  onClick={() => setSelectedDate(day.date)}
-                  className={cn(
-                    "shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors",
-                    isSelected
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-secondary text-muted-foreground"
-                  )}
-                >
-                  {format(new Date(`${day.date}T00:00:00`), "EEE d")}
-                </button>
-              )
-            })}
+          <div className="flex items-center justify-center gap-1.5 pt-1 pb-3" aria-hidden>
+            {days.map((day) => (
+              <span
+                key={day.date}
+                className={`h-1.5 rounded-full transition-all ${
+                  day.date === activeDay?.date ? "bg-primary w-4" : "bg-secondary w-1.5"
+                }`}
+              />
+            ))}
           </div>
         )}
-
-        <div className="px-5 pt-4">
-          {activeDay && activeDay.intervals.length === 0 && (
-            <p className="text-muted-foreground py-8 text-center text-[13px]">
-              The AC wasn't used this day.
-            </p>
-          )}
-          {activeDay?.intervals.map((interval, i) => (
-            <IntervalRow
-              key={i}
-              interval={interval}
-              index={i}
-              isLast={i === activeDay.intervals.length - 1}
-            />
-          ))}
-        </div>
       </SheetContent>
     </Sheet>
   )
