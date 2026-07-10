@@ -1,7 +1,7 @@
 import * as React from "react"
 import { format } from "date-fns"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { AnimatePresence, motion, useDragControls, type PanInfo } from "framer-motion"
+import { AnimatePresence, motion, type PanInfo } from "framer-motion"
 
 import { fanConfig } from "@/lib/ac-labels"
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet"
@@ -166,16 +166,6 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
   // Tracks swipe direction so the outgoing/incoming day content slides the
   // correct way -- 1 = moving to a later day, -1 = moving to an earlier day.
   const [direction, setDirection] = React.useState(0)
-  // Drag is started manually (dragListener={false}) from only the header/dial
-  // row's onPointerDown below -- not the whole day-content block. That's the
-  // fix for the interval list's vertical scroll getting eaten by the swipe
-  // gesture: framer-motion still applies its drag machinery (and the
-  // touch-action tweak that comes with it) to the whole motion.div so the
-  // slide animation keeps working, but it never actually STARTS a drag
-  // unless the touch began on the header, so a touch/scroll starting
-  // anywhere in the interval list is never claimed by the gesture recognizer
-  // in the first place and the browser scrolls it completely natively.
-  const dragControls = useDragControls()
 
   React.useEffect(() => {
     if (open) {
@@ -218,7 +208,8 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="dashboard-flat dark bg-card border-border max-h-[85vh] gap-0 overflow-y-auto rounded-t-[1.75rem] border-t p-0 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
+        className="dashboard-flat dark bg-card border-border max-h-[85vh] gap-0 overflow-y-auto overscroll-contain rounded-t-[1.75rem] border-t p-0 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
+        style={{ WebkitOverflowScrolling: "touch" }}
       >
         <div className="flex justify-center pt-2.5 pb-1" aria-hidden>
           <div className="bg-muted-foreground/40 h-1 w-9 rounded-full" />
@@ -254,19 +245,16 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ type: "spring", stiffness: 280, damping: 30, mass: 0.85 }}
+              transition={{ type: "spring", stiffness: 340, damping: 32, mass: 0.6 }}
               drag="x"
-              dragListener={false}
-              dragControls={dragControls}
               dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.2}
+              dragElastic={0.65}
+              dragTransition={{ power: 0.25, timeConstant: 200 }}
               onDragEnd={handleDragEnd}
               className="touch-pan-y"
+              style={{ touchAction: "pan-y" }}
             >
-              <div
-                className="flex items-start justify-between gap-3 px-5 pt-2"
-                onPointerDown={(e) => dragControls.start(e)}
-              >
+              <div className="flex items-start justify-between gap-3 px-5 pt-2">
                 <DayRadialDial day={activeDay} totalHours={stats.hours} />
                 <div className="min-w-0 flex-1 pt-1 text-right">
                   <SheetTitle className="text-[17px]">
