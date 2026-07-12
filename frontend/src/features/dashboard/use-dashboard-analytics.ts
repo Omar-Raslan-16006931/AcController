@@ -125,7 +125,7 @@ export function useDashboardAnalytics() {
     const weekAvgTemp = tempWeightMs > 0 ? Math.round(tempWeightedSum / tempWeightMs) : null
     const weekHours = totalOnMs / MS_PER_HOUR
     const weekKwh = estimateKwh(weekHours)
-    const weekCostEgp = estimateEgpCost(weekKwh, 7)
+    const weekCostEgp = estimateEgpCost(weekHours)
 
     return {
       todayHours,
