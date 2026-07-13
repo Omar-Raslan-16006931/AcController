@@ -1,5 +1,5 @@
 import { motion } from "framer-motion"
-import { Lightbulb, Sparkles } from "lucide-react"
+import { BrushCleaning, Lightbulb } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { useToggleLight, useTriggerSelfClean } from "@/features/remote/use-aux-control"
@@ -43,7 +43,7 @@ export function AuxButtons({ disabled = false }: { disabled?: boolean }) {
         )}
         aria-label="Start Self Clean"
       >
-        <Sparkles className="size-3.5" strokeWidth={2.25} />
+        <BrushCleaning className="size-3.5" strokeWidth={2.25} />
         Self Clean
       </motion.button>
     </div>

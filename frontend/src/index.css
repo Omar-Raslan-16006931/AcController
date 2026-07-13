@@ -413,7 +413,7 @@
 .dashboard-flat {
   --background: #0a0a0c;
   --foreground: #f4f4f6;
-  --card: #131212;
+  --card: #151414;
   --card-foreground: #f4f4f6;
   --popover: #050506;
   --popover-foreground: #f4f4f6;
@@ -440,7 +440,7 @@
 .dashboard-flat [data-slot="card"] {
   background-image: linear-gradient(
     160deg,
-    color-mix(in oklch, var(--glow-blue-dark) 26%, rgb(7, 19, 83) 6%) 0%,
+    color-mix(in oklch, var(--glow-blue-dark) 16%, rgb(255, 255, 255) 6%) 0%,
     color-mix(in oklch, var(--glow-blue-dark) 6%, transparent) 25%,
     transparent 42%
   );
