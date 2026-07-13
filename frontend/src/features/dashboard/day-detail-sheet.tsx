@@ -8,6 +8,14 @@ import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/
 import { tempRampColor } from "@/lib/temp-ramp"
 import { useAcUsageDetail, type AcUsageDayDetail, type AcUsageInterval } from "@/features/dashboard/use-ac-usage-detail"
 
+// Intervals shorter than this are almost always a stray button tap (e.g.
+// nudging the temperature twice in a row) rather than a real session --
+// they clutter the list without being useful, so the *rendered* rows are
+// filtered to this floor. Nothing else (radial dial, total on-time,
+// average temperature) is filtered -- those must stay accurate to real
+// elapsed on-time, including the brief sessions this hides from the list.
+const MIN_DISPLAYED_INTERVAL_MS = 10 * 60_000
+
 function formatDuration(hours: number): string {
   const totalMinutes = Math.round(hours * 60)
   const h = Math.floor(totalMinutes / 60)
@@ -179,6 +187,14 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
   const stats = dayStats(activeDay)
   const isToday = activeDay?.date === days?.[days.length - 1]?.date
 
+  // The list only ever shows sessions >= MIN_DISPLAYED_INTERVAL_MS -- see
+  // the constant's comment. dayStats/DayRadialDial above intentionally use
+  // the unfiltered activeDay.intervals so total on-time stays accurate.
+  const displayIntervals = React.useMemo(
+    () => activeDay?.intervals.filter((iv) => iv.endMs - iv.startMs >= MIN_DISPLAYED_INTERVAL_MS) ?? [],
+    [activeDay]
+  )
+
   const resolvedIndex = days && activeDay ? days.findIndex((d) => d.date === activeDay.date) : -1
   const hasPrev = !!days && resolvedIndex > 0
   const hasNext = !!days && resolvedIndex >= 0 && resolvedIndex < days.length - 1
@@ -208,14 +224,13 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="dashboard-flat dark bg-card border-border max-h-[85vh] gap-0 overflow-y-auto overscroll-contain rounded-t-[1.75rem] border-t p-0 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
-        style={{ WebkitOverflowScrolling: "touch" }}
+        className="dashboard-flat dark bg-card border-border flex max-h-[85vh] flex-col gap-0 overflow-hidden rounded-t-[1.75rem] border-t p-0 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
       >
-        <div className="flex justify-center pt-2.5 pb-1" aria-hidden>
+        <div className="flex shrink-0 justify-center pt-2.5 pb-1" aria-hidden>
           <div className="bg-muted-foreground/40 h-1 w-9 rounded-full" />
         </div>
 
-        <div className="flex items-center justify-between px-3">
+        <div className="flex shrink-0 items-center justify-between px-3">
           <button
             type="button"
             aria-label="Previous day"
@@ -236,7 +251,13 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
           </button>
         </div>
 
-        <div className="overflow-hidden">
+        {/* This wrapper is the only flexible/scrollable region -- header
+            (above) and the day-dots footer (below) are shrink-0 and never
+            scroll. min-h-0 is required here: without it, a flex child
+            refuses to shrink below its content size, which is the classic
+            reason "overflow-y-auto" silently does nothing inside a flex
+            column. */}
+        <div className="min-h-0 flex-1 overflow-hidden">
           <AnimatePresence initial={false} mode="popLayout" custom={direction}>
             <motion.div
               key={activeDay?.date ?? "empty"}
@@ -251,10 +272,10 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
               dragElastic={0.65}
               dragTransition={{ power: 0.25, timeConstant: 200 }}
               onDragEnd={handleDragEnd}
-              className="touch-pan-y"
+              className="flex h-full flex-col touch-pan-y"
               style={{ touchAction: "pan-y" }}
             >
-              <div className="flex items-start justify-between gap-3 px-5 pt-2">
+              <div className="flex shrink-0 items-start justify-between gap-3 px-5 pt-2">
                 <DayRadialDial day={activeDay} totalHours={stats.hours} />
                 <div className="min-w-0 flex-1 pt-1 text-right">
                   <SheetTitle className="text-[17px]">
@@ -271,18 +292,29 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
                 </div>
               </div>
 
-              <div className="px-5 pt-4">
+              {/* The actual scrollable interval list -- min-h-0 + flex-1
+                  again, plus overscroll-contain so an overscrolled list
+                  doesn't drag the whole sheet/page along with it. */}
+              <div
+                className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pt-4"
+                style={{ WebkitOverflowScrolling: "touch" }}
+              >
                 {activeDay && activeDay.intervals.length === 0 && (
                   <p className="text-muted-foreground py-8 text-center text-[13px]">
                     The AC wasn't used this day.
                   </p>
                 )}
-                {activeDay?.intervals.map((interval, i) => (
+                {activeDay && activeDay.intervals.length > 0 && displayIntervals.length === 0 && (
+                  <p className="text-muted-foreground py-8 text-center text-[13px]">
+                    Only brief taps under 10 minutes today.
+                  </p>
+                )}
+                {displayIntervals.map((interval, i) => (
                   <IntervalRow
                     key={i}
                     interval={interval}
                     index={i}
-                    isLast={i === activeDay.intervals.length - 1}
+                    isLast={i === displayIntervals.length - 1}
                   />
                 ))}
               </div>
@@ -291,7 +323,7 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
         </div>
 
         {days && days.length > 1 && (
-          <div className="flex items-center justify-center gap-1.5 pt-1 pb-3" aria-hidden>
+          <div className="flex shrink-0 items-center justify-center gap-1.5 pt-1 pb-3" aria-hidden>
             {days.map((day) => (
               <span
                 key={day.date}

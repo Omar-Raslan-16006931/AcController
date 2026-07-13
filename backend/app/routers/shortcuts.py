@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 
 from app.dependencies import CurrentUser, get_shortcut_or_current_user
 from app.models.ac_state import (
+    AuxCommandResponse,
     CommandResponse,
     FanRequest,
     ModeRequest,
@@ -25,6 +26,7 @@ from app.models.ac_state import (
 )
 from app.models.scheduler import TimerCreate, TimerOut
 from app.routers.scheduler import create_timer
+from app.services import ir_transmitter
 from app.services.command_executor import apply_command
 
 router = APIRouter(prefix="/api/shortcuts", tags=["shortcuts"])
@@ -114,6 +116,20 @@ def shortcut_fan(
     body: FanRequest, user: CurrentUser = Depends(get_shortcut_or_current_user)
 ) -> CommandResponse:
     return apply_command(user_id=user.user_id, fan=body.fan, source=_SOURCE)
+
+
+@router.post(
+    "/light",
+    response_model=AuxCommandResponse,
+    summary="Toggle the AC's display light",
+    description="No body. Replays the real remote's Light button (a captured "
+    "raw waveform, not an encoded state change — see aux.py/ir_transmitter.py). "
+    "Requires `raw/ac_codes/light.txt` to exist on the Pi; returns "
+    "`{\"success\": false, \"message\": \"...\"}` if it hasn't been captured yet.",
+)
+def shortcut_light(user: CurrentUser = Depends(get_shortcut_or_current_user)) -> AuxCommandResponse:
+    result = ir_transmitter.send_raw_command("light.txt", "carrier-light")
+    return AuxCommandResponse(success=result.success, message=result.error)
 
 
 @router.post(
