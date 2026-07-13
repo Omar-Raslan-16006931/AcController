@@ -21,6 +21,7 @@ import { PowerButtons } from "@/features/remote/power-button"
 import { TemperatureDial } from "@/features/remote/temperature-dial"
 import { ModeSelector } from "@/features/remote/mode-selector"
 import { FanSelector } from "@/features/remote/fan-selector"
+import { AuxButtons } from "@/features/remote/aux-buttons"
 import { TimerControls } from "@/features/remote/timer-controls"
 import type { AcMode, FanSpeed } from "@/types/database"
 
@@ -171,6 +172,12 @@ export function RemotePage() {
                 onChange={handleFanChange}
               />
             </div>
+
+            {/* Light and Self Clean aren't part of AcState (see
+                use-aux-control.ts) -- they're momentary remote buttons, so
+                they only gate on their own in-flight request, not on
+                power/busy the way the state-backed controls above do. */}
+            <AuxButtons />
 
             {!autoSend && hasPendingChanges && (
               <div className="bg-accent flex w-full items-center justify-between gap-2 rounded-2xl px-3 py-2">
