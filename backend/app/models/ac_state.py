@@ -64,3 +64,12 @@ class CommandResponse(BaseModel):
     success: bool
     state: AcState
     message: Optional[str] = None
+
+
+class AuxCommandResponse(BaseModel):
+    """Response for momentary auxiliary buttons (Light, Self Clean) that
+    live outside the power/temp/mode/fan AcState model entirely -- there's
+    no resulting `state` to report, just whether the IR send worked."""
+
+    success: bool
+    message: Optional[str] = None
