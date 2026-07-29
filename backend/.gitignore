@@ -4,3 +4,7 @@ __pycache__/
 .env
 ir_files/*.ir
 ac_state.json
+detected_ac.json
+.wifi_ap_mode
+.wifi_pending.json
+.wifi_last_result.json

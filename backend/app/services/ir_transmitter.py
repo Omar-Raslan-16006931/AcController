@@ -153,6 +153,19 @@ def send_state(state: AcState) -> TransmitResult:
     return _transmit(ir_file)
 
 
+def transmit_raw_file(path: str) -> TransmitResult:
+    """
+    Transmits an arbitrary, already-built ir-ctl text file directly -- no
+    AcState, no CarrierAC, no copy into ir_files_dir first. Used by the AC
+    brute-force detector (app/services/ac_detector.py) to replay third-party
+    captured waveforms from raw/ac_codes/brute_force/ while probing an
+    unknown AC for its brand/protocol: those files aren't part of the
+    Carrier AcState model at all (they're someone else's remote's capture),
+    so there's nothing to build, just a straight replay.
+    """
+    return _transmit(path)
+
+
 def send_raw_command(raw_filename: str, tmp_prefix: str) -> TransmitResult:
     """
     Transmits a captured raw waveform directly — for momentary auxiliary

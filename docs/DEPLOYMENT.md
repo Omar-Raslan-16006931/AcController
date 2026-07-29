@@ -27,7 +27,7 @@ reboot).
 ```bash
 git clone <your-repo-url> AcController
 cd AcController/backend
-bash scripts/setup_pi.sh          # venv, deps, systemd unit, sudoers rule
+bash scripts/setup_pi.sh          # venv, deps, systemd units, sudoers rule, wifi watchdog
 ```
 
 Then:
@@ -45,7 +45,14 @@ Then:
 3. Start it: `sudo systemctl start ac-controller`
 4. Verify: `curl https://acpi.tail3f987b.ts.net/api/status/ping` and
    `sudo journalctl -u ac-controller -f`
-5. Expose it to the internet so Vercel can reach it — either:
+5. Start the WiFi fallback watchdog too, and set a real
+   `WIFI_AP_PASSWORD` in `.env` first — see `docs/WIFI_FALLBACK.md`:
+   ```
+   sudo systemctl start ac-controller-wifi-watchdog
+   ```
+   This is what lets the Pi raise its own setup hotspot if it can't get
+   on WiFi — worth having running before you take the Pi anywhere.
+6. Expose it to the internet so Vercel can reach it — either:
    - **Tailscale Funnel / Cloudflare Tunnel** (recommended: no port
      forwarding, works behind CGNAT), or
    - Port-forward 8000 on your router to the Pi and use a dynamic DNS
@@ -66,7 +73,7 @@ Environment Variables):
 |---|---|
 | `VITE_SUPABASE_URL` | from step 1 |
 | `VITE_SUPABASE_ANON_KEY` | the **anon** key, never the service role key |
-| `VITE_API_BASE_URL` | the public HTTPS URL from step 2.5 |
+| `VITE_API_BASE_URL` | the public HTTPS URL from step 2.6 |
 
 Deploy: `vercel --prod` (or push to your connected Git branch).
 `vercel.json` already configures the SPA rewrite so client-side routes
@@ -82,4 +89,13 @@ Vercel URL, then `sudo systemctl restart ac-controller`.
   automatically.
 - **Backend**: `git pull`, `source .venv/bin/activate && pip install -r requirements.txt`
   if dependencies changed, then `sudo systemctl restart ac-controller` (or
-  use the System page's "Restart backend" button).
+  use the System page's "Restart backend" button). If
+  `backend/scripts/wifi_watchdog.py` or its systemd unit changed, also
+  `sudo systemctl restart ac-controller-wifi-watchdog`.
+
+## See also
+
+- `docs/WIFI_FALLBACK.md` — the Pi raising its own setup hotspot when it
+  can't get on WiFi (useful while travelling).
+- `docs/AC_DETECT.md` — brute-forcing an unfamiliar (non-Carrier) AC's
+  brand/protocol by cycling through captured codes.

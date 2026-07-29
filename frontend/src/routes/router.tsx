@@ -31,6 +31,11 @@ const SettingsPage = lazyWithReload(() =>
 const SystemPage = lazyWithReload(() =>
   import("@/pages/system-page").then((m) => ({ default: m.SystemPage }))
 )
+// Same pattern as System -- a real route reached via a link card on
+// Settings rather than the primary bottom nav.
+const DetectPage = lazyWithReload(() =>
+  import("@/pages/detect-page").then((m) => ({ default: m.DetectPage }))
+)
 
 export const router = createBrowserRouter([
   {
@@ -51,6 +56,7 @@ export const router = createBrowserRouter([
       { path: "history", element: <HistoryPage /> },
       { path: "settings", element: <SettingsPage /> },
       { path: "system", element: <SystemPage /> },
+      { path: "detect", element: <DetectPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },

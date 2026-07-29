@@ -7,4 +7,6 @@ export const queryKeys = {
   history: (userId: string, params: object) =>
     ["history", userId, params] as const,
   passkeys: (userId: string) => ["passkeys", userId] as const,
+  detectStatus: ["detect-status"] as const,
+  detectCodes: ["detect-codes"] as const,
 }
