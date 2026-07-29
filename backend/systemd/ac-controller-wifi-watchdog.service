@@ -1,0 +1,23 @@
+[Unit]
+Description=AcController WiFi watchdog / hotspot fallback
+# Not "network-online.target" on purpose -- this service's whole job is to
+# handle the case where the network never comes online, so it must not
+# wait on that itself. It only needs NetworkManager (for nmcli) to exist.
+After=NetworkManager.service
+Wants=NetworkManager.service
+
+[Service]
+Type=simple
+# Runs as root, unlike ac-controller.service (which stays on the
+# unprivileged `pi` user throughout) -- this is the ONLY process on the Pi
+# that calls nmcli to change network state. See
+# backend/scripts/wifi_watchdog.py's module docstring and
+# docs/WIFI_FALLBACK.md for the reasoning behind that split.
+User=root
+WorkingDirectory=/home/pi/AcController/backend
+ExecStart=/usr/bin/python3 /home/pi/AcController/backend/scripts/wifi_watchdog.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

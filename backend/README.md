@@ -21,9 +21,17 @@ backend/
       command_executor.py     # shared apply_command() used by every AC route
       history_logger.py       # writes results to Supabase command_history
       system_metrics.py       # CPU/RAM/disk/temp/WiFi/IP/hostname/uptime via psutil
+      ac_detector.py           # brute-force brand/protocol detector — see docs/AC_DETECT.md
+      wifi_setup_page.py       # HTML for GET /wifi-setup — see docs/WIFI_FALLBACK.md
+      raw/ac_codes/brute_force/  # 116 captured codes (Flipper-IRDB, CC0) + manifest.json
     routers/                 # one file per REST resource (see API section)
+  scripts/
+    setup_pi.sh               # one-shot Pi provisioning
+    wifi_watchdog.py           # stdlib-only, runs as its own root systemd service
+    regenerate_brute_force_codes.py  # rebuilds raw/ac_codes/brute_force/ from Flipper-IRDB
   systemd/
-    ac-controller.service    # systemd unit — see docs/DEPLOYMENT.md
+    ac-controller.service               # systemd unit — see docs/DEPLOYMENT.md
+    ac-controller-wifi-watchdog.service # runs wifi_watchdog.py as root
   requirements.txt
   .env.example
 ```
@@ -76,9 +84,14 @@ All routes except `GET /api/status/ping` require
 | POST   | `/api/system/reboot`                  | `sudo reboot`                         |
 | POST   | `/api/system/shutdown`                | `sudo shutdown -h now`                |
 | POST   | `/api/system/restart`                 | `sudo systemctl restart ac-controller`|
+| GET/POST | `/api/detect/[...]`                 | Brute-force AC brand detector — see `docs/AC_DETECT.md` |
 
 Interactive docs are available at `/docs` (Swagger) and `/redoc` once the
 server is running.
+
+`GET /wifi-setup` and `/api/wifi/*` are separate, **unauthenticated**
+endpoints that only function while the Pi's WiFi fallback hotspot is
+active — see `docs/WIFI_FALLBACK.md`.
 
 ## Scheduler/timer worker
 

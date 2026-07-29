@@ -20,6 +20,10 @@ frontend/.env.local
 # Backend runtime files
 backend/ir_files/*.ir
 backend/ac_state.json
+backend/detected_ac.json
+backend/.wifi_ap_mode
+backend/.wifi_pending.json
+backend/.wifi_last_result.json
 
 # Editor / OS
 .vscode/*

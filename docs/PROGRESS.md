@@ -1,6 +1,6 @@
 # Build progress
 
-All 11 modules are complete. The project is feature-complete and builds
+All 13 modules are complete. The project is feature-complete and builds
 clean end to end.
 
 ## ✅ Module 1 — Project setup, routing, auth, layout
@@ -64,6 +64,29 @@ four tables.
 `backend/scripts/setup_pi.sh` (one-shot Pi provisioning), and
 `docs/DEPLOYMENT.md` walking through Supabase → Pi → Vercel in order.
 
+## ✅ Module 12 — WiFi hotspot fallback
+`backend/scripts/wifi_watchdog.py` (its own root systemd service,
+`ac-controller-wifi-watchdog.service`): monitors WiFi connectivity via
+`nmcli`, raises a fallback hotspot after a 90s disconnected grace period,
+retries known networks every 5 minutes while in AP mode, and picks up
+newly-submitted credentials within ~15s. `app/routers/wifi.py`:
+unauthenticated (necessarily — no internet route to Supabase while in AP
+mode) `GET /wifi-setup` self-contained HTML page,
+`GET/POST /api/wifi/status,networks,connect`, gated to only function while
+the AP flag file the watchdog writes actually exists. See
+`docs/WIFI_FALLBACK.md`.
+
+## ✅ Module 13 — AC brand/protocol brute-force detector
+`app/services/ac_detector.py` + `app/routers/detect.py`
+(`/api/detect/*`, authenticated normally): cycles through 116 real
+captured codes across 70+ brands (sourced from Flipper-IRDB, CC0) at an
+adjustable interval, for identifying an unfamiliar (non-Carrier) AC while
+travelling. Frontend: `/detect` page (linked from Settings) with live
+progress, a confirm action, and replay of the last match. See
+`docs/AC_DETECT.md` for scope/limitations — this identifies a
+brand/protocol and replays one captured signal, it is not full state
+control the way the Carrier integration is.
+
 ## Known trade-offs / what to do before going live
 
 - `backend/app/services/carrier_ac.py` ships as a clearly-marked **stub**.
@@ -74,3 +97,11 @@ four tables.
 - No automated test suite (unit/e2e) is included — the backend was verified
   with manual `TestClient` smoke tests during development; consider adding
   `pytest` coverage before relying on this unattended long-term.
+- The WiFi watchdog requires NetworkManager (`nmcli`) managing WiFi — the
+  Raspberry Pi OS Bookworm+ default. On an older dhcpcd-based image it
+  installs but can't actually raise a hotspot; see `docs/WIFI_FALLBACK.md`.
+- The AC detector's 116-code dataset is a snapshot of Flipper-IRDB at the
+  time it was bundled, and only covers files with raw-capture entries
+  (~116 of ~158 source files) — notably missing LG's and Frigidaire's own
+  AC files. Re-run `backend/scripts/regenerate_brute_force_codes.py`
+  against a fresh checkout to update it.

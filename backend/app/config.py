@@ -45,6 +45,22 @@ class Settings(BaseSettings):
 
     scheduler_poll_seconds: int = 20
 
+    # --- AC brute-force detector (app/services/ac_detector.py) --------------
+    # Where a confirmed brand/model match gets persisted, same pattern as
+    # state_file_path -- survives a service restart so the Remote page can
+    # still show/replay the last detected AC after the Pi reboots.
+    detected_ac_file_path: str = "./detected_ac.json"
+
+    # --- WiFi hotspot fallback (app/routers/wifi.py) -------------------------
+    # These paths are shared with backend/scripts/wifi_watchdog.py, which
+    # runs as its own root systemd service (NOT this app) -- the FastAPI
+    # process only ever reads the flag/status file and writes the pending
+    # file; it never touches nmcli/networking directly. See
+    # docs/WIFI_FALLBACK.md for why the split exists.
+    wifi_ap_mode_flag_path: str = "/home/pi/AcController/backend/.wifi_ap_mode"
+    wifi_pending_path: str = "/home/pi/AcController/backend/.wifi_pending.json"
+    wifi_status_path: str = "/home/pi/AcController/backend/.wifi_last_result.json"
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]

@@ -4,7 +4,7 @@ import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { format } from "date-fns"
-import { ChevronRight, Cpu, Loader2, Plus, Save, ScanFace, Trash2 } from "lucide-react"
+import { ChevronRight, Cpu, Loader2, Plus, Radar, Save, ScanFace, Trash2 } from "lucide-react"
 
 import { PageHeader } from "@/components/page-header"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -156,6 +156,28 @@ function PasskeysCard() {
           </p>
         )}
       </CardContent>
+    </Card>
+  )
+}
+
+function DetectAcLinkCard() {
+  return (
+    <Card className="lg:col-span-2">
+      <Link
+        to="/detect"
+        className="hover:bg-accent/40 flex items-center gap-2.5 rounded-[inherit] px-3 py-2.5 transition-colors"
+      >
+        <div className="bg-secondary text-foreground/80 flex size-7 items-center justify-center rounded-xl">
+          <Radar className="size-3.5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-medium">Detect AC</p>
+          <p className="text-muted-foreground text-[11px]">
+            For a non-Carrier AC while travelling — brute-force the brand
+          </p>
+        </div>
+        <ChevronRight className="text-muted-foreground/60 size-3.5" />
+      </Link>
     </Card>
   )
 }
@@ -343,6 +365,7 @@ export function SettingsPage() {
         </Card>
 
         <PasskeysCard />
+        <DetectAcLinkCard />
         <SystemLinkCard />
       </div>
     </form>

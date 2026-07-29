@@ -1,0 +1,814 @@
+[
+  {
+    "index": 0,
+    "brand": "Admiral",
+    "model": "Admiral_AC",
+    "signal": "Fan_2",
+    "file": "Admiral__Admiral_AC.txt"
+  },
+  {
+    "index": 1,
+    "brand": "Airfel",
+    "model": "AIRFEL_AFSW-12HAR1RCIO",
+    "signal": "Cold_lo",
+    "file": "Airfel__AIRFEL_AFSW-12HAR1RCIO.txt"
+  },
+  {
+    "index": 2,
+    "brand": "Airmax",
+    "model": "Airmax",
+    "signal": "Power_on",
+    "file": "Airmax__Airmax.txt"
+  },
+  {
+    "index": 3,
+    "brand": "Airmet",
+    "model": "Airmet_ac",
+    "signal": "POWER",
+    "file": "Airmet__Airmet_ac.txt"
+  },
+  {
+    "index": 4,
+    "brand": "Airwell",
+    "model": "Airwell",
+    "signal": "POWER",
+    "file": "Airwell__Airwell.txt"
+  },
+  {
+    "index": 5,
+    "brand": "Airwell",
+    "model": "Airwell_AWSI-PNXA012-N11",
+    "signal": "COOL MODE",
+    "file": "Airwell__Airwell_AWSI-PNXA012-N11.txt"
+  },
+  {
+    "index": 6,
+    "brand": "Aldi",
+    "model": "Easy_Home_Portable_Air_Cooler",
+    "signal": "Power",
+    "file": "Aldi__Easy_Home_Portable_Air_Cooler.txt"
+  },
+  {
+    "index": 7,
+    "brand": "Argo",
+    "model": "Argo_ac",
+    "signal": "POWER",
+    "file": "Argo__Argo_ac.txt"
+  },
+  {
+    "index": 8,
+    "brand": "Ariston",
+    "model": "Ariston_AC_A-MW09-IGX",
+    "signal": "POWER",
+    "file": "Ariston__Ariston_AC_A-MW09-IGX.txt"
+  },
+  {
+    "index": 9,
+    "brand": "Ballu",
+    "model": "Ballu_R05-BGE",
+    "signal": "Cool_23",
+    "file": "Ballu__Ballu_R05-BGE.txt"
+  },
+  {
+    "index": 10,
+    "brand": "Beko",
+    "model": "Beko",
+    "signal": "Power_on",
+    "file": "Beko__Beko.txt"
+  },
+  {
+    "index": 11,
+    "brand": "Black_and_Decker",
+    "model": "Portable",
+    "signal": "PWR ON",
+    "file": "Black_and_Decker__Portable.txt"
+  },
+  {
+    "index": 12,
+    "brand": "Bonaire",
+    "model": "Bonaire_DurangoAC",
+    "signal": "POWER",
+    "file": "Bonaire__Bonaire_DurangoAC.txt"
+  },
+  {
+    "index": 13,
+    "brand": "Boston_Bay",
+    "model": "Boston_Bay_MSAB_09CR",
+    "signal": "COOL MODE",
+    "file": "Boston_Bay__Boston_Bay_MSAB_09CR.txt"
+  },
+  {
+    "index": 14,
+    "brand": "Botti",
+    "model": "Botti_BL-168DLR",
+    "signal": "Power",
+    "file": "Botti__Botti_BL-168DLR.txt"
+  },
+  {
+    "index": 15,
+    "brand": "COTech",
+    "model": "COTech_MPPH-08CRN7-QB6_AC",
+    "signal": "POWER_ON",
+    "file": "COTech__COTech_MPPH-08CRN7-QB6_AC.txt"
+  },
+  {
+    "index": 16,
+    "brand": "Carrier",
+    "model": "Carrier_orlen_ac",
+    "signal": "0n",
+    "file": "Carrier__Carrier_orlen_ac.txt"
+  },
+  {
+    "index": 17,
+    "brand": "Chigo",
+    "model": "Chigo_CS-21H3A-B155AF",
+    "signal": "Cool_20",
+    "file": "Chigo__Chigo_CS-21H3A-B155AF.txt"
+  },
+  {
+    "index": 18,
+    "brand": "Chigo",
+    "model": "Chigo_KRF-51G_79F",
+    "signal": "Cool_20",
+    "file": "Chigo__Chigo_KRF-51G_79F.txt"
+  },
+  {
+    "index": 19,
+    "brand": "Ciatronic",
+    "model": "Ciatronic_AC",
+    "signal": "TEMP-",
+    "file": "Ciatronic__Ciatronic_AC.txt"
+  },
+  {
+    "index": 20,
+    "brand": "Comfort_Aire",
+    "model": "Comfort_Aire_RG57A6",
+    "signal": "Mode Cool",
+    "file": "Comfort_Aire__Comfort_Aire_RG57A6.txt"
+  },
+  {
+    "index": 21,
+    "brand": "Daikin",
+    "model": "Daikin_AC",
+    "signal": "POWER",
+    "file": "Daikin__Daikin_AC.txt"
+  },
+  {
+    "index": 22,
+    "brand": "Daikin",
+    "model": "Daikin_AC_industrial_TB",
+    "signal": "POWER",
+    "file": "Daikin__Daikin_AC_industrial_TB.txt"
+  },
+  {
+    "index": 23,
+    "brand": "Daikin",
+    "model": "Daikin_AC_unknownModel",
+    "signal": "Cool_25_slow",
+    "file": "Daikin__Daikin_AC_unknownModel.txt"
+  },
+  {
+    "index": 24,
+    "brand": "Daikin",
+    "model": "Daikin_ARC480A41",
+    "signal": "POWERFUL",
+    "file": "Daikin__Daikin_ARC480A41.txt"
+  },
+  {
+    "index": 25,
+    "brand": "Daikin",
+    "model": "Daikin_ARC480A53",
+    "signal": "POWERFUL",
+    "file": "Daikin__Daikin_ARC480A53.txt"
+  },
+  {
+    "index": 26,
+    "brand": "Daikin",
+    "model": "Daikin_FTE35KV1",
+    "signal": "POWER",
+    "file": "Daikin__Daikin_FTE35KV1.txt"
+  },
+  {
+    "index": 27,
+    "brand": "Daikin",
+    "model": "Daikin_FTX50GV1B",
+    "signal": "Power",
+    "file": "Daikin__Daikin_FTX50GV1B.txt"
+  },
+  {
+    "index": 28,
+    "brand": "Daikin",
+    "model": "Daikin_FTXM95PVMA",
+    "signal": "Power",
+    "file": "Daikin__Daikin_FTXM95PVMA.txt"
+  },
+  {
+    "index": 29,
+    "brand": "Daikin",
+    "model": "Daikin_FTXS25KVMA",
+    "signal": "Power",
+    "file": "Daikin__Daikin_FTXS25KVMA.txt"
+  },
+  {
+    "index": 30,
+    "brand": "Danby",
+    "model": "Danby DAC060EB7WDB",
+    "signal": "Cool_hi",
+    "file": "Danby__Danby_DAC060EB7WDB.txt"
+  },
+  {
+    "index": 31,
+    "brand": "Electra",
+    "model": "electra_smart",
+    "signal": "On",
+    "file": "Electra__electra_smart.txt"
+  },
+  {
+    "index": 32,
+    "brand": "Electrolux",
+    "model": "Electrol_ESV09CRO_B2I",
+    "signal": "POWER_ON",
+    "file": "Electrolux__Electrol_ESV09CRO_B2I.txt"
+  },
+  {
+    "index": 33,
+    "brand": "Emerson",
+    "model": "Emerson_EARC8RE1_ac",
+    "signal": "Power",
+    "file": "Emerson__Emerson_EARC8RE1_ac.txt"
+  },
+  {
+    "index": 34,
+    "brand": "Ferroli",
+    "model": "Ferroli",
+    "signal": "On",
+    "file": "Ferroli__Ferroli.txt"
+  },
+  {
+    "index": 35,
+    "brand": "Firstline",
+    "model": "Firstline_AAS2500",
+    "signal": "High power",
+    "file": "Firstline__Firstline_AAS2500.txt"
+  },
+  {
+    "index": 36,
+    "brand": "Frico",
+    "model": "Frico_PA2510E08",
+    "signal": "On_off",
+    "file": "Frico__Frico_PA2510E08.txt"
+  },
+  {
+    "index": 37,
+    "brand": "Friedrich",
+    "model": "Friedrich",
+    "signal": "POWER",
+    "file": "Friedrich__Friedrich.txt"
+  },
+  {
+    "index": 38,
+    "brand": "Friedrich",
+    "model": "Friedrich_4235h",
+    "signal": "Power",
+    "file": "Friedrich__Friedrich_4235h.txt"
+  },
+  {
+    "index": 39,
+    "brand": "Friedrich",
+    "model": "Friedrich_AKB73756214",
+    "signal": "On",
+    "file": "Friedrich__Friedrich_AKB73756214.txt"
+  },
+  {
+    "index": 40,
+    "brand": "Fujidenzo",
+    "model": "Fujidenzo_FEA5001_AC",
+    "signal": "POWER",
+    "file": "Fujidenzo__Fujidenzo_FEA5001_AC.txt"
+  },
+  {
+    "index": 41,
+    "brand": "Fujitsu",
+    "model": "Fujitsu_AC",
+    "signal": "POWER",
+    "file": "Fujitsu__Fujitsu_AC.txt"
+  },
+  {
+    "index": 42,
+    "brand": "Fujitsu",
+    "model": "Fujitsu_AC_ASU18RLF",
+    "signal": "Cool_64",
+    "file": "Fujitsu__Fujitsu_AC_ASU18RLF.txt"
+  },
+  {
+    "index": 43,
+    "brand": "GREE",
+    "model": "GREE_YAPOF",
+    "signal": "Power_on",
+    "file": "GREE__GREE_YAPOF.txt"
+  },
+  {
+    "index": 44,
+    "brand": "GREE",
+    "model": "Gree_KFR-70G-A1",
+    "signal": "Cool_23",
+    "file": "GREE__Gree_KFR-70G-A1.txt"
+  },
+  {
+    "index": 45,
+    "brand": "GREE",
+    "model": "Gree_airco",
+    "signal": "Power_on",
+    "file": "GREE__Gree_airco.txt"
+  },
+  {
+    "index": 46,
+    "brand": "GREE",
+    "model": "Gree_airco_lightoff",
+    "signal": "Power_on",
+    "file": "GREE__Gree_airco_lightoff.txt"
+  },
+  {
+    "index": 47,
+    "brand": "General_Electric",
+    "model": "GE_AC",
+    "signal": "POWER",
+    "file": "General_Electric__GE_AC.txt"
+  },
+  {
+    "index": 48,
+    "brand": "Haier",
+    "model": "Haier_AC_AS18GD3HRA",
+    "signal": "Cool",
+    "file": "Haier__Haier_AC_AS18GD3HRA.txt"
+  },
+  {
+    "index": 49,
+    "brand": "Haier",
+    "model": "Haier_AC_HWE08XCR-L",
+    "signal": "POWER",
+    "file": "Haier__Haier_AC_HWE08XCR-L.txt"
+  },
+  {
+    "index": 50,
+    "brand": "Hisense",
+    "model": "Hisense_DG11J1-99_celsius",
+    "signal": "Power",
+    "file": "Hisense__Hisense_DG11J1-99_celsius.txt"
+  },
+  {
+    "index": 51,
+    "brand": "Hisense",
+    "model": "Hisense_DG11J1-99_fahrenheit",
+    "signal": "Power",
+    "file": "Hisense__Hisense_DG11J1-99_fahrenheit.txt"
+  },
+  {
+    "index": 52,
+    "brand": "Hisense",
+    "model": "Hisense_room_AC",
+    "signal": "POWER",
+    "file": "Hisense__Hisense_room_AC.txt"
+  },
+  {
+    "index": 53,
+    "brand": "Hisense",
+    "model": "Hisense_window_AC",
+    "signal": "POWER",
+    "file": "Hisense__Hisense_window_AC.txt"
+  },
+  {
+    "index": 54,
+    "brand": "Hitachi",
+    "model": "Hitach_RAK-18QH8",
+    "signal": "Cool_hi",
+    "file": "Hitachi__Hitach_RAK-18QH8.txt"
+  },
+  {
+    "index": 55,
+    "brand": "Hitachi",
+    "model": "Hitachi_RAK35",
+    "signal": "Power_On",
+    "file": "Hitachi__Hitachi_RAK35.txt"
+  },
+  {
+    "index": 56,
+    "brand": "Inventum",
+    "model": "Inventum_AC",
+    "signal": "POWER",
+    "file": "Inventum__Inventum_AC.txt"
+  },
+  {
+    "index": 57,
+    "brand": "Kelon",
+    "model": "Kelon_AS-24HR4SQJUL",
+    "signal": "Cool_25",
+    "file": "Kelon__Kelon_AS-24HR4SQJUL.txt"
+  },
+  {
+    "index": 58,
+    "brand": "Klarstein",
+    "model": "Klarstein_Skyscraper",
+    "signal": "Cool_hum",
+    "file": "Klarstein__Klarstein_Skyscraper.txt"
+  },
+  {
+    "index": 59,
+    "brand": "LG",
+    "model": "LG_AC_2",
+    "signal": "POWER",
+    "file": "LG__LG_AC_2.txt"
+  },
+  {
+    "index": 60,
+    "brand": "LG",
+    "model": "LG_COV30332906_AC",
+    "signal": "Timer",
+    "file": "LG__LG_COV30332906_AC.txt"
+  },
+  {
+    "index": 61,
+    "brand": "LG",
+    "model": "LG_LP0817WSR",
+    "signal": "Power",
+    "file": "LG__LG_LP0817WSR.txt"
+  },
+  {
+    "index": 62,
+    "brand": "LG",
+    "model": "LG_LP1417GSR_AC",
+    "signal": "POWER",
+    "file": "LG__LG_LP1417GSR_AC.txt"
+  },
+  {
+    "index": 63,
+    "brand": "LG",
+    "model": "LG_LP1419IVSM",
+    "signal": "POWER_ON",
+    "file": "LG__LG_LP1419IVSM.txt"
+  },
+  {
+    "index": 64,
+    "brand": "LG",
+    "model": "LG_R12AWN-NB11",
+    "signal": "Power",
+    "file": "LG__LG_R12AWN-NB11.txt"
+  },
+  {
+    "index": 65,
+    "brand": "LG",
+    "model": "LG_SX122CL",
+    "signal": "On",
+    "file": "LG__LG_SX122CL.txt"
+  },
+  {
+    "index": 66,
+    "brand": "Lamborghini",
+    "model": "Unknown_Model_1",
+    "signal": "Power On",
+    "file": "Lamborghini__Unknown_Model_1.txt"
+  },
+  {
+    "index": 67,
+    "brand": "Legion",
+    "model": "Legion_LE-F30RH-IN",
+    "signal": "Cool_20",
+    "file": "Legion__Legion_LE-F30RH-IN.txt"
+  },
+  {
+    "index": 68,
+    "brand": "Lennox",
+    "model": "Lennox_AC",
+    "signal": "POWER",
+    "file": "Lennox__Lennox_AC.txt"
+  },
+  {
+    "index": 69,
+    "brand": "Logik",
+    "model": "Logik_HLF-20R",
+    "signal": "Power",
+    "file": "Logik__Logik_HLF-20R.txt"
+  },
+  {
+    "index": 70,
+    "brand": "Midea",
+    "model": "Midea_AC_MAW05R1WBL",
+    "signal": "POWER",
+    "file": "Midea__Midea_AC_MAW05R1WBL.txt"
+  },
+  {
+    "index": 71,
+    "brand": "Midea",
+    "model": "Midea_WWK08CR81N",
+    "signal": "Energy_Saver",
+    "file": "Midea__Midea_WWK08CR81N.txt"
+  },
+  {
+    "index": 72,
+    "brand": "Midea",
+    "model": "Midea_silent_cool_26_pro",
+    "signal": "POWER",
+    "file": "Midea__Midea_silent_cool_26_pro.txt"
+  },
+  {
+    "index": 73,
+    "brand": "Mitsubishi",
+    "model": "Mitsubishi_MSH-30RV",
+    "signal": "POWER",
+    "file": "Mitsubishi__Mitsubishi_MSH-30RV.txt"
+  },
+  {
+    "index": 74,
+    "brand": "Mitsubishi",
+    "model": "Mitsubishi_MSH_GA71VB",
+    "signal": "Power",
+    "file": "Mitsubishi__Mitsubishi_MSH_GA71VB.txt"
+  },
+  {
+    "index": 75,
+    "brand": "Mitsubishi",
+    "model": "Mitsubishi_SRK20ZJ-S",
+    "signal": "POWER",
+    "file": "Mitsubishi__Mitsubishi_SRK20ZJ-S.txt"
+  },
+  {
+    "index": 76,
+    "brand": "Mitsubishi",
+    "model": "Mitsubishi_SRK35ZS-W",
+    "signal": "POWER_ON",
+    "file": "Mitsubishi__Mitsubishi_SRK35ZS-W.txt"
+  },
+  {
+    "index": 77,
+    "brand": "Mitsubishi",
+    "model": "mitsubishi-MSY-GE10VA",
+    "signal": "POWER",
+    "file": "Mitsubishi__mitsubishi-MSY-GE10VA.txt"
+  },
+  {
+    "index": 78,
+    "brand": "Moretti",
+    "model": "Moretti_Air_Cooler",
+    "signal": "Cool",
+    "file": "Moretti__Moretti_Air_Cooler.txt"
+  },
+  {
+    "index": 79,
+    "brand": "OK",
+    "model": "Ok_AC_OAC_7020",
+    "signal": "ON",
+    "file": "OK__Ok_AC_OAC_7020.txt"
+  },
+  {
+    "index": 80,
+    "brand": "Osaka",
+    "model": "Osaka_CH_09_DSBP",
+    "signal": "On",
+    "file": "Osaka__Osaka_CH_09_DSBP.txt"
+  },
+  {
+    "index": 81,
+    "brand": "Panasonic",
+    "model": "Panasonic_A75C4187",
+    "signal": "Powerful",
+    "file": "Panasonic__Panasonic_A75C4187.txt"
+  },
+  {
+    "index": 82,
+    "brand": "Panasonic",
+    "model": "Panasonic_CS-E9HKR",
+    "signal": "Cool_hi",
+    "file": "Panasonic__Panasonic_CS-E9HKR.txt"
+  },
+  {
+    "index": 83,
+    "brand": "Panasonic",
+    "model": "Panasonic_CS-UE12RKE",
+    "signal": "Powerful_quiet",
+    "file": "Panasonic__Panasonic_CS-UE12RKE.txt"
+  },
+  {
+    "index": 84,
+    "brand": "Panasonic",
+    "model": "Panasonic_CWA75C4179",
+    "signal": "POWER_ON",
+    "file": "Panasonic__Panasonic_CWA75C4179.txt"
+  },
+  {
+    "index": 85,
+    "brand": "Panasonic",
+    "model": "Panasonic_Climate_A75C2600",
+    "signal": "Powerfull",
+    "file": "Panasonic__Panasonic_Climate_A75C2600.txt"
+  },
+  {
+    "index": 86,
+    "brand": "Pioneer",
+    "model": "PioneerMiniSplit",
+    "signal": "Mode: Cool",
+    "file": "Pioneer__PioneerMiniSplit.txt"
+  },
+  {
+    "index": 87,
+    "brand": "Rinnai",
+    "model": "Rinnai_AC",
+    "signal": "POWER",
+    "file": "Rinnai__Rinnai_AC.txt"
+  },
+  {
+    "index": 88,
+    "brand": "Royal_Clima",
+    "model": "Royal_Clima_RC-TWN55HN",
+    "signal": "Cool_23",
+    "file": "Royal_Clima__Royal_Clima_RC-TWN55HN.txt"
+  },
+  {
+    "index": 89,
+    "brand": "Samsung",
+    "model": "Samsung_AC_AR12K",
+    "signal": "POWER",
+    "file": "Samsung__Samsung_AC_AR12K.txt"
+  },
+  {
+    "index": 90,
+    "brand": "Samsung",
+    "model": "Samsung_AR13TYHZCWKN",
+    "signal": "Cool",
+    "file": "Samsung__Samsung_AR13TYHZCWKN.txt"
+  },
+  {
+    "index": 91,
+    "brand": "Samsung",
+    "model": "Samsung_Wind-Free",
+    "signal": "POWER",
+    "file": "Samsung__Samsung_Wind-Free.txt"
+  },
+  {
+    "index": 92,
+    "brand": "Sharp",
+    "model": "Sharp AH-A9UCD",
+    "signal": "POWER_ON",
+    "file": "Sharp__Sharp_AH-A9UCD.txt"
+  },
+  {
+    "index": 93,
+    "brand": "Sharp",
+    "model": "Sharp_AH_X9VEW_AC",
+    "signal": "POWER_ON",
+    "file": "Sharp__Sharp_AH_X9VEW_AC.txt"
+  },
+  {
+    "index": 94,
+    "brand": "Sharp",
+    "model": "Sharp_CVP10MX",
+    "signal": "MEGA COOL",
+    "file": "Sharp__Sharp_CVP10MX.txt"
+  },
+  {
+    "index": 95,
+    "brand": "Shivaki",
+    "model": "Shivaki_SSA18002",
+    "signal": "Cool_20",
+    "file": "Shivaki__Shivaki_SSA18002.txt"
+  },
+  {
+    "index": 96,
+    "brand": "Sinclair",
+    "model": "SINCLAIR_ASH13BIF2",
+    "signal": "POWER_ON",
+    "file": "Sinclair__SINCLAIR_ASH13BIF2.txt"
+  },
+  {
+    "index": 97,
+    "brand": "SoleusAir",
+    "model": "SoleusAir",
+    "signal": "Power",
+    "file": "SoleusAir__SoleusAir.txt"
+  },
+  {
+    "index": 98,
+    "brand": "Subtropic",
+    "model": "Subtropic_in-07HN1",
+    "signal": "Cool_23",
+    "file": "Subtropic__Subtropic_in-07HN1.txt"
+  },
+  {
+    "index": 99,
+    "brand": "TCL",
+    "model": "Tcl",
+    "signal": "Power",
+    "file": "TCL__Tcl.txt"
+  },
+  {
+    "index": 100,
+    "brand": "Timberk",
+    "model": "Timberk_RG05D4-BGE",
+    "signal": "Cool_20",
+    "file": "Timberk__Timberk_RG05D4-BGE.txt"
+  },
+  {
+    "index": 101,
+    "brand": "Tora",
+    "model": "Tora_TS_16-Classic",
+    "signal": "Cool_26",
+    "file": "Tora__Tora_TS_16-Classic.txt"
+  },
+  {
+    "index": 102,
+    "brand": "Toshiba",
+    "model": "Toshiba_RAS13SKV2E",
+    "signal": "POWER",
+    "file": "Toshiba__Toshiba_RAS13SKV2E.txt"
+  },
+  {
+    "index": 103,
+    "brand": "Toshiba",
+    "model": "Toshiba_RASB10BKVG-E",
+    "signal": "Power",
+    "file": "Toshiba__Toshiba_RASB10BKVG-E.txt"
+  },
+  {
+    "index": 104,
+    "brand": "Toshiba",
+    "model": "Toshiba_RG57H4",
+    "signal": "POWER",
+    "file": "Toshiba__Toshiba_RG57H4.txt"
+  },
+  {
+    "index": 105,
+    "brand": "Tosot",
+    "model": "Tosot_T24H-ILF",
+    "signal": "Cool_20",
+    "file": "Tosot__Tosot_T24H-ILF.txt"
+  },
+  {
+    "index": 106,
+    "brand": "Tropic",
+    "model": "Tropic_AC",
+    "signal": "On_Off",
+    "file": "Tropic__Tropic_AC.txt"
+  },
+  {
+    "index": 107,
+    "brand": "Trotec",
+    "model": "Trotec_PAC2600X",
+    "signal": "Power",
+    "file": "Trotec__Trotec_PAC2600X.txt"
+  },
+  {
+    "index": 108,
+    "brand": "Vornado",
+    "model": "Vornado",
+    "signal": "POWER",
+    "file": "Vornado__Vornado.txt"
+  },
+  {
+    "index": 109,
+    "brand": "Whynter",
+    "model": "Whynter_AC",
+    "signal": "POWER",
+    "file": "Whynter__Whynter_AC.txt"
+  },
+  {
+    "index": 110,
+    "brand": "Windfree",
+    "model": "Windfree_Ac_test",
+    "signal": "On_cool_21_high",
+    "file": "Windfree__Windfree_Ac_test.txt"
+  },
+  {
+    "index": 111,
+    "brand": "Windfree",
+    "model": "Windfree_Actest2",
+    "signal": "Off_cool_21_high",
+    "file": "Windfree__Windfree_Actest2.txt"
+  },
+  {
+    "index": 112,
+    "brand": "Windfree",
+    "model": "Windfree_Remote3",
+    "signal": "22_fan_1_on",
+    "file": "Windfree__Windfree_Remote3.txt"
+  },
+  {
+    "index": 113,
+    "brand": "Xiaomi",
+    "model": "Xiaomi_AC",
+    "signal": "POWER",
+    "file": "Xiaomi__Xiaomi_AC.txt"
+  },
+  {
+    "index": 114,
+    "brand": "York",
+    "model": "York_AC",
+    "signal": "Power",
+    "file": "York__York_AC.txt"
+  },
+  {
+    "index": 115,
+    "brand": "York",
+    "model": "York_full_working",
+    "signal": "on",
+    "file": "York__York_full_working.txt"
+  }
+]
