@@ -1,0 +1,34 @@
+{
+  "brand": "Airmax",
+  "model": "Airmax",
+  "signals": [
+    {
+      "name": "Power_on",
+      "file": "Power_on.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Turbo",
+      "file": "Turbo.txt"
+    },
+    {
+      "name": "Temp_17",
+      "file": "Temp_17.txt"
+    },
+    {
+      "name": "Temp_22",
+      "file": "Temp_22.txt"
+    },
+    {
+      "name": "temp_30",
+      "file": "temp_30.txt"
+    },
+    {
+      "name": "Led",
+      "file": "Led.txt"
+    }
+  ]
+}

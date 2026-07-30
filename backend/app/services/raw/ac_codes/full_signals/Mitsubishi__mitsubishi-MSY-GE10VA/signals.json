@@ -1,0 +1,30 @@
+{
+  "brand": "Mitsubishi",
+  "model": "mitsubishi-MSY-GE10VA",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "Fan Speed",
+      "file": "Fan_Speed.txt"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "brand": "COTech",
+  "model": "COTech_MPPH-08CRN7-QB6_AC",
+  "signals": [
+    {
+      "name": "POWER_ON",
+      "file": "POWER_ON.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "MODE_AUTO",
+      "file": "MODE_AUTO.txt"
+    },
+    {
+      "name": "MODE_COOL",
+      "file": "MODE_COOL.txt"
+    },
+    {
+      "name": "MODE_DRY",
+      "file": "MODE_DRY.txt"
+    },
+    {
+      "name": "MODE_FAN",
+      "file": "MODE_FAN.txt"
+    },
+    {
+      "name": "FAN_AUTO",
+      "file": "FAN_AUTO.txt"
+    },
+    {
+      "name": "FAN_LOW",
+      "file": "FAN_LOW.txt"
+    },
+    {
+      "name": "FAN_HIGH",
+      "file": "FAN_HIGH.txt"
+    },
+    {
+      "name": "LED",
+      "file": "LED.txt"
+    },
+    {
+      "name": "SLEEP",
+      "file": "SLEEP.txt"
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "brand": "Fujitsu",
+  "model": "Fujitsu_AC_ASU18RLF",
+  "signals": [
+    {
+      "name": "On_fan",
+      "file": "On_fan.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Cool_64",
+      "file": "Cool_64.txt"
+    },
+    {
+      "name": "Cool_66",
+      "file": "Cool_66.txt"
+    },
+    {
+      "name": "Cool_68",
+      "file": "Cool_68.txt"
+    },
+    {
+      "name": "Cool_70",
+      "file": "Cool_70.txt"
+    },
+    {
+      "name": "Cool_72",
+      "file": "Cool_72.txt"
+    },
+    {
+      "name": "Cool_74",
+      "file": "Cool_74.txt"
+    },
+    {
+      "name": "Cool_76",
+      "file": "Cool_76.txt"
+    },
+    {
+      "name": "Cool_78",
+      "file": "Cool_78.txt"
+    },
+    {
+      "name": "Cool_80",
+      "file": "Cool_80.txt"
+    },
+    {
+      "name": "Cool_82",
+      "file": "Cool_82.txt"
+    },
+    {
+      "name": "Cool_84",
+      "file": "Cool_84.txt"
+    },
+    {
+      "name": "Cool_86",
+      "file": "Cool_86.txt"
+    },
+    {
+      "name": "Cool_88",
+      "file": "Cool_88.txt"
+    },
+    {
+      "name": "Dry_64",
+      "file": "Dry_64.txt"
+    },
+    {
+      "name": "Dry_66",
+      "file": "Dry_66.txt"
+    },
+    {
+      "name": "Dry_68",
+      "file": "Dry_68.txt"
+    },
+    {
+      "name": "Dry_70",
+      "file": "Dry_70.txt"
+    },
+    {
+      "name": "Dry_72",
+      "file": "Dry_72.txt"
+    },
+    {
+      "name": "Dry_74",
+      "file": "Dry_74.txt"
+    },
+    {
+      "name": "Dry_76",
+      "file": "Dry_76.txt"
+    },
+    {
+      "name": "Dry_78",
+      "file": "Dry_78.txt"
+    },
+    {
+      "name": "Dry_80",
+      "file": "Dry_80.txt"
+    },
+    {
+      "name": "Dry_82",
+      "file": "Dry_82.txt"
+    },
+    {
+      "name": "Dry_84",
+      "file": "Dry_84.txt"
+    },
+    {
+      "name": "Dry_86",
+      "file": "Dry_86.txt"
+    },
+    {
+      "name": "Dry_88",
+      "file": "Dry_88.txt"
+    },
+    {
+      "name": "Fan_mode",
+      "file": "Fan_mode.txt"
+    },
+    {
+      "name": "Heat_60",
+      "file": "Heat_60.txt"
+    },
+    {
+      "name": "Heat_62",
+      "file": "Heat_62.txt"
+    },
+    {
+      "name": "Heat_64",
+      "file": "Heat_64.txt"
+    },
+    {
+      "name": "Heat_66",
+      "file": "Heat_66.txt"
+    },
+    {
+      "name": "Heat_68",
+      "file": "Heat_68.txt"
+    },
+    {
+      "name": "Heat_70",
+      "file": "Heat_70.txt"
+    },
+    {
+      "name": "Heat_72",
+      "file": "Heat_72.txt"
+    },
+    {
+      "name": "Heat_74",
+      "file": "Heat_74.txt"
+    },
+    {
+      "name": "Heat_76",
+      "file": "Heat_76.txt"
+    },
+    {
+      "name": "Heat_78",
+      "file": "Heat_78.txt"
+    },
+    {
+      "name": "Heat_80",
+      "file": "Heat_80.txt"
+    },
+    {
+      "name": "Heat_82",
+      "file": "Heat_82.txt"
+    },
+    {
+      "name": "Heat_84",
+      "file": "Heat_84.txt"
+    },
+    {
+      "name": "Heat_86",
+      "file": "Heat_86.txt"
+    },
+    {
+      "name": "Heat_88",
+      "file": "Heat_88.txt"
+    }
+  ]
+}

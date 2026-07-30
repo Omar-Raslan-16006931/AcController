@@ -1,0 +1,54 @@
+{
+  "brand": "Sharp",
+  "model": "Sharp_AH_X9VEW_AC",
+  "signals": [
+    {
+      "name": "POWER_ON",
+      "file": "POWER_ON.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "TEMP_14",
+      "file": "TEMP_14.txt"
+    },
+    {
+      "name": "TEMP_16",
+      "file": "TEMP_16.txt"
+    },
+    {
+      "name": "TEMP_18",
+      "file": "TEMP_18.txt"
+    },
+    {
+      "name": "TEMP_20",
+      "file": "TEMP_20.txt"
+    },
+    {
+      "name": "TEMP_22",
+      "file": "TEMP_22.txt"
+    },
+    {
+      "name": "TEMP_24",
+      "file": "TEMP_24.txt"
+    },
+    {
+      "name": "TEMP_26",
+      "file": "TEMP_26.txt"
+    },
+    {
+      "name": "TEMP_27",
+      "file": "TEMP_27.txt"
+    },
+    {
+      "name": "TEMP_28",
+      "file": "TEMP_28.txt"
+    },
+    {
+      "name": "TEMP_30",
+      "file": "TEMP_30.txt"
+    }
+  ]
+}

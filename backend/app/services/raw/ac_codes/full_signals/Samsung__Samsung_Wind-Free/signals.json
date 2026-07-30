@@ -1,0 +1,22 @@
+{
+  "brand": "Samsung",
+  "model": "Samsung_Wind-Free",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "Fan_less",
+      "file": "Fan_less.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Auto_mode",
+      "file": "Auto_mode.txt"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "brand": "Hitachi",
+  "model": "Hitachi_RAK35",
+  "signals": [
+    {
+      "name": "Power_On",
+      "file": "Power_On.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "Temp_Up",
+      "file": "Temp_Up.txt"
+    },
+    {
+      "name": "Temp_Down",
+      "file": "Temp_Down.txt"
+    }
+  ]
+}

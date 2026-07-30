@@ -1,0 +1,54 @@
+{
+  "brand": "Friedrich",
+  "model": "Friedrich",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "Speed_low",
+      "file": "Speed_low.txt"
+    },
+    {
+      "name": "Speed_med",
+      "file": "Speed_med.txt"
+    },
+    {
+      "name": "Speed_hi",
+      "file": "Speed_hi.txt"
+    },
+    {
+      "name": "Speed_auto",
+      "file": "Speed_auto.txt"
+    },
+    {
+      "name": "Mode_cont",
+      "file": "Mode_cont.txt"
+    },
+    {
+      "name": "Mode_auto",
+      "file": "Mode_auto.txt"
+    },
+    {
+      "name": "Sched_off",
+      "file": "Sched_off.txt"
+    },
+    {
+      "name": "Sched_on",
+      "file": "Sched_on.txt"
+    }
+  ]
+}

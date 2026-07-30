@@ -1,0 +1,62 @@
+{
+  "brand": "Sharp",
+  "model": "Sharp_CVP10MX",
+  "signals": [
+    {
+      "name": "ON",
+      "file": "ON.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "TEMP DWN",
+      "file": "TEMP_DWN.txt"
+    },
+    {
+      "name": "TEMP UP",
+      "file": "TEMP_UP.txt"
+    },
+    {
+      "name": "Lights",
+      "file": "Lights.txt"
+    },
+    {
+      "name": "Ion",
+      "file": "Ion.txt"
+    },
+    {
+      "name": "1 HR OFF",
+      "file": "1_HR_OFF.txt"
+    },
+    {
+      "name": "MEGA COOL",
+      "file": "MEGA_COOL.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "ON Timer",
+      "file": "ON_Timer.txt"
+    },
+    {
+      "name": "OFF Timer",
+      "file": "OFF_Timer.txt"
+    },
+    {
+      "name": "Cancel",
+      "file": "Cancel.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "Louvers",
+      "file": "Louvers.txt"
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "brand": "Tora",
+  "model": "Tora_TS_16-Classic",
+  "signals": [
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Cool_26",
+      "file": "Cool_26.txt"
+    },
+    {
+      "name": "Cool_25",
+      "file": "Cool_25.txt"
+    },
+    {
+      "name": "Cool_24",
+      "file": "Cool_24.txt"
+    },
+    {
+      "name": "Cool_23",
+      "file": "Cool_23.txt"
+    },
+    {
+      "name": "Cool_22",
+      "file": "Cool_22.txt"
+    },
+    {
+      "name": "Cool_21",
+      "file": "Cool_21.txt"
+    },
+    {
+      "name": "Cool_20",
+      "file": "Cool_20.txt"
+    },
+    {
+      "name": "Cool_19",
+      "file": "Cool_19.txt"
+    },
+    {
+      "name": "Cool_18",
+      "file": "Cool_18.txt"
+    },
+    {
+      "name": "Cool_17",
+      "file": "Cool_17.txt"
+    },
+    {
+      "name": "Cool_16",
+      "file": "Cool_16.txt"
+    },
+    {
+      "name": "Dry",
+      "file": "Dry.txt"
+    },
+    {
+      "name": "Fan_low",
+      "file": "Fan_low.txt"
+    },
+    {
+      "name": "Fan_mid",
+      "file": "Fan_mid.txt"
+    },
+    {
+      "name": "Fan_high",
+      "file": "Fan_high.txt"
+    },
+    {
+      "name": "Heat_31",
+      "file": "Heat_31.txt"
+    },
+    {
+      "name": "Heat_30",
+      "file": "Heat_30.txt"
+    },
+    {
+      "name": "Heat_29",
+      "file": "Heat_29.txt"
+    },
+    {
+      "name": "Heat_28",
+      "file": "Heat_28.txt"
+    },
+    {
+      "name": "Heat_27",
+      "file": "Heat_27.txt"
+    },
+    {
+      "name": "Heat_26",
+      "file": "Heat_26.txt"
+    },
+    {
+      "name": "Heat_25",
+      "file": "Heat_25.txt"
+    },
+    {
+      "name": "Heat_24",
+      "file": "Heat_24.txt"
+    },
+    {
+      "name": "Heat_23",
+      "file": "Heat_23.txt"
+    },
+    {
+      "name": "Heat_22",
+      "file": "Heat_22.txt"
+    },
+    {
+      "name": "Heat_21",
+      "file": "Heat_21.txt"
+    },
+    {
+      "name": "Heat_20",
+      "file": "Heat_20.txt"
+    },
+    {
+      "name": "Heat_19",
+      "file": "Heat_19.txt"
+    },
+    {
+      "name": "Heat_18",
+      "file": "Heat_18.txt"
+    },
+    {
+      "name": "Feel",
+      "file": "Feel.txt"
+    },
+    {
+      "name": "Super_cool_16",
+      "file": "Super_cool_16.txt"
+    },
+    {
+      "name": "Super_heat_31",
+      "file": "Super_heat_31.txt"
+    }
+  ]
+}

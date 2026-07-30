@@ -1,0 +1,62 @@
+{
+  "brand": "Mitsubishi",
+  "model": "Mitsubishi_SRK35ZS-W",
+  "signals": [
+    {
+      "name": "POWER_ON",
+      "file": "POWER_ON.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "LEFT_RIGHT",
+      "file": "LEFT_RIGHT.txt"
+    },
+    {
+      "name": "UP_DOWN",
+      "file": "UP_DOWN.txt"
+    },
+    {
+      "name": "3D_AUTO",
+      "file": "3D_AUTO.txt"
+    },
+    {
+      "name": "FAN_0SPEED",
+      "file": "FAN_0SPEED.txt"
+    },
+    {
+      "name": "FAN_1SPEED",
+      "file": "FAN_1SPEED.txt"
+    },
+    {
+      "name": "FAN_2SPEED",
+      "file": "FAN_2SPEED.txt"
+    },
+    {
+      "name": "FAN_3SPEED",
+      "file": "FAN_3SPEED.txt"
+    },
+    {
+      "name": "FAN_4SPEED",
+      "file": "FAN_4SPEED.txt"
+    },
+    {
+      "name": "FAN_5SPEED",
+      "file": "FAN_5SPEED.txt"
+    }
+  ]
+}

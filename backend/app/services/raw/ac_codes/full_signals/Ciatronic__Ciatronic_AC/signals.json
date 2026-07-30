@@ -1,0 +1,10 @@
+{
+  "brand": "Ciatronic",
+  "model": "Ciatronic_AC",
+  "signals": [
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    }
+  ]
+}

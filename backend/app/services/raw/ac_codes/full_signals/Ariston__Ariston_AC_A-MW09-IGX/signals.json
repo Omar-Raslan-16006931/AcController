@@ -1,0 +1,14 @@
+{
+  "brand": "Ariston",
+  "model": "Ariston_AC_A-MW09-IGX",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    }
+  ]
+}

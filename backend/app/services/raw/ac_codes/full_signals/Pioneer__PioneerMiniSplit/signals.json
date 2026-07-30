@@ -1,0 +1,62 @@
+{
+  "brand": "Pioneer",
+  "model": "PioneerMiniSplit",
+  "signals": [
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "On",
+      "file": "On.txt"
+    },
+    {
+      "name": "72_degrees",
+      "file": "72_degrees.txt"
+    },
+    {
+      "name": "71_degrees",
+      "file": "71_degrees.txt"
+    },
+    {
+      "name": "70_degrees",
+      "file": "70_degrees.txt"
+    },
+    {
+      "name": "69_degrees",
+      "file": "69_degrees.txt"
+    },
+    {
+      "name": "68_degrees",
+      "file": "68_degrees.txt"
+    },
+    {
+      "name": "Mode: Cool",
+      "file": "Mode_Cool.txt"
+    },
+    {
+      "name": "Mode: Dry",
+      "file": "Mode_Dry.txt"
+    },
+    {
+      "name": "Mode: Heat",
+      "file": "Mode_Heat.txt"
+    },
+    {
+      "name": "Mode: Fan",
+      "file": "Mode_Fan.txt"
+    },
+    {
+      "name": "LED_Toggle",
+      "file": "LED_Toggle.txt"
+    },
+    {
+      "name": "Mode: Clean",
+      "file": "Mode_Clean.txt"
+    },
+    {
+      "name": "Mode Swing",
+      "file": "Mode_Swing.txt"
+    }
+  ]
+}

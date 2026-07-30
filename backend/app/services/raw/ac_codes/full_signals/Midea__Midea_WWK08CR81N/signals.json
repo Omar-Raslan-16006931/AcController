@@ -1,0 +1,18 @@
+{
+  "brand": "Midea",
+  "model": "Midea_WWK08CR81N",
+  "signals": [
+    {
+      "name": "Energy_Saver",
+      "file": "Energy_Saver.txt"
+    },
+    {
+      "name": "LED_Display",
+      "file": "LED_Display.txt"
+    },
+    {
+      "name": "Sense_Temp",
+      "file": "Sense_Temp.txt"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "brand": "Windfree",
+  "model": "Windfree_Remote3",
+  "signals": [
+    {
+      "name": "22_fan_1_on",
+      "file": "22_fan_1_on.txt"
+    },
+    {
+      "name": "22_fan1_off",
+      "file": "22_fan1_off.txt"
+    }
+  ]
+}

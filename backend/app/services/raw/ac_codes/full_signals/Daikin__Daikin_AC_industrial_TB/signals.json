@@ -1,0 +1,14 @@
+{
+  "brand": "Daikin",
+  "model": "Daikin_AC_industrial_TB",
+  "signals": [
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    }
+  ]
+}

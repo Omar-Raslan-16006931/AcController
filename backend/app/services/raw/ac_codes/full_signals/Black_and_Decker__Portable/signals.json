@@ -1,0 +1,42 @@
+{
+  "brand": "Black_and_Decker",
+  "model": "Portable",
+  "signals": [
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "PWR ON",
+      "file": "PWR_ON.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "SWING",
+      "file": "SWING.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "MAX ON",
+      "file": "MAX_ON.txt"
+    },
+    {
+      "name": "MAX OFF",
+      "file": "MAX_OFF.txt"
+    },
+    {
+      "name": "DIM DISPLAY",
+      "file": "DIM_DISPLAY.txt"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "brand": "Panasonic",
+  "model": "Panasonic_CS-E9HKR",
+  "signals": [
+    {
+      "name": "Dh",
+      "file": "Dh.txt"
+    },
+    {
+      "name": "Cool_hi",
+      "file": "Cool_hi.txt"
+    },
+    {
+      "name": "Cool_lo",
+      "file": "Cool_lo.txt"
+    },
+    {
+      "name": "Heat_hi",
+      "file": "Heat_hi.txt"
+    },
+    {
+      "name": "Heat_lo",
+      "file": "Heat_lo.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    }
+  ]
+}

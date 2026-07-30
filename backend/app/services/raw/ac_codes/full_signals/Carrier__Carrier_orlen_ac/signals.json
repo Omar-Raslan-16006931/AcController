@@ -1,0 +1,30 @@
+{
+  "brand": "Carrier",
+  "model": "Carrier_orlen_ac",
+  "signals": [
+    {
+      "name": "0n",
+      "file": "0n.txt"
+    },
+    {
+      "name": "Mod",
+      "file": "Mod.txt"
+    },
+    {
+      "name": "Up",
+      "file": "Up.txt"
+    },
+    {
+      "name": "Dow",
+      "file": "Dow.txt"
+    },
+    {
+      "name": "Went",
+      "file": "Went.txt"
+    },
+    {
+      "name": "air",
+      "file": "air.txt"
+    }
+  ]
+}

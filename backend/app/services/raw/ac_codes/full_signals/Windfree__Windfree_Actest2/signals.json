@@ -1,0 +1,38 @@
+{
+  "brand": "Windfree",
+  "model": "Windfree_Actest2",
+  "signals": [
+    {
+      "name": "Off_cool_21_high",
+      "file": "Off_cool_21_high.txt"
+    },
+    {
+      "name": "On_cool_21_high",
+      "file": "On_cool_21_high.txt"
+    },
+    {
+      "name": "Cool_21_full",
+      "file": "Cool_21_full.txt"
+    },
+    {
+      "name": "Cool_21_high",
+      "file": "Cool_21_high.txt"
+    },
+    {
+      "name": "Cool_21_med",
+      "file": "Cool_21_med.txt"
+    },
+    {
+      "name": "Cool_21_low",
+      "file": "Cool_21_low.txt"
+    },
+    {
+      "name": "Cool_21_auto",
+      "file": "Cool_21_auto.txt"
+    },
+    {
+      "name": "Cool_22_auto",
+      "file": "Cool_22_auto.txt"
+    }
+  ]
+}

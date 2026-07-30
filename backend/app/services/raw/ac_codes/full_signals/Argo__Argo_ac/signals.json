@@ -1,0 +1,10 @@
+{
+  "brand": "Argo",
+  "model": "Argo_ac",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    }
+  ]
+}

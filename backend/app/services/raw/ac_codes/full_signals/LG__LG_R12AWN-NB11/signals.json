@@ -1,0 +1,14 @@
+{
+  "brand": "LG",
+  "model": "LG_R12AWN-NB11",
+  "signals": [
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Plasma",
+      "file": "Plasma.txt"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "brand": "Toshiba",
+  "model": "Toshiba_RASB10BKVG-E",
+  "signals": [
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Heat_hi",
+      "file": "Heat_hi.txt"
+    },
+    {
+      "name": "Heat_lo",
+      "file": "Heat_lo.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Fix",
+      "file": "Fix.txt"
+    },
+    {
+      "name": "Swing",
+      "file": "Swing.txt"
+    }
+  ]
+}

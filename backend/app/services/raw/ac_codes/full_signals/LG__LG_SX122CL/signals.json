@@ -1,0 +1,50 @@
+{
+  "brand": "LG",
+  "model": "LG_SX122CL",
+  "signals": [
+    {
+      "name": "On",
+      "file": "On.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Up",
+      "file": "Up.txt"
+    },
+    {
+      "name": "Down",
+      "file": "Down.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "Sleep_on",
+      "file": "Sleep_on.txt"
+    },
+    {
+      "name": "Sleep_off",
+      "file": "Sleep_off.txt"
+    },
+    {
+      "name": "Swing_on",
+      "file": "Swing_on.txt"
+    },
+    {
+      "name": "Swing_off",
+      "file": "Swing_off.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "Timer",
+      "file": "Timer.txt"
+    }
+  ]
+}

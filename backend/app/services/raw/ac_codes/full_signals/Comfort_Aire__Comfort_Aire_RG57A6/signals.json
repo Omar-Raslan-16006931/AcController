@@ -1,0 +1,70 @@
+{
+  "brand": "Comfort_Aire",
+  "model": "Comfort_Aire_RG57A6",
+  "signals": [
+    {
+      "name": "On",
+      "file": "On.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Mode Auto",
+      "file": "Mode_Auto.txt"
+    },
+    {
+      "name": "Mode Cool",
+      "file": "Mode_Cool.txt"
+    },
+    {
+      "name": "Mode Dry",
+      "file": "Mode_Dry.txt"
+    },
+    {
+      "name": "Mode Heat",
+      "file": "Mode_Heat.txt"
+    },
+    {
+      "name": "Mode Fan",
+      "file": "Mode_Fan.txt"
+    },
+    {
+      "name": "Sleep",
+      "file": "Sleep.txt"
+    },
+    {
+      "name": "Turbo",
+      "file": "Turbo.txt"
+    },
+    {
+      "name": "Self Clean",
+      "file": "Self_Clean.txt"
+    },
+    {
+      "name": "LED",
+      "file": "LED.txt"
+    },
+    {
+      "name": "Follow Me",
+      "file": "Follow_Me.txt"
+    },
+    {
+      "name": "Swing",
+      "file": "Swing.txt"
+    },
+    {
+      "name": "Direct",
+      "file": "Direct.txt"
+    },
+    {
+      "name": "Silence FP",
+      "file": "Silence_FP.txt"
+    },
+    {
+      "name": "Unsilence",
+      "file": "Unsilence.txt"
+    }
+  ]
+}

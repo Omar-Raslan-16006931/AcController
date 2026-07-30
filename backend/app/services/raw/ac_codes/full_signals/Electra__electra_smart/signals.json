@@ -1,0 +1,14 @@
+{
+  "brand": "Electra",
+  "model": "electra_smart",
+  "signals": [
+    {
+      "name": "On",
+      "file": "On.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    }
+  ]
+}

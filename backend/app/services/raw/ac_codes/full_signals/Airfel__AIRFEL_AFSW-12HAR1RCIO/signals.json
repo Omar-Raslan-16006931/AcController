@@ -1,0 +1,30 @@
+{
+  "brand": "Airfel",
+  "model": "AIRFEL_AFSW-12HAR1RCIO",
+  "signals": [
+    {
+      "name": "Cold_lo",
+      "file": "Cold_lo.txt"
+    },
+    {
+      "name": "Cold_hi",
+      "file": "Cold_hi.txt"
+    },
+    {
+      "name": "Heat_hi",
+      "file": "Heat_hi.txt"
+    },
+    {
+      "name": "Dh",
+      "file": "Dh.txt"
+    },
+    {
+      "name": "Heat_lo",
+      "file": "Heat_lo.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    }
+  ]
+}

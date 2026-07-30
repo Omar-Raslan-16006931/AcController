@@ -1,0 +1,42 @@
+{
+  "brand": "Rinnai",
+  "model": "Rinnai_AC",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "Turbo",
+      "file": "Turbo.txt"
+    },
+    {
+      "name": "Cool",
+      "file": "Cool.txt"
+    },
+    {
+      "name": "Heat",
+      "file": "Heat.txt"
+    },
+    {
+      "name": "Quiet",
+      "file": "Quiet.txt"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "brand": "Mitsubishi",
+  "model": "Mitsubishi_MSH_GA71VB",
+  "signals": [
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Temp_up",
+      "file": "Temp_up.txt"
+    },
+    {
+      "name": "Temp_down",
+      "file": "Temp_down.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "Vane_oscilate",
+      "file": "Vane_oscilate.txt"
+    },
+    {
+      "name": "Vane_width",
+      "file": "Vane_width.txt"
+    }
+  ]
+}

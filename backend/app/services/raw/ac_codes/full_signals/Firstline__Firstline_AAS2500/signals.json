@@ -1,0 +1,46 @@
+{
+  "brand": "Firstline",
+  "model": "Firstline_AAS2500",
+  "signals": [
+    {
+      "name": "On",
+      "file": "On.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Temp up",
+      "file": "Temp_up.txt"
+    },
+    {
+      "name": "Temp down",
+      "file": "Temp_down.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Sleep",
+      "file": "Sleep.txt"
+    },
+    {
+      "name": "Fan_speed",
+      "file": "Fan_speed.txt"
+    },
+    {
+      "name": "Flap",
+      "file": "Flap.txt"
+    },
+    {
+      "name": "1HR",
+      "file": "1HR.txt"
+    },
+    {
+      "name": "High power",
+      "file": "High_power.txt"
+    }
+  ]
+}

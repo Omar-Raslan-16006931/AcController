@@ -1,0 +1,50 @@
+{
+  "brand": "Emerson",
+  "model": "Emerson_EARC8RE1_ac",
+  "signals": [
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Cool",
+      "file": "Cool.txt"
+    },
+    {
+      "name": "Up",
+      "file": "Up.txt"
+    },
+    {
+      "name": "Down",
+      "file": "Down.txt"
+    },
+    {
+      "name": "Eco",
+      "file": "Eco.txt"
+    },
+    {
+      "name": "Sleep",
+      "file": "Sleep.txt"
+    },
+    {
+      "name": "Fan Speed",
+      "file": "Fan_Speed.txt"
+    },
+    {
+      "name": "Timer",
+      "file": "Timer.txt"
+    },
+    {
+      "name": "Display",
+      "file": "Display.txt"
+    },
+    {
+      "name": "Auto Mode",
+      "file": "Auto_Mode.txt"
+    },
+    {
+      "name": "Fan Only",
+      "file": "Fan_Only.txt"
+    }
+  ]
+}

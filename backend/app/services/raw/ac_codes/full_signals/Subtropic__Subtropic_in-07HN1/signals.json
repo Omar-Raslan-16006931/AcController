@@ -1,0 +1,38 @@
+{
+  "brand": "Subtropic",
+  "model": "Subtropic_in-07HN1",
+  "signals": [
+    {
+      "name": "OFF",
+      "file": "OFF.txt"
+    },
+    {
+      "name": "Cool_16",
+      "file": "Cool_16.txt"
+    },
+    {
+      "name": "Cool_23",
+      "file": "Cool_23.txt"
+    },
+    {
+      "name": "Heat_32",
+      "file": "Heat_32.txt"
+    },
+    {
+      "name": "Heat_23",
+      "file": "Heat_23.txt"
+    },
+    {
+      "name": "Dry_23",
+      "file": "Dry_23.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "Auto",
+      "file": "Auto.txt"
+    }
+  ]
+}

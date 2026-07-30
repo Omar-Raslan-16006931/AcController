@@ -1,0 +1,30 @@
+{
+  "brand": "Trotec",
+  "model": "Trotec_PAC2600X",
+  "signals": [
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "Temp+",
+      "file": "Temp.txt"
+    },
+    {
+      "name": "Temp-",
+      "file": "Temp-.txt"
+    },
+    {
+      "name": "Sleep",
+      "file": "Sleep.txt"
+    }
+  ]
+}

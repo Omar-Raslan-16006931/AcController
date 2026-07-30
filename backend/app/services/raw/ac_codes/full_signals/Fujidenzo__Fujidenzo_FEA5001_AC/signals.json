@@ -1,0 +1,26 @@
+{
+  "brand": "Fujidenzo",
+  "model": "Fujidenzo_FEA5001_AC",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "Swing",
+      "file": "Swing.txt"
+    },
+    {
+      "name": "Timer",
+      "file": "Timer.txt"
+    },
+    {
+      "name": "Cool",
+      "file": "Cool.txt"
+    },
+    {
+      "name": "Wind_Speed",
+      "file": "Wind_Speed.txt"
+    }
+  ]
+}

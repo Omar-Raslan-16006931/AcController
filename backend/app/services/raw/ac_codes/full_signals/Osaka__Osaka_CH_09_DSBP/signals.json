@@ -1,0 +1,30 @@
+{
+  "brand": "Osaka",
+  "model": "Osaka_CH_09_DSBP",
+  "signals": [
+    {
+      "name": "On",
+      "file": "On.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Up",
+      "file": "Up.txt"
+    },
+    {
+      "name": "Down",
+      "file": "Down.txt"
+    },
+    {
+      "name": "Swing",
+      "file": "Swing.txt"
+    }
+  ]
+}

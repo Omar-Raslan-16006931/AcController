@@ -1,0 +1,30 @@
+{
+  "brand": "Moretti",
+  "model": "Moretti_Air_Cooler",
+  "signals": [
+    {
+      "name": "On_off",
+      "file": "On_off.txt"
+    },
+    {
+      "name": "Cool",
+      "file": "Cool.txt"
+    },
+    {
+      "name": "Speed",
+      "file": "Speed.txt"
+    },
+    {
+      "name": "Swing",
+      "file": "Swing.txt"
+    },
+    {
+      "name": "Timer",
+      "file": "Timer.txt"
+    },
+    {
+      "name": "Cancel_timer",
+      "file": "Cancel_timer.txt"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "brand": "Xiaomi",
+  "model": "Xiaomi_AC",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Fan_Speed",
+      "file": "Fan_Speed.txt"
+    },
+    {
+      "name": "Sweep",
+      "file": "Sweep.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "Timer",
+      "file": "Timer.txt"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "brand": "GREE",
+  "model": "GREE_YAPOF",
+  "signals": [
+    {
+      "name": "Power_on",
+      "file": "Power_on.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Auto",
+      "file": "Auto.txt"
+    },
+    {
+      "name": "25",
+      "file": "25.txt"
+    },
+    {
+      "name": "23",
+      "file": "23.txt"
+    },
+    {
+      "name": "20",
+      "file": "20.txt"
+    },
+    {
+      "name": "Heat_25",
+      "file": "Heat_25.txt"
+    },
+    {
+      "name": "Wind_max",
+      "file": "Wind_max.txt"
+    }
+  ]
+}

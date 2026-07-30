@@ -1,0 +1,62 @@
+{
+  "brand": "Lennox",
+  "model": "Lennox_AC",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "FAN",
+      "file": "FAN.txt"
+    },
+    {
+      "name": "SLEEP",
+      "file": "SLEEP.txt"
+    },
+    {
+      "name": "TURBO",
+      "file": "TURBO.txt"
+    },
+    {
+      "name": "SELF_CLEAN",
+      "file": "SELF_CLEAN.txt"
+    },
+    {
+      "name": "SWING",
+      "file": "SWING.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "DIRECT",
+      "file": "DIRECT.txt"
+    },
+    {
+      "name": "LED",
+      "file": "LED.txt"
+    },
+    {
+      "name": "TIMER ON",
+      "file": "TIMER_ON.txt"
+    },
+    {
+      "name": "TIMER OFF",
+      "file": "TIMER_OFF.txt"
+    },
+    {
+      "name": "SILENCE FP",
+      "file": "SILENCE_FP.txt"
+    }
+  ]
+}

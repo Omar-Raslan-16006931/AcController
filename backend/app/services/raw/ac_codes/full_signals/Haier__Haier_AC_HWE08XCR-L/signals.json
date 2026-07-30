@@ -1,0 +1,30 @@
+{
+  "brand": "Haier",
+  "model": "Haier_AC_HWE08XCR-L",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "SPEED",
+      "file": "SPEED.txt"
+    },
+    {
+      "name": "TIMER",
+      "file": "TIMER.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    }
+  ]
+}

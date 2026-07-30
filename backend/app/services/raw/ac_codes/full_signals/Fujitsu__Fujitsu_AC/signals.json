@@ -1,0 +1,34 @@
+{
+  "brand": "Fujitsu",
+  "model": "Fujitsu_AC",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "Mode_auto",
+      "file": "Mode_auto.txt"
+    },
+    {
+      "name": "Fan_auto",
+      "file": "Fan_auto.txt"
+    },
+    {
+      "name": "Eco",
+      "file": "Eco.txt"
+    },
+    {
+      "name": "Mode_cool",
+      "file": "Mode_cool.txt"
+    },
+    {
+      "name": "Mode_dry",
+      "file": "Mode_dry.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    }
+  ]
+}

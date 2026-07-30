@@ -1,0 +1,102 @@
+{
+  "brand": "York",
+  "model": "York_full_working",
+  "signals": [
+    {
+      "name": "on",
+      "file": "on.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "17",
+      "file": "17.txt"
+    },
+    {
+      "name": "18",
+      "file": "18.txt"
+    },
+    {
+      "name": "19",
+      "file": "19.txt"
+    },
+    {
+      "name": "20",
+      "file": "20.txt"
+    },
+    {
+      "name": "21",
+      "file": "21.txt"
+    },
+    {
+      "name": "22",
+      "file": "22.txt"
+    },
+    {
+      "name": "23",
+      "file": "23.txt"
+    },
+    {
+      "name": "24",
+      "file": "24.txt"
+    },
+    {
+      "name": "25",
+      "file": "25.txt"
+    },
+    {
+      "name": "26",
+      "file": "26.txt"
+    },
+    {
+      "name": "27",
+      "file": "27.txt"
+    },
+    {
+      "name": "28",
+      "file": "28.txt"
+    },
+    {
+      "name": "29",
+      "file": "29.txt"
+    },
+    {
+      "name": "30",
+      "file": "30.txt"
+    },
+    {
+      "name": "mode",
+      "file": "mode.txt"
+    },
+    {
+      "name": "fan-speed",
+      "file": "fan-speed.txt"
+    },
+    {
+      "name": "swing-up",
+      "file": "swing-up.txt"
+    },
+    {
+      "name": "swing-side",
+      "file": "swing-side.txt"
+    },
+    {
+      "name": "eco",
+      "file": "eco.txt"
+    },
+    {
+      "name": "timer-24h",
+      "file": "timer-24h.txt"
+    },
+    {
+      "name": "timer-off",
+      "file": "timer-off.txt"
+    },
+    {
+      "name": "air-direction",
+      "file": "air-direction.txt"
+    }
+  ]
+}

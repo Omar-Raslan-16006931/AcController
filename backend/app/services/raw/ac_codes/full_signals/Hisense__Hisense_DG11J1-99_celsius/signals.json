@@ -1,0 +1,146 @@
+{
+  "brand": "Hisense",
+  "model": "Hisense_DG11J1-99_celsius",
+  "signals": [
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Mode Cold",
+      "file": "Mode_Cold.txt"
+    },
+    {
+      "name": "Mode Dry",
+      "file": "Mode_Dry.txt"
+    },
+    {
+      "name": "Mode Fan",
+      "file": "Mode_Fan.txt"
+    },
+    {
+      "name": "FAN Auto",
+      "file": "FAN_Auto.txt"
+    },
+    {
+      "name": "FAN Max",
+      "file": "FAN_Max.txt"
+    },
+    {
+      "name": "FAN Med",
+      "file": "FAN_Med.txt"
+    },
+    {
+      "name": "FAN Low",
+      "file": "FAN_Low.txt"
+    },
+    {
+      "name": "Blade",
+      "file": "Blade.txt"
+    },
+    {
+      "name": "Celsius",
+      "file": "Celsius.txt"
+    },
+    {
+      "name": "16c",
+      "file": "16c.txt"
+    },
+    {
+      "name": "17c",
+      "file": "17c.txt"
+    },
+    {
+      "name": "18c",
+      "file": "18c.txt"
+    },
+    {
+      "name": "19c",
+      "file": "19c.txt"
+    },
+    {
+      "name": "20c",
+      "file": "20c.txt"
+    },
+    {
+      "name": "21c",
+      "file": "21c.txt"
+    },
+    {
+      "name": "22c",
+      "file": "22c.txt"
+    },
+    {
+      "name": "23c",
+      "file": "23c.txt"
+    },
+    {
+      "name": "24c",
+      "file": "24c.txt"
+    },
+    {
+      "name": "25c",
+      "file": "25c.txt"
+    },
+    {
+      "name": "26c",
+      "file": "26c.txt"
+    },
+    {
+      "name": "27c",
+      "file": "27c.txt"
+    },
+    {
+      "name": "28c",
+      "file": "28c.txt"
+    },
+    {
+      "name": "29c",
+      "file": "29c.txt"
+    },
+    {
+      "name": "30c",
+      "file": "30c.txt"
+    },
+    {
+      "name": "Sleep off",
+      "file": "Sleep_off.txt"
+    },
+    {
+      "name": "Sleep 1h",
+      "file": "Sleep_1h.txt"
+    },
+    {
+      "name": "Sleep 2h",
+      "file": "Sleep_2h.txt"
+    },
+    {
+      "name": "Sleep 3h",
+      "file": "Sleep_3h.txt"
+    },
+    {
+      "name": "Sleep 4h",
+      "file": "Sleep_4h.txt"
+    },
+    {
+      "name": "Sleep 5h",
+      "file": "Sleep_5h.txt"
+    },
+    {
+      "name": "Sleep 10h",
+      "file": "Sleep_10h.txt"
+    },
+    {
+      "name": "Sleep 20h",
+      "file": "Sleep_20h.txt"
+    },
+    {
+      "name": "Light",
+      "file": "Light.txt"
+    },
+    {
+      "name": "Standby",
+      "file": "Standby.txt"
+    }
+  ]
+}

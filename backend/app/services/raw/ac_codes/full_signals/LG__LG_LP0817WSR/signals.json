@@ -1,0 +1,38 @@
+{
+  "brand": "LG",
+  "model": "LG_LP0817WSR",
+  "signals": [
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Up",
+      "file": "Up.txt"
+    },
+    {
+      "name": "Down",
+      "file": "Down.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "Swing",
+      "file": "Swing.txt"
+    },
+    {
+      "name": "Sleep",
+      "file": "Sleep.txt"
+    },
+    {
+      "name": "Timer",
+      "file": "Timer.txt"
+    }
+  ]
+}

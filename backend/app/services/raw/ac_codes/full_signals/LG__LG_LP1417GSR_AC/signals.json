@@ -1,0 +1,42 @@
+{
+  "brand": "LG",
+  "model": "LG_LP1417GSR_AC",
+  "signals": [
+    {
+      "name": "Timer",
+      "file": "Timer.txt"
+    },
+    {
+      "name": "SWING",
+      "file": "SWING.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "Sleep",
+      "file": "Sleep.txt"
+    },
+    {
+      "name": "F_or_C",
+      "file": "F_or_C.txt"
+    }
+  ]
+}

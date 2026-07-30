@@ -73,3 +73,29 @@ class DetectReplayResponse(BaseModel):
     brand: str
     model: str
     message: Optional[str] = None
+
+
+class DetectSignal(BaseModel):
+    """One button captured for the confirmed AC's model -- see
+    app/services/ac_remote_control.py. `category` is a best-effort guess
+    (power/temperature/mode/fan/swing/light/sleep/boost/other) for
+    grouping in the UI, not a guarantee."""
+
+    name: str
+    label: str
+    category: str
+
+
+class DetectSignalsResponse(BaseModel):
+    detected: DetectedAc
+    signals: list[DetectSignal]
+
+
+class DetectSendSignalRequest(BaseModel):
+    name: str = Field(min_length=1)
+
+
+class DetectSendSignalResponse(BaseModel):
+    success: bool
+    name: str
+    message: Optional[str] = None

@@ -1,0 +1,58 @@
+{
+  "brand": "Airmet",
+  "model": "Airmet_ac",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "POWER24",
+      "file": "POWER24.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Swing",
+      "file": "Swing.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "Sleep",
+      "file": "Sleep.txt"
+    },
+    {
+      "name": "T_on",
+      "file": "T_on.txt"
+    },
+    {
+      "name": "T_off",
+      "file": "T_off.txt"
+    },
+    {
+      "name": "Clock",
+      "file": "Clock.txt"
+    },
+    {
+      "name": "Cancel",
+      "file": "Cancel.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    }
+  ]
+}

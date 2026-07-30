@@ -1,0 +1,22 @@
+{
+  "brand": "Daikin",
+  "model": "Daikin_FTX50GV1B",
+  "signals": [
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Temp_up",
+      "file": "Temp_up.txt"
+    },
+    {
+      "name": "Temp_down",
+      "file": "Temp_down.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    }
+  ]
+}

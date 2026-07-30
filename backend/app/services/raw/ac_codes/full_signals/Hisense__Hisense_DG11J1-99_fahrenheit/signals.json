@@ -1,0 +1,190 @@
+{
+  "brand": "Hisense",
+  "model": "Hisense_DG11J1-99_fahrenheit",
+  "signals": [
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Mode Cold",
+      "file": "Mode_Cold.txt"
+    },
+    {
+      "name": "Mode Dry",
+      "file": "Mode_Dry.txt"
+    },
+    {
+      "name": "Mode Fan",
+      "file": "Mode_Fan.txt"
+    },
+    {
+      "name": "FAN Auto",
+      "file": "FAN_Auto.txt"
+    },
+    {
+      "name": "FAN Max",
+      "file": "FAN_Max.txt"
+    },
+    {
+      "name": "FAN Med",
+      "file": "FAN_Med.txt"
+    },
+    {
+      "name": "FAN Low",
+      "file": "FAN_Low.txt"
+    },
+    {
+      "name": "Blade",
+      "file": "Blade.txt"
+    },
+    {
+      "name": "Fahrenheit",
+      "file": "Fahrenheit.txt"
+    },
+    {
+      "name": "61f",
+      "file": "61f.txt"
+    },
+    {
+      "name": "62f",
+      "file": "62f.txt"
+    },
+    {
+      "name": "63f",
+      "file": "63f.txt"
+    },
+    {
+      "name": "64f",
+      "file": "64f.txt"
+    },
+    {
+      "name": "65f",
+      "file": "65f.txt"
+    },
+    {
+      "name": "66f",
+      "file": "66f.txt"
+    },
+    {
+      "name": "67f",
+      "file": "67f.txt"
+    },
+    {
+      "name": "68f",
+      "file": "68f.txt"
+    },
+    {
+      "name": "69f",
+      "file": "69f.txt"
+    },
+    {
+      "name": "70f",
+      "file": "70f.txt"
+    },
+    {
+      "name": "71f",
+      "file": "71f.txt"
+    },
+    {
+      "name": "72f",
+      "file": "72f.txt"
+    },
+    {
+      "name": "73f",
+      "file": "73f.txt"
+    },
+    {
+      "name": "74f",
+      "file": "74f.txt"
+    },
+    {
+      "name": "75f",
+      "file": "75f.txt"
+    },
+    {
+      "name": "76f",
+      "file": "76f.txt"
+    },
+    {
+      "name": "77f",
+      "file": "77f.txt"
+    },
+    {
+      "name": "78f",
+      "file": "78f.txt"
+    },
+    {
+      "name": "79f",
+      "file": "79f.txt"
+    },
+    {
+      "name": "80f",
+      "file": "80f.txt"
+    },
+    {
+      "name": "81f",
+      "file": "81f.txt"
+    },
+    {
+      "name": "82f",
+      "file": "82f.txt"
+    },
+    {
+      "name": "83f",
+      "file": "83f.txt"
+    },
+    {
+      "name": "84f",
+      "file": "84f.txt"
+    },
+    {
+      "name": "85f",
+      "file": "85f.txt"
+    },
+    {
+      "name": "86f",
+      "file": "86f.txt"
+    },
+    {
+      "name": "Sleep off",
+      "file": "Sleep_off.txt"
+    },
+    {
+      "name": "Sleep 1h",
+      "file": "Sleep_1h.txt"
+    },
+    {
+      "name": "Sleep 2h",
+      "file": "Sleep_2h.txt"
+    },
+    {
+      "name": "Sleep 3h",
+      "file": "Sleep_3h.txt"
+    },
+    {
+      "name": "Sleep 4h",
+      "file": "Sleep_4h.txt"
+    },
+    {
+      "name": "Sleep 5h",
+      "file": "Sleep_5h.txt"
+    },
+    {
+      "name": "Sleep 10h",
+      "file": "Sleep_10h.txt"
+    },
+    {
+      "name": "Sleep 20h",
+      "file": "Sleep_20h.txt"
+    },
+    {
+      "name": "Light",
+      "file": "Light.txt"
+    },
+    {
+      "name": "Standby",
+      "file": "Standby.txt"
+    }
+  ]
+}

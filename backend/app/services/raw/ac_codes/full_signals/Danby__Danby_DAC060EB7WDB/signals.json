@@ -1,0 +1,22 @@
+{
+  "brand": "Danby",
+  "model": "Danby DAC060EB7WDB",
+  "signals": [
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Dh",
+      "file": "Dh.txt"
+    },
+    {
+      "name": "Cool_hi",
+      "file": "Cool_hi.txt"
+    },
+    {
+      "name": "Cool_lo",
+      "file": "Cool_lo.txt"
+    }
+  ]
+}

@@ -16,17 +16,25 @@ AC; the moment it beeps/responds, you tap **"I heard it! Confirm"** in the
 Detect AC page (Settings → Detect AC, or `/detect`). Whatever code was
 most recently sent gets recorded as the match.
 
-**This identifies a brand/protocol and gives you a working replay of that
-one captured signal — it is not full temperature/mode/fan control.** The
-payload was captured from someone else's remote and encodes whatever
-state *that* remote happened to be in when captured, not your desired
-temperature. Getting real state control for a newly detected AC (the way
-`carrier_ac.py` has for the Carrier unit) would need the same
-reverse-engineering process: capture that AC's actual remote with
-`ir-ctl --receive` across several button presses, and decode the bit
-layout from the differences — a separate, much bigger effort per AC. Think
-of this feature as "which universal remote code do I need" more than "new
-smart AC support."
+**Confirming a match unlocks real control, not just the one probe signal.**
+Once you confirm, the Detect AC page shows every button captured for that
+model — not just the "on" probe used during detection — grouped into
+Power / Temperature / Mode / Fan / Swing / Light / Sleep / Eco-turbo /
+Other. `app/services/ac_remote_control.py` reads
+`raw/ac_codes/full_signals/<Brand>__<Model>/signals.json` (built by
+`backend/scripts/regenerate_full_ac_signals.py`, same source as the probe
+codes) and exposes each one over `POST /api/detect/remote/send`.
+
+This is **not** the same kind of control the Carrier integration has,
+though: there's no shared `AcState` byte layout here, no "set temperature
+to 23" that regenerates one packet — each button is an independent
+captured waveform, replayed exactly as the original remote sent it, same
+as if you pressed that specific button. If a model's file only captured
+`Cool_16` through `Cool_24`, that's the exact range you get; there's no
+way to synthesize `Cool_25`. Category/label guessing
+(`ac_remote_control.categorize()`) is heuristic and names vary in quality
+across community captures (typos like `0n` for `On` do happen) — buttons
+are still shown even when mis-categorized, just bucketed under "Other."
 
 ## Where the codes come from
 
@@ -63,6 +71,10 @@ as every other endpoint except the WiFi setup ones):
 - `POST /reset` — clears run state (not a previously confirmed match).
 - `POST /replay/{index}` — manually re-sends one specific code (refuses to
   run while an auto pass is active).
+- `GET /remote/signals` — every captured button for whatever AC was last
+  confirmed (404 until something's been confirmed).
+- `POST /remote/send` `{name}` — sends one specific button by its raw
+  signal name (as returned by `/remote/signals`).
 
 Confirmed matches persist to `DETECTED_AC_FILE_PATH` (default
 `./detected_ac.json`) so they survive a restart.
