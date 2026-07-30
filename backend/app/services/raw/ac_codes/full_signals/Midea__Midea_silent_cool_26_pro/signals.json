@@ -1,0 +1,50 @@
+{
+  "brand": "Midea",
+  "model": "Midea_silent_cool_26_pro",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "Fan_Speed",
+      "file": "Fan_Speed.txt"
+    },
+    {
+      "name": "Sleep",
+      "file": "Sleep.txt"
+    },
+    {
+      "name": "SWING",
+      "file": "SWING.txt"
+    },
+    {
+      "name": "Follow_Mode",
+      "file": "Follow_Mode.txt"
+    },
+    {
+      "name": "Led",
+      "file": "Led.txt"
+    },
+    {
+      "name": "Timer_On",
+      "file": "Timer_On.txt"
+    },
+    {
+      "name": "Timer_Off",
+      "file": "Timer_Off.txt"
+    }
+  ]
+}

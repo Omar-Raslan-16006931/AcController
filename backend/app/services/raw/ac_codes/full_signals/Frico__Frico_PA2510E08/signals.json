@@ -1,0 +1,18 @@
+{
+  "brand": "Frico",
+  "model": "Frico_PA2510E08",
+  "signals": [
+    {
+      "name": "Fan_speed",
+      "file": "Fan_speed.txt"
+    },
+    {
+      "name": "Heat",
+      "file": "Heat.txt"
+    },
+    {
+      "name": "On_off",
+      "file": "On_off.txt"
+    }
+  ]
+}

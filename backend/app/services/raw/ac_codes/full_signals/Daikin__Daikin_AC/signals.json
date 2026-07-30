@@ -1,0 +1,26 @@
+{
+  "brand": "Daikin",
+  "model": "Daikin_AC",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "Swing_off",
+      "file": "Swing_off.txt"
+    },
+    {
+      "name": "Swing_on",
+      "file": "Swing_on.txt"
+    },
+    {
+      "name": "16_celcius",
+      "file": "16_celcius.txt"
+    },
+    {
+      "name": "Fan_3",
+      "file": "Fan_3.txt"
+    }
+  ]
+}

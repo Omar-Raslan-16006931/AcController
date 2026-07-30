@@ -56,6 +56,40 @@ export function useDetectStatus() {
   })
 }
 
+export interface DetectSignal {
+  name: string
+  label: string
+  category: string
+}
+
+export interface DetectSignalsResponse {
+  detected: DetectedAc
+  signals: DetectSignal[]
+}
+
+// Enabled only once something's been confirmed -- otherwise this 404s by
+// design (see app/routers/detect.py), no point polling it before then.
+export function useDetectSignals(enabled: boolean) {
+  return useQuery({
+    queryKey: queryKeys.detectSignals,
+    queryFn: () => api.get<DetectSignalsResponse>("/api/detect/remote/signals"),
+    enabled,
+    staleTime: Infinity, // a given confirmed model's button set doesn't change mid-session
+  })
+}
+
+export function useSendSignal() {
+  return useMutation({
+    mutationFn: (name: string) =>
+      api.post<{ success: boolean; name: string; message?: string }>("/api/detect/remote/send", { name }),
+    onError: (error) => {
+      toast.error("Send failed", {
+        description: error instanceof Error ? error.message : String(error),
+      })
+    },
+  })
+}
+
 export function useDetectCodes() {
   return useQuery({
     queryKey: queryKeys.detectCodes,
@@ -110,6 +144,7 @@ export function useConfirmDetect() {
     mutationFn: () => api.post<DetectConfirmResponse>("/api/detect/confirm"),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.detectStatus })
+      queryClient.invalidateQueries({ queryKey: queryKeys.detectSignals })
       if (data.detected) {
         toast.success(`Matched: ${data.detected.brand} ${data.detected.model}`)
       }

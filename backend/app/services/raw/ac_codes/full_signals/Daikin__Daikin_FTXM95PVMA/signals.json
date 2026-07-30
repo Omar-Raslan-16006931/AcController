@@ -1,0 +1,62 @@
+{
+  "brand": "Daikin",
+  "model": "Daikin_FTXM95PVMA",
+  "signals": [
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "Powerful",
+      "file": "Powerful.txt"
+    },
+    {
+      "name": "Temp+",
+      "file": "Temp.txt"
+    },
+    {
+      "name": "Temp-",
+      "file": "Temp-.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Econo",
+      "file": "Econo.txt"
+    },
+    {
+      "name": "Quiet",
+      "file": "Quiet.txt"
+    },
+    {
+      "name": "ShortSwing",
+      "file": "ShortSwing.txt"
+    },
+    {
+      "name": "WideSwing",
+      "file": "WideSwing.txt"
+    },
+    {
+      "name": "Comfort",
+      "file": "Comfort.txt"
+    },
+    {
+      "name": "Sensor",
+      "file": "Sensor.txt"
+    },
+    {
+      "name": "Cancel",
+      "file": "Cancel.txt"
+    },
+    {
+      "name": "Off?",
+      "file": "Off.txt"
+    }
+  ]
+}

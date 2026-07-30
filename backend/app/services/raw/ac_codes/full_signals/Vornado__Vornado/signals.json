@@ -1,0 +1,18 @@
+{
+  "brand": "Vornado",
+  "model": "Vornado",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "Speed",
+      "file": "Speed.txt"
+    },
+    {
+      "name": "Timer",
+      "file": "Timer.txt"
+    }
+  ]
+}

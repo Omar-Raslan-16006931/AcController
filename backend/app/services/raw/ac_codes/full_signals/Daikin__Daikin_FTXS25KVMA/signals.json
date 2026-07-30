@@ -1,0 +1,58 @@
+{
+  "brand": "Daikin",
+  "model": "Daikin_FTXS25KVMA",
+  "signals": [
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "Powerful",
+      "file": "Powerful.txt"
+    },
+    {
+      "name": "Temp+",
+      "file": "Temp.txt"
+    },
+    {
+      "name": "Temp-",
+      "file": "Temp-.txt"
+    },
+    {
+      "name": "Cancel",
+      "file": "Cancel.txt"
+    },
+    {
+      "name": "SwingWide",
+      "file": "SwingWide.txt"
+    },
+    {
+      "name": "SwingNarrow",
+      "file": "SwingNarrow.txt"
+    },
+    {
+      "name": "Quiet",
+      "file": "Quiet.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Sensor",
+      "file": "Sensor.txt"
+    },
+    {
+      "name": "Comfort",
+      "file": "Comfort.txt"
+    },
+    {
+      "name": "Off?",
+      "file": "Off.txt"
+    }
+  ]
+}

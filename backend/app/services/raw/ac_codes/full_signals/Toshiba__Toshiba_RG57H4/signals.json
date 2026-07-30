@@ -1,0 +1,58 @@
+{
+  "brand": "Toshiba",
+  "model": "Toshiba_RG57H4",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "Fan Speed",
+      "file": "Fan_Speed.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "Short Cut",
+      "file": "Short_Cut.txt"
+    },
+    {
+      "name": "Timer On",
+      "file": "Timer_On.txt"
+    },
+    {
+      "name": "Timer Off",
+      "file": "Timer_Off.txt"
+    },
+    {
+      "name": "Sleep",
+      "file": "Sleep.txt"
+    },
+    {
+      "name": "SWING",
+      "file": "SWING.txt"
+    },
+    {
+      "name": "MyTemp",
+      "file": "MyTemp.txt"
+    },
+    {
+      "name": "LED",
+      "file": "LED.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    }
+  ]
+}

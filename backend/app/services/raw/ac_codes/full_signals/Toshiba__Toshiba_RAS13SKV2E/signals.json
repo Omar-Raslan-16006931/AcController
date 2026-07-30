@@ -1,0 +1,26 @@
+{
+  "brand": "Toshiba",
+  "model": "Toshiba_RAS13SKV2E",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "Swing",
+      "file": "Swing.txt"
+    }
+  ]
+}

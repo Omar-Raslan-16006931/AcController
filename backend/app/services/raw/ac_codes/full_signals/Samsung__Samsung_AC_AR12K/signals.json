@@ -1,0 +1,54 @@
+{
+  "brand": "Samsung",
+  "model": "Samsung_AC_AR12K",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "Round points",
+      "file": "Round_points.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "Quiet",
+      "file": "Quiet.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "Fan_max",
+      "file": "Fan_max.txt"
+    },
+    {
+      "name": "Fan_min",
+      "file": "Fan_min.txt"
+    },
+    {
+      "name": "Verti_wind",
+      "file": "Verti_wind.txt"
+    },
+    {
+      "name": "Horiz_wind",
+      "file": "Horiz_wind.txt"
+    },
+    {
+      "name": "Auto_clean",
+      "file": "Auto_clean.txt"
+    },
+    {
+      "name": "Set_cancel",
+      "file": "Set_cancel.txt"
+    }
+  ]
+}

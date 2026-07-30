@@ -6,10 +6,14 @@ from app.models.detect import (
     DetectCodesResponse,
     DetectConfirmResponse,
     DetectReplayResponse,
+    DetectSendSignalRequest,
+    DetectSendSignalResponse,
+    DetectSignal,
+    DetectSignalsResponse,
     DetectStartRequest,
     DetectStatus,
 )
-from app.services import ac_detector
+from app.services import ac_detector, ac_remote_control
 
 router = APIRouter(prefix="/api/detect", tags=["detect"])
 
@@ -74,3 +78,32 @@ def replay(index: int, user: CurrentUser = Depends(get_current_user)) -> DetectR
     return DetectReplayResponse(
         success=True, brand=code.brand, model=code.model, message=f"Replayed {code.brand} {code.model}"
     )
+
+
+@router.get("/remote/signals", response_model=DetectSignalsResponse)
+def remote_signals(user: CurrentUser = Depends(get_current_user)) -> DetectSignalsResponse:
+    """Every captured button available for whatever AC was last confirmed
+    -- not just the single probe code used during detection. See
+    app/services/ac_remote_control.py."""
+    try:
+        detected, signals = ac_remote_control.get_signals_for_detected()
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return DetectSignalsResponse(detected=detected, signals=[DetectSignal(**s) for s in signals])
+
+
+@router.post("/remote/send", response_model=DetectSendSignalResponse)
+def remote_send(
+    body: DetectSendSignalRequest, user: CurrentUser = Depends(get_current_user)
+) -> DetectSendSignalResponse:
+    try:
+        result = ac_remote_control.send_signal(body.name)
+    except (LookupError, FileNotFoundError, ValueError) as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    if not result.success:
+        raise HTTPException(status_code=502, detail=result.error or "IR transmit failed")
+
+    return DetectSendSignalResponse(success=True, name=body.name, message=f"Sent {body.name}")

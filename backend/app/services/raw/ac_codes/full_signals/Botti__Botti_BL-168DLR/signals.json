@@ -1,0 +1,30 @@
+{
+  "brand": "Botti",
+  "model": "Botti_BL-168DLR",
+  "signals": [
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Humidity",
+      "file": "Humidity.txt"
+    },
+    {
+      "name": "Speed",
+      "file": "Speed.txt"
+    },
+    {
+      "name": "Swing",
+      "file": "Swing.txt"
+    },
+    {
+      "name": "Cooler",
+      "file": "Cooler.txt"
+    },
+    {
+      "name": "Timer",
+      "file": "Timer.txt"
+    }
+  ]
+}

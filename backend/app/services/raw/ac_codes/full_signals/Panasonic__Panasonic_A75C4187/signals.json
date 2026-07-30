@@ -1,0 +1,42 @@
+{
+  "brand": "Panasonic",
+  "model": "Panasonic_A75C4187",
+  "signals": [
+    {
+      "name": "PWR_SW",
+      "file": "PWR_SW.txt"
+    },
+    {
+      "name": "Tmp_UP",
+      "file": "Tmp_UP.txt"
+    },
+    {
+      "name": "Tmp_DN",
+      "file": "Tmp_DN.txt"
+    },
+    {
+      "name": "Powerful",
+      "file": "Powerful.txt"
+    },
+    {
+      "name": "FanSpeed",
+      "file": "FanSpeed.txt"
+    },
+    {
+      "name": "AirSwing",
+      "file": "AirSwing.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Timer",
+      "file": "Timer.txt"
+    },
+    {
+      "name": "Set_Cncl",
+      "file": "Set_Cncl.txt"
+    }
+  ]
+}

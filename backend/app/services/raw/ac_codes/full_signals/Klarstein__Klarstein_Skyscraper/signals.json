@@ -1,0 +1,18 @@
+{
+  "brand": "Klarstein",
+  "model": "Klarstein_Skyscraper",
+  "signals": [
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Swing",
+      "file": "Swing.txt"
+    },
+    {
+      "name": "Cool_hum",
+      "file": "Cool_hum.txt"
+    }
+  ]
+}

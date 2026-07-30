@@ -1,0 +1,26 @@
+{
+  "brand": "Airwell",
+  "model": "Airwell",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "FAN",
+      "file": "FAN.txt"
+    }
+  ]
+}

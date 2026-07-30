@@ -1,0 +1,42 @@
+{
+  "brand": "Hisense",
+  "model": "Hisense_window_AC",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Dimmer",
+      "file": "Dimmer.txt"
+    },
+    {
+      "name": "Timer",
+      "file": "Timer.txt"
+    },
+    {
+      "name": "Sleep",
+      "file": "Sleep.txt"
+    },
+    {
+      "name": "Filter",
+      "file": "Filter.txt"
+    },
+    {
+      "name": "Up",
+      "file": "Up.txt"
+    },
+    {
+      "name": "Down",
+      "file": "Down.txt"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "brand": "Midea",
+  "model": "Midea_AC_MAW05R1WBL",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "C_Sense",
+      "file": "C_Sense.txt"
+    },
+    {
+      "name": "Sleep",
+      "file": "Sleep.txt"
+    },
+    {
+      "name": "Timer Up",
+      "file": "Timer_Up.txt"
+    },
+    {
+      "name": "Degree F/C",
+      "file": "Degree_F_C.txt"
+    },
+    {
+      "name": "Timer Off",
+      "file": "Timer_Off.txt"
+    },
+    {
+      "name": "LED Display",
+      "file": "LED_Display.txt"
+    },
+    {
+      "name": "Energy_Saver",
+      "file": "Energy_Saver.txt"
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "brand": "Daikin",
+  "model": "Daikin_ARC480A53",
+  "signals": [
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "AUTO",
+      "file": "AUTO.txt"
+    },
+    {
+      "name": "COOL",
+      "file": "COOL.txt"
+    },
+    {
+      "name": "DRY",
+      "file": "DRY.txt"
+    },
+    {
+      "name": "HEAT",
+      "file": "HEAT.txt"
+    },
+    {
+      "name": "FAN_ONLY",
+      "file": "FAN_ONLY.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "FAN",
+      "file": "FAN.txt"
+    },
+    {
+      "name": "ECONOMY",
+      "file": "ECONOMY.txt"
+    },
+    {
+      "name": "COMFORT",
+      "file": "COMFORT.txt"
+    },
+    {
+      "name": "POWERFUL",
+      "file": "POWERFUL.txt"
+    },
+    {
+      "name": "SWING_VERTICAL",
+      "file": "SWING_VERTICAL.txt"
+    },
+    {
+      "name": "SWING_HORIZONTAL",
+      "file": "SWING_HORIZONTAL.txt"
+    },
+    {
+      "name": "TIMER_ON",
+      "file": "TIMER_ON.txt"
+    },
+    {
+      "name": "TIMER_OFF",
+      "file": "TIMER_OFF.txt"
+    },
+    {
+      "name": "TIMER_CANCEL",
+      "file": "TIMER_CANCEL.txt"
+    }
+  ]
+}

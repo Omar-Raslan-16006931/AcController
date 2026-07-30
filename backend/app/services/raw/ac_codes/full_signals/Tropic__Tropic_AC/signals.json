@@ -1,0 +1,30 @@
+{
+  "brand": "Tropic",
+  "model": "Tropic_AC",
+  "signals": [
+    {
+      "name": "On_Off",
+      "file": "On_Off.txt"
+    },
+    {
+      "name": "Aire",
+      "file": "Aire.txt"
+    },
+    {
+      "name": "Frio",
+      "file": "Frio.txt"
+    },
+    {
+      "name": "Calor",
+      "file": "Calor.txt"
+    },
+    {
+      "name": "Tiempo",
+      "file": "Tiempo.txt"
+    },
+    {
+      "name": "Velocidad",
+      "file": "Velocidad.txt"
+    }
+  ]
+}

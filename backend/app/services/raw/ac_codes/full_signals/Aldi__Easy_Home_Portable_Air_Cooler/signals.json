@@ -1,0 +1,34 @@
+{
+  "brand": "Aldi",
+  "model": "Easy_Home_Portable_Air_Cooler",
+  "signals": [
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Speed",
+      "file": "Speed.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Timer",
+      "file": "Timer.txt"
+    },
+    {
+      "name": "Swing",
+      "file": "Swing.txt"
+    },
+    {
+      "name": "Cool",
+      "file": "Cool.txt"
+    },
+    {
+      "name": "Light",
+      "file": "Light.txt"
+    }
+  ]
+}

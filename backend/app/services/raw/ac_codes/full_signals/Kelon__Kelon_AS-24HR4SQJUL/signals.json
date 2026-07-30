@@ -1,0 +1,138 @@
+{
+  "brand": "Kelon",
+  "model": "Kelon_AS-24HR4SQJUL",
+  "signals": [
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Cool_25",
+      "file": "Cool_25.txt"
+    },
+    {
+      "name": "Cool_24",
+      "file": "Cool_24.txt"
+    },
+    {
+      "name": "Cool_23",
+      "file": "Cool_23.txt"
+    },
+    {
+      "name": "Cool_22",
+      "file": "Cool_22.txt"
+    },
+    {
+      "name": "Cool_21",
+      "file": "Cool_21.txt"
+    },
+    {
+      "name": "Cool_20",
+      "file": "Cool_20.txt"
+    },
+    {
+      "name": "Cool_19",
+      "file": "Cool_19.txt"
+    },
+    {
+      "name": "Cool_18",
+      "file": "Cool_18.txt"
+    },
+    {
+      "name": "Dry_0",
+      "file": "Dry_0.txt"
+    },
+    {
+      "name": "Fan_low",
+      "file": "Fan_low.txt"
+    },
+    {
+      "name": "Fan_middle",
+      "file": "Fan_middle.txt"
+    },
+    {
+      "name": "Fan_high",
+      "file": "Fan_high.txt"
+    },
+    {
+      "name": "Heat_21",
+      "file": "Heat_21.txt"
+    },
+    {
+      "name": "Heat_22",
+      "file": "Heat_22.txt"
+    },
+    {
+      "name": "Heat_23",
+      "file": "Heat_23.txt"
+    },
+    {
+      "name": "Heat_24",
+      "file": "Heat_24.txt"
+    },
+    {
+      "name": "Heat_25",
+      "file": "Heat_25.txt"
+    },
+    {
+      "name": "Heat_26",
+      "file": "Heat_26.txt"
+    },
+    {
+      "name": "Heat_27",
+      "file": "Heat_27.txt"
+    },
+    {
+      "name": "Heat_28",
+      "file": "Heat_28.txt"
+    },
+    {
+      "name": "Heat_29",
+      "file": "Heat_29.txt"
+    },
+    {
+      "name": "Heat_30",
+      "file": "Heat_30.txt"
+    },
+    {
+      "name": "Heat_31",
+      "file": "Heat_31.txt"
+    },
+    {
+      "name": "Heat_32",
+      "file": "Heat_32.txt"
+    },
+    {
+      "name": "SUPER",
+      "file": "SUPER.txt"
+    },
+    {
+      "name": "Auto_0",
+      "file": "Auto_0.txt"
+    },
+    {
+      "name": "Auto_m1",
+      "file": "Auto_m1.txt"
+    },
+    {
+      "name": "Auto_m2",
+      "file": "Auto_m2.txt"
+    },
+    {
+      "name": "Auto_m3",
+      "file": "Auto_m3.txt"
+    },
+    {
+      "name": "Auto_1",
+      "file": "Auto_1.txt"
+    },
+    {
+      "name": "Auto_2",
+      "file": "Auto_2.txt"
+    },
+    {
+      "name": "Auto_3",
+      "file": "Auto_3.txt"
+    }
+  ]
+}

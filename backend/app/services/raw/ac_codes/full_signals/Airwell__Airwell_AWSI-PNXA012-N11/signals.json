@@ -1,0 +1,74 @@
+{
+  "brand": "Airwell",
+  "model": "Airwell_AWSI-PNXA012-N11",
+  "signals": [
+    {
+      "name": "ON",
+      "file": "ON.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "FAN AUTO",
+      "file": "FAN_AUTO.txt"
+    },
+    {
+      "name": "FAN LOW",
+      "file": "FAN_LOW.txt"
+    },
+    {
+      "name": "FAN MEDIUM",
+      "file": "FAN_MEDIUM.txt"
+    },
+    {
+      "name": "FAN HIGH",
+      "file": "FAN_HIGH.txt"
+    },
+    {
+      "name": "FAN TURBO",
+      "file": "FAN_TURBO.txt"
+    },
+    {
+      "name": "COOL MODE",
+      "file": "COOL_MODE.txt"
+    },
+    {
+      "name": "HEAT MODE",
+      "file": "HEAT_MODE.txt"
+    },
+    {
+      "name": "FAN MODE",
+      "file": "FAN_MODE.txt"
+    },
+    {
+      "name": "DEHUM. MODE",
+      "file": "DEHUM._MODE.txt"
+    },
+    {
+      "name": "SLEEP MODE",
+      "file": "SLEEP_MODE.txt"
+    },
+    {
+      "name": "20c",
+      "file": "20c.txt"
+    },
+    {
+      "name": "22c",
+      "file": "22c.txt"
+    },
+    {
+      "name": "24c",
+      "file": "24c.txt"
+    },
+    {
+      "name": "26c",
+      "file": "26c.txt"
+    },
+    {
+      "name": "28c",
+      "file": "28c.txt"
+    }
+  ]
+}

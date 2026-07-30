@@ -1,0 +1,10 @@
+{
+  "brand": "Admiral",
+  "model": "Admiral_AC",
+  "signals": [
+    {
+      "name": "Fan_2",
+      "file": "Fan_2.txt"
+    }
+  ]
+}

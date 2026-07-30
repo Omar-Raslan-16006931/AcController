@@ -1,0 +1,70 @@
+{
+  "brand": "York",
+  "model": "York_AC",
+  "signals": [
+    {
+      "name": "Temp-DN",
+      "file": "Temp-DN.txt"
+    },
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Temp-UP",
+      "file": "Temp-UP.txt"
+    },
+    {
+      "name": "FanMode",
+      "file": "FanMode.txt"
+    },
+    {
+      "name": "I Feel",
+      "file": "I_Feel.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "7",
+      "file": "7.txt"
+    },
+    {
+      "name": "8",
+      "file": "8.txt"
+    },
+    {
+      "name": "Timer ON",
+      "file": "Timer_ON.txt"
+    },
+    {
+      "name": "Swing",
+      "file": "Swing.txt"
+    },
+    {
+      "name": "X-Fan",
+      "file": "X-Fan.txt"
+    },
+    {
+      "name": "Temp",
+      "file": "Temp.txt"
+    },
+    {
+      "name": "Timer OFF",
+      "file": "Timer_OFF.txt"
+    },
+    {
+      "name": "Light",
+      "file": "Light.txt"
+    },
+    {
+      "name": "Sleep",
+      "file": "Sleep.txt"
+    },
+    {
+      "name": "Turbo",
+      "file": "Turbo.txt"
+    }
+  ]
+}

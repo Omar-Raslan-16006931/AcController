@@ -1,0 +1,34 @@
+{
+  "brand": "Logik",
+  "model": "Logik_HLF-20R",
+  "signals": [
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Oscillation",
+      "file": "Oscillation.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Refresh",
+      "file": "Refresh.txt"
+    },
+    {
+      "name": "Speed",
+      "file": "Speed.txt"
+    },
+    {
+      "name": "Timer",
+      "file": "Timer.txt"
+    },
+    {
+      "name": "Ionization",
+      "file": "Ionization.txt"
+    }
+  ]
+}

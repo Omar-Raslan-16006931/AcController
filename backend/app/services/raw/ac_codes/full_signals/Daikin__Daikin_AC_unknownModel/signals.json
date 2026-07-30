@@ -1,0 +1,22 @@
+{
+  "brand": "Daikin",
+  "model": "Daikin_AC_unknownModel",
+  "signals": [
+    {
+      "name": "Cool_25_slow",
+      "file": "Cool_25_slow.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Auto_25_slow",
+      "file": "Auto_25_slow.txt"
+    },
+    {
+      "name": "Auto_25_auto",
+      "file": "Auto_25_auto.txt"
+    }
+  ]
+}

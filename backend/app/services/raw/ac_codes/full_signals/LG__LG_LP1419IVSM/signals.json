@@ -1,0 +1,46 @@
+{
+  "brand": "LG",
+  "model": "LG_LP1419IVSM",
+  "signals": [
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "POWER_ON",
+      "file": "POWER_ON.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "SWING",
+      "file": "SWING.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "SPEED",
+      "file": "SPEED.txt"
+    },
+    {
+      "name": "TIMER",
+      "file": "TIMER.txt"
+    },
+    {
+      "name": "SLEEP",
+      "file": "SLEEP.txt"
+    },
+    {
+      "name": "CLEAR",
+      "file": "CLEAR.txt"
+    }
+  ]
+}

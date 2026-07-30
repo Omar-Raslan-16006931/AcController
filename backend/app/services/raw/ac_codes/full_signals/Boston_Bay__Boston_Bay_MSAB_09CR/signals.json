@@ -1,0 +1,82 @@
+{
+  "brand": "Boston_Bay",
+  "model": "Boston_Bay_MSAB_09CR",
+  "signals": [
+    {
+      "name": "ON",
+      "file": "ON.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "TEMP 20",
+      "file": "TEMP_20.txt"
+    },
+    {
+      "name": "TEMP 21",
+      "file": "TEMP_21.txt"
+    },
+    {
+      "name": "TEMP 22",
+      "file": "TEMP_22.txt"
+    },
+    {
+      "name": "TEMP 23",
+      "file": "TEMP_23.txt"
+    },
+    {
+      "name": "TEMP 24",
+      "file": "TEMP_24.txt"
+    },
+    {
+      "name": "FAN MODE",
+      "file": "FAN_MODE.txt"
+    },
+    {
+      "name": "AUTO MODE",
+      "file": "AUTO_MODE.txt"
+    },
+    {
+      "name": "COOL MODE",
+      "file": "COOL_MODE.txt"
+    },
+    {
+      "name": "FAN LOW SPEED",
+      "file": "FAN_LOW_SPEED.txt"
+    },
+    {
+      "name": "FAN MEDIUM SPEED",
+      "file": "FAN_MEDIUM_SPEED.txt"
+    },
+    {
+      "name": "FAN HIGH SPEED",
+      "file": "FAN_HIGH_SPEED.txt"
+    },
+    {
+      "name": "SLEEP MODE",
+      "file": "SLEEP_MODE.txt"
+    },
+    {
+      "name": "SILENT FAN",
+      "file": "SILENT_FAN.txt"
+    },
+    {
+      "name": "TURBO",
+      "file": "TURBO.txt"
+    },
+    {
+      "name": "LED",
+      "file": "LED.txt"
+    },
+    {
+      "name": "UP_DOWN VENT",
+      "file": "UP_DOWN_VENT.txt"
+    },
+    {
+      "name": "RIGHT_LEFT VENT",
+      "file": "RIGHT_LEFT_VENT.txt"
+    }
+  ]
+}

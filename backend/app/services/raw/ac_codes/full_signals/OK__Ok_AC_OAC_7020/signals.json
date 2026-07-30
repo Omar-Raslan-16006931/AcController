@@ -1,0 +1,22 @@
+{
+  "brand": "OK",
+  "model": "Ok_AC_OAC_7020",
+  "signals": [
+    {
+      "name": "ON",
+      "file": "ON.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "TEMP -",
+      "file": "TEMP_-.txt"
+    },
+    {
+      "name": "TEMP +",
+      "file": "TEMP.txt"
+    }
+  ]
+}

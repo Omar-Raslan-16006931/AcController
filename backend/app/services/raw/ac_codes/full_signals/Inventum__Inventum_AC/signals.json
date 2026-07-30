@@ -1,0 +1,42 @@
+{
+  "brand": "Inventum",
+  "model": "Inventum_AC",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "Setting",
+      "file": "Setting.txt"
+    },
+    {
+      "name": "Night",
+      "file": "Night.txt"
+    },
+    {
+      "name": "Timer_ON",
+      "file": "Timer_ON.txt"
+    },
+    {
+      "name": "Timer_OFF",
+      "file": "Timer_OFF.txt"
+    },
+    {
+      "name": "Light",
+      "file": "Light.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    }
+  ]
+}

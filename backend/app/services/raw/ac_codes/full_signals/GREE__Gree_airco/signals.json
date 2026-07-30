@@ -1,0 +1,34 @@
+{
+  "brand": "GREE",
+  "model": "Gree_airco",
+  "signals": [
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Power_on",
+      "file": "Power_on.txt"
+    },
+    {
+      "name": "Warm",
+      "file": "Warm.txt"
+    },
+    {
+      "name": "Deumid",
+      "file": "Deumid.txt"
+    },
+    {
+      "name": "Vent",
+      "file": "Vent.txt"
+    },
+    {
+      "name": "Cool",
+      "file": "Cool.txt"
+    },
+    {
+      "name": "Swing",
+      "file": "Swing.txt"
+    }
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "brand": "Legion",
+  "model": "Legion_LE-F30RH-IN",
+  "signals": [
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Cool_16",
+      "file": "Cool_16.txt"
+    },
+    {
+      "name": "Cool_17",
+      "file": "Cool_17.txt"
+    },
+    {
+      "name": "Cool_18",
+      "file": "Cool_18.txt"
+    },
+    {
+      "name": "Cool_19",
+      "file": "Cool_19.txt"
+    },
+    {
+      "name": "Cool_20",
+      "file": "Cool_20.txt"
+    },
+    {
+      "name": "Cool_21",
+      "file": "Cool_21.txt"
+    },
+    {
+      "name": "Cool_22",
+      "file": "Cool_22.txt"
+    },
+    {
+      "name": "Cool_23",
+      "file": "Cool_23.txt"
+    },
+    {
+      "name": "Cool_24",
+      "file": "Cool_24.txt"
+    },
+    {
+      "name": "Cool_25",
+      "file": "Cool_25.txt"
+    },
+    {
+      "name": "Cool_26",
+      "file": "Cool_26.txt"
+    },
+    {
+      "name": "Dry",
+      "file": "Dry.txt"
+    },
+    {
+      "name": "Heat_21",
+      "file": "Heat_21.txt"
+    },
+    {
+      "name": "Heat_22",
+      "file": "Heat_22.txt"
+    },
+    {
+      "name": "Heat_23",
+      "file": "Heat_23.txt"
+    },
+    {
+      "name": "Heat_24",
+      "file": "Heat_24.txt"
+    },
+    {
+      "name": "Heat_25",
+      "file": "Heat_25.txt"
+    },
+    {
+      "name": "Heat_26",
+      "file": "Heat_26.txt"
+    },
+    {
+      "name": "Heat_27",
+      "file": "Heat_27.txt"
+    },
+    {
+      "name": "Heat_28",
+      "file": "Heat_28.txt"
+    },
+    {
+      "name": "Heat_29",
+      "file": "Heat_29.txt"
+    },
+    {
+      "name": "Heat_30",
+      "file": "Heat_30.txt"
+    },
+    {
+      "name": "Heat_31",
+      "file": "Heat_31.txt"
+    },
+    {
+      "name": "Heat_32",
+      "file": "Heat_32.txt"
+    },
+    {
+      "name": "Fan_auto",
+      "file": "Fan_auto.txt"
+    },
+    {
+      "name": "Fan_high",
+      "file": "Fan_high.txt"
+    },
+    {
+      "name": "Fan_mid",
+      "file": "Fan_mid.txt"
+    },
+    {
+      "name": "Fan_low",
+      "file": "Fan_low.txt"
+    },
+    {
+      "name": "Auto_16",
+      "file": "Auto_16.txt"
+    },
+    {
+      "name": "Auto_17",
+      "file": "Auto_17.txt"
+    },
+    {
+      "name": "Auto_18",
+      "file": "Auto_18.txt"
+    },
+    {
+      "name": "Auto_19",
+      "file": "Auto_19.txt"
+    },
+    {
+      "name": "Auto_20",
+      "file": "Auto_20.txt"
+    },
+    {
+      "name": "Auto_21",
+      "file": "Auto_21.txt"
+    },
+    {
+      "name": "Auto_22",
+      "file": "Auto_22.txt"
+    },
+    {
+      "name": "Auto_23",
+      "file": "Auto_23.txt"
+    },
+    {
+      "name": "Auto_24",
+      "file": "Auto_24.txt"
+    },
+    {
+      "name": "Auto_25",
+      "file": "Auto_25.txt"
+    },
+    {
+      "name": "Auto_26",
+      "file": "Auto_26.txt"
+    },
+    {
+      "name": "Auto_27",
+      "file": "Auto_27.txt"
+    },
+    {
+      "name": "Auto_28",
+      "file": "Auto_28.txt"
+    },
+    {
+      "name": "Auto_29",
+      "file": "Auto_29.txt"
+    },
+    {
+      "name": "Auto_30",
+      "file": "Auto_30.txt"
+    },
+    {
+      "name": "Auto_31",
+      "file": "Auto_31.txt"
+    },
+    {
+      "name": "Auto_32",
+      "file": "Auto_32.txt"
+    },
+    {
+      "name": "Cool_16_turbo",
+      "file": "Cool_16_turbo.txt"
+    },
+    {
+      "name": "Heat_32_turbo",
+      "file": "Heat_32_turbo.txt"
+    }
+  ]
+}

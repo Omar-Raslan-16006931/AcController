@@ -1,0 +1,38 @@
+{
+  "brand": "Sharp",
+  "model": "Sharp AH-A9UCD",
+  "signals": [
+    {
+      "name": "POWER_ON",
+      "file": "POWER_ON.txt"
+    },
+    {
+      "name": "POWER_OFF",
+      "file": "POWER_OFF.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "16c",
+      "file": "16c.txt"
+    },
+    {
+      "name": "20c",
+      "file": "20c.txt"
+    },
+    {
+      "name": "23c",
+      "file": "23c.txt"
+    },
+    {
+      "name": "SWING Start",
+      "file": "SWING_Start.txt"
+    },
+    {
+      "name": "SWING Stop",
+      "file": "SWING_Stop.txt"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "brand": "Daikin",
+  "model": "Daikin_FTE35KV1",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "SWING",
+      "file": "SWING.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    }
+  ]
+}

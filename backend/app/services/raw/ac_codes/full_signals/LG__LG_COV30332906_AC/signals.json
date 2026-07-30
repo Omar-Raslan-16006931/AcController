@@ -1,0 +1,14 @@
+{
+  "brand": "LG",
+  "model": "LG_COV30332906_AC",
+  "signals": [
+    {
+      "name": "Timer",
+      "file": "Timer.txt"
+    },
+    {
+      "name": "Sleep",
+      "file": "Sleep.txt"
+    }
+  ]
+}

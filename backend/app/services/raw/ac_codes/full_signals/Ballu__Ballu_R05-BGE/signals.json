@@ -1,0 +1,34 @@
+{
+  "brand": "Ballu",
+  "model": "Ballu_R05-BGE",
+  "signals": [
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Cool_17",
+      "file": "Cool_17.txt"
+    },
+    {
+      "name": "Cool_23",
+      "file": "Cool_23.txt"
+    },
+    {
+      "name": "Heat_23",
+      "file": "Heat_23.txt"
+    },
+    {
+      "name": "Heat_30",
+      "file": "Heat_30.txt"
+    },
+    {
+      "name": "Dry_23",
+      "file": "Dry_23.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    }
+  ]
+}

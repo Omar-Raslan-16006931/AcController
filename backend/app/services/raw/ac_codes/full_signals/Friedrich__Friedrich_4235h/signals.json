@@ -1,0 +1,42 @@
+{
+  "brand": "Friedrich",
+  "model": "Friedrich_4235h",
+  "signals": [
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Temp up",
+      "file": "Temp_up.txt"
+    },
+    {
+      "name": "Temp Down",
+      "file": "Temp_Down.txt"
+    },
+    {
+      "name": "Money Saver",
+      "file": "Money_Saver.txt"
+    },
+    {
+      "name": "Turbo",
+      "file": "Turbo.txt"
+    },
+    {
+      "name": "Fan Speed",
+      "file": "Fan_Speed.txt"
+    },
+    {
+      "name": "Sleep",
+      "file": "Sleep.txt"
+    },
+    {
+      "name": "Timer",
+      "file": "Timer.txt"
+    }
+  ]
+}

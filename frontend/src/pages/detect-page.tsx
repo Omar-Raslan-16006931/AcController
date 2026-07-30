@@ -1,5 +1,18 @@
 import * as React from "react"
-import { Bell, Loader2, Play, RotateCcw, Square } from "lucide-react"
+import {
+  Bell,
+  Fan,
+  Lightbulb,
+  Loader2,
+  Moon,
+  Play,
+  Power,
+  RotateCcw,
+  Sparkles,
+  Square,
+  Thermometer,
+  Wind,
+} from "lucide-react"
 
 import { PageHeader } from "@/components/page-header"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -14,6 +27,9 @@ import {
   useResetDetect,
   useConfirmDetect,
   useReplayCode,
+  useDetectSignals,
+  useSendSignal,
+  type DetectSignal,
 } from "@/features/detect/use-detect"
 
 export function DetectPage() {
@@ -146,27 +162,24 @@ export function DetectPage() {
 
       {status?.detected && (
         <Card className="border-primary/30">
-          <CardHeader>
-            <CardTitle className="text-sm">Last confirmed match</CardTitle>
-            <CardDescription className="text-xs">
-              Confirmed {new Date(status.detected.confirmed_at).toLocaleString()}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium">{status.detected.brand}</p>
-              <p className="text-muted-foreground truncate text-[11px]">{status.detected.model}</p>
+          <CardHeader className="flex-row items-start justify-between space-y-0">
+            <div>
+              <CardTitle className="text-sm">{status.detected.brand}</CardTitle>
+              <CardDescription className="text-xs">{status.detected.model}</CardDescription>
             </div>
             <Button
               variant="outline"
               size="sm"
-              className="h-9 shrink-0 gap-1.5"
+              className="h-8 shrink-0 gap-1.5 text-xs"
               disabled={replay.isPending || running}
               onClick={() => replay.mutate(status.detected!.index)}
             >
               {replay.isPending ? <Loader2 className="size-3.5 animate-spin" /> : <Play className="size-3.5" />}
-              Replay
+              Replay probe
             </Button>
+          </CardHeader>
+          <CardContent>
+            <ControlPanel disabled={running} />
           </CardContent>
         </Card>
       )}
@@ -174,13 +187,87 @@ export function DetectPage() {
       <Card>
         <CardContent className="text-muted-foreground space-y-1.5 pt-4 text-[11px]">
           <p>
-            This identifies a brand/protocol and replays a real captured "on" signal — it is not full
-            temperature/mode control the way the Carrier remote is. If a code makes the AC beep, that
-            brand is confirmed working for at least power/mode toggling.
+            Once confirmed, every button captured for that model — not just the probe signal used
+            during detection — becomes available above. Each is an independent captured waveform
+            replayed as-is, same as pressing that button on the real remote; there's no shared state
+            model backing it the way the Carrier integration has, so button names/labels are a
+            best-effort guess and may not perfectly match your unit.
           </p>
           <p>Codes sourced from the community Flipper-IRDB project (CC0 license). See NOTICE.md.</p>
         </CardContent>
       </Card>
+    </div>
+  )
+}
+
+const CATEGORY_CONFIG: Record<string, { title: string; icon: React.ElementType }> = {
+  power: { title: "Power", icon: Power },
+  temperature: { title: "Temperature", icon: Thermometer },
+  mode: { title: "Mode", icon: Wind },
+  fan: { title: "Fan", icon: Fan },
+  swing: { title: "Swing", icon: Wind },
+  light: { title: "Light", icon: Lightbulb },
+  sleep: { title: "Sleep", icon: Moon },
+  boost: { title: "Eco / turbo", icon: Sparkles },
+  other: { title: "Other buttons", icon: Sparkles },
+}
+const CATEGORY_ORDER = ["power", "temperature", "mode", "fan", "swing", "light", "sleep", "boost", "other"]
+
+function ControlPanel({ disabled }: { disabled: boolean }) {
+  const { data, isLoading, isError } = useDetectSignals(true)
+  const send = useSendSignal()
+  const [pending, setPending] = React.useState<string | null>(null)
+
+  const handleSend = (signal: DetectSignal) => {
+    setPending(signal.name)
+    send.mutate(signal.name, { onSettled: () => setPending(null) })
+  }
+
+  if (isLoading) {
+    return <p className="text-muted-foreground text-xs">Loading buttons…</p>
+  }
+  if (isError || !data) {
+    return <p className="text-muted-foreground text-xs">Couldn't load this AC's button set.</p>
+  }
+
+  const grouped = new Map<string, DetectSignal[]>()
+  for (const signal of data.signals) {
+    const list = grouped.get(signal.category) ?? []
+    list.push(signal)
+    grouped.set(signal.category, list)
+  }
+
+  return (
+    <div className="space-y-3">
+      {CATEGORY_ORDER.filter((cat) => grouped.has(cat)).map((cat) => {
+        const config = CATEGORY_CONFIG[cat]
+        const Icon = config.icon
+        return (
+          <div key={cat}>
+            <div className="text-muted-foreground mb-1.5 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide">
+              <Icon className="size-3" />
+              {config.title}
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {grouped.get(cat)!.map((signal) => (
+                <Button
+                  key={signal.name}
+                  variant="outline"
+                  size="sm"
+                  className="h-8 gap-1.5 text-xs"
+                  disabled={disabled || send.isPending}
+                  onClick={() => handleSend(signal)}
+                >
+                  {pending === signal.name && send.isPending ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : null}
+                  {signal.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )
+      })}
     </div>
   )
 }

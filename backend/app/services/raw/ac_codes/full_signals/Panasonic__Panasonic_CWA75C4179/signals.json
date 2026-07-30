@@ -1,0 +1,58 @@
+{
+  "brand": "Panasonic",
+  "model": "Panasonic_CWA75C4179",
+  "signals": [
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "POWER_ON",
+      "file": "POWER_ON.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "ECONAVI",
+      "file": "ECONAVI.txt"
+    },
+    {
+      "name": "AUTO/COMFORT",
+      "file": "AUTO_COMFORT.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "NANO-G",
+      "file": "NANO-G.txt"
+    },
+    {
+      "name": "MILD DRY COOL",
+      "file": "MILD_DRY_COOL.txt"
+    },
+    {
+      "name": "FAN SPD",
+      "file": "FAN_SPD.txt"
+    },
+    {
+      "name": "PWR QUIET",
+      "file": "PWR_QUIET.txt"
+    },
+    {
+      "name": "AIR SWG UP",
+      "file": "AIR_SWG_UP.txt"
+    },
+    {
+      "name": "AIR SWG DWN",
+      "file": "AIR_SWG_DWN.txt"
+    }
+  ]
+}

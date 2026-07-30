@@ -1,0 +1,42 @@
+{
+  "brand": "Sinclair",
+  "model": "SINCLAIR_ASH13BIF2",
+  "signals": [
+    {
+      "name": "POWER_ON",
+      "file": "POWER_ON.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "FAN",
+      "file": "FAN.txt"
+    },
+    {
+      "name": "LEFT_RIGHT",
+      "file": "LEFT_RIGHT.txt"
+    },
+    {
+      "name": "UP_DOWN",
+      "file": "UP_DOWN.txt"
+    },
+    {
+      "name": "TEMP_up",
+      "file": "TEMP_up.txt"
+    },
+    {
+      "name": "TEMP_down",
+      "file": "TEMP_down.txt"
+    },
+    {
+      "name": "QUIET",
+      "file": "QUIET.txt"
+    }
+  ]
+}

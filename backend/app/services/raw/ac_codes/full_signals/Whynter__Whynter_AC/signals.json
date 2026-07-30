@@ -1,0 +1,42 @@
+{
+  "brand": "Whynter",
+  "model": "Whynter_AC",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Auto",
+      "file": "Auto.txt"
+    },
+    {
+      "name": "AC",
+      "file": "AC.txt"
+    },
+    {
+      "name": "Humidifier",
+      "file": "Humidifier.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "Fan_speed",
+      "file": "Fan_speed.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    }
+  ]
+}

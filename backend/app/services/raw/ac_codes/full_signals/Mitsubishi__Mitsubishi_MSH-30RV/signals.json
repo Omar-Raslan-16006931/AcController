@@ -1,0 +1,26 @@
+{
+  "brand": "Mitsubishi",
+  "model": "Mitsubishi_MSH-30RV",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    }
+  ]
+}

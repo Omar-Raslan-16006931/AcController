@@ -9,4 +9,5 @@ export const queryKeys = {
   passkeys: (userId: string) => ["passkeys", userId] as const,
   detectStatus: ["detect-status"] as const,
   detectCodes: ["detect-codes"] as const,
+  detectSignals: ["detect-signals"] as const,
 }

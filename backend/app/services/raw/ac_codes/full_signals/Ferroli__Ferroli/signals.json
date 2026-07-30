@@ -1,0 +1,38 @@
+{
+  "brand": "Ferroli",
+  "model": "Ferroli",
+  "signals": [
+    {
+      "name": "On",
+      "file": "On.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Up",
+      "file": "Up.txt"
+    },
+    {
+      "name": "Ok",
+      "file": "Ok.txt"
+    },
+    {
+      "name": "Down",
+      "file": "Down.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "Swing",
+      "file": "Swing.txt"
+    },
+    {
+      "name": "Star",
+      "file": "Star.txt"
+    }
+  ]
+}

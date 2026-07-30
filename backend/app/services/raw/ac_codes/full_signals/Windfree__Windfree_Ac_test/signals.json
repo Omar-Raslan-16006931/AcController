@@ -1,0 +1,18 @@
+{
+  "brand": "Windfree",
+  "model": "Windfree_Ac_test",
+  "signals": [
+    {
+      "name": "On_cool_21_high",
+      "file": "On_cool_21_high.txt"
+    },
+    {
+      "name": "Off_cool_21_high",
+      "file": "Off_cool_21_high.txt"
+    },
+    {
+      "name": "01",
+      "file": "01.txt"
+    }
+  ]
+}

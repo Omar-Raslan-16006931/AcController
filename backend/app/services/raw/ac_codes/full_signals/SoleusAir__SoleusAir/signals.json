@@ -1,0 +1,58 @@
+{
+  "brand": "SoleusAir",
+  "model": "SoleusAir",
+  "signals": [
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Up",
+      "file": "Up.txt"
+    },
+    {
+      "name": "Down",
+      "file": "Down.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Sleep",
+      "file": "Sleep.txt"
+    },
+    {
+      "name": "High",
+      "file": "High.txt"
+    },
+    {
+      "name": "Med",
+      "file": "Med.txt"
+    },
+    {
+      "name": "Low",
+      "file": "Low.txt"
+    },
+    {
+      "name": "ChildLock",
+      "file": "ChildLock.txt"
+    },
+    {
+      "name": "EnergySaver",
+      "file": "EnergySaver.txt"
+    },
+    {
+      "name": "Timer",
+      "file": "Timer.txt"
+    },
+    {
+      "name": "CF",
+      "file": "CF.txt"
+    },
+    {
+      "name": "MyTempMode",
+      "file": "MyTempMode.txt"
+    }
+  ]
+}

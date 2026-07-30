@@ -1,0 +1,46 @@
+{
+  "brand": "General_Electric",
+  "model": "GE_AC",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "Fan_down",
+      "file": "Fan_down.txt"
+    },
+    {
+      "name": "Fan_up",
+      "file": "Fan_up.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "Mode_auto",
+      "file": "Mode_auto.txt"
+    },
+    {
+      "name": "Delay_on_off",
+      "file": "Delay_on_off.txt"
+    },
+    {
+      "name": "Delay_decrease",
+      "file": "Delay_decrease.txt"
+    },
+    {
+      "name": "Delay_increase",
+      "file": "Delay_increase.txt"
+    }
+  ]
+}

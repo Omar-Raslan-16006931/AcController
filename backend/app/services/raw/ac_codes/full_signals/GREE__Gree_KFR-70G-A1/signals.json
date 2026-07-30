@@ -1,0 +1,38 @@
+{
+  "brand": "GREE",
+  "model": "Gree_KFR-70G-A1",
+  "signals": [
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Cool_16",
+      "file": "Cool_16.txt"
+    },
+    {
+      "name": "Cool_23",
+      "file": "Cool_23.txt"
+    },
+    {
+      "name": "Heat_23",
+      "file": "Heat_23.txt"
+    },
+    {
+      "name": "Heat_30",
+      "file": "Heat_30.txt"
+    },
+    {
+      "name": "Dry_23",
+      "file": "Dry_23.txt"
+    },
+    {
+      "name": "Fan_23",
+      "file": "Fan_23.txt"
+    },
+    {
+      "name": "Auto",
+      "file": "Auto.txt"
+    }
+  ]
+}

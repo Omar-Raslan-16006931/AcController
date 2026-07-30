@@ -1,0 +1,94 @@
+{
+  "brand": "Timberk",
+  "model": "Timberk_RG05D4-BGE",
+  "signals": [
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Cool_17",
+      "file": "Cool_17.txt"
+    },
+    {
+      "name": "Cool_18",
+      "file": "Cool_18.txt"
+    },
+    {
+      "name": "Cool_19",
+      "file": "Cool_19.txt"
+    },
+    {
+      "name": "Cool_20",
+      "file": "Cool_20.txt"
+    },
+    {
+      "name": "Cool_21",
+      "file": "Cool_21.txt"
+    },
+    {
+      "name": "Cool_22",
+      "file": "Cool_22.txt"
+    },
+    {
+      "name": "Cool_23",
+      "file": "Cool_23.txt"
+    },
+    {
+      "name": "Cool_24",
+      "file": "Cool_24.txt"
+    },
+    {
+      "name": "Dry_17",
+      "file": "Dry_17.txt"
+    },
+    {
+      "name": "Dry_23",
+      "file": "Dry_23.txt"
+    },
+    {
+      "name": "Dry_30",
+      "file": "Dry_30.txt"
+    },
+    {
+      "name": "Heat_30",
+      "file": "Heat_30.txt"
+    },
+    {
+      "name": "Heat_29",
+      "file": "Heat_29.txt"
+    },
+    {
+      "name": "Heat_28",
+      "file": "Heat_28.txt"
+    },
+    {
+      "name": "Heat_27",
+      "file": "Heat_27.txt"
+    },
+    {
+      "name": "Heat_26",
+      "file": "Heat_26.txt"
+    },
+    {
+      "name": "Heat_25",
+      "file": "Heat_25.txt"
+    },
+    {
+      "name": "Heat_24",
+      "file": "Heat_24.txt"
+    },
+    {
+      "name": "Heat_23",
+      "file": "Heat_23.txt"
+    },
+    {
+      "name": "Heat_22",
+      "file": "Heat_22.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    }
+  ]
+}

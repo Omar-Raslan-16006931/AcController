@@ -1,0 +1,34 @@
+{
+  "brand": "Panasonic",
+  "model": "Panasonic_CS-UE12RKE",
+  "signals": [
+    {
+      "name": "On_off",
+      "file": "On_off.txt"
+    },
+    {
+      "name": "Up_temp",
+      "file": "Up_temp.txt"
+    },
+    {
+      "name": "Down_temp",
+      "file": "Down_temp.txt"
+    },
+    {
+      "name": "Powerful_quiet",
+      "file": "Powerful_quiet.txt"
+    },
+    {
+      "name": "Fan_speed",
+      "file": "Fan_speed.txt"
+    },
+    {
+      "name": "Air_Swing",
+      "file": "Air_Swing.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    }
+  ]
+}

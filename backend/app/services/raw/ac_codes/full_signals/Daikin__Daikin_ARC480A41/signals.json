@@ -1,0 +1,82 @@
+{
+  "brand": "Daikin",
+  "model": "Daikin_ARC480A41",
+  "signals": [
+    {
+      "name": "OFF",
+      "file": "OFF.txt"
+    },
+    {
+      "name": "COOL",
+      "file": "COOL.txt"
+    },
+    {
+      "name": "HEAT",
+      "file": "HEAT.txt"
+    },
+    {
+      "name": "DRY",
+      "file": "DRY.txt"
+    },
+    {
+      "name": "AUTO",
+      "file": "AUTO.txt"
+    },
+    {
+      "name": "FAN_ONLY",
+      "file": "FAN_ONLY.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "POWERFUL",
+      "file": "POWERFUL.txt"
+    },
+    {
+      "name": "COMFORT",
+      "file": "COMFORT.txt"
+    },
+    {
+      "name": "FAN",
+      "file": "FAN.txt"
+    },
+    {
+      "name": "SWING",
+      "file": "SWING.txt"
+    },
+    {
+      "name": "QUIET",
+      "file": "QUIET.txt"
+    },
+    {
+      "name": "SLEEP",
+      "file": "SLEEP.txt"
+    },
+    {
+      "name": "ECONOMY",
+      "file": "ECONOMY.txt"
+    },
+    {
+      "name": "MOLD PROOF",
+      "file": "MOLD_PROOF.txt"
+    },
+    {
+      "name": "TIMER ON",
+      "file": "TIMER_ON.txt"
+    },
+    {
+      "name": "TIMER OFF",
+      "file": "TIMER_OFF.txt"
+    },
+    {
+      "name": "TIMER CANCEL",
+      "file": "TIMER_CANCEL.txt"
+    }
+  ]
+}

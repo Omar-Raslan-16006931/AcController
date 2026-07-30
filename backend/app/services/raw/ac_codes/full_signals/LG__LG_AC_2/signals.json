@@ -1,0 +1,14 @@
+{
+  "brand": "LG",
+  "model": "LG_AC_2",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    }
+  ]
+}

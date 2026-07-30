@@ -1,0 +1,42 @@
+{
+  "brand": "Hisense",
+  "model": "Hisense_room_AC",
+  "signals": [
+    {
+      "name": "POWER",
+      "file": "POWER.txt"
+    },
+    {
+      "name": "TEMP+",
+      "file": "TEMP.txt"
+    },
+    {
+      "name": "TEMP-",
+      "file": "TEMP-.txt"
+    },
+    {
+      "name": "FAN",
+      "file": "FAN.txt"
+    },
+    {
+      "name": "MODE",
+      "file": "MODE.txt"
+    },
+    {
+      "name": "SUPER",
+      "file": "SUPER.txt"
+    },
+    {
+      "name": "SLEEP",
+      "file": "SLEEP.txt"
+    },
+    {
+      "name": "SMART",
+      "file": "SMART.txt"
+    },
+    {
+      "name": "FEEL",
+      "file": "FEEL.txt"
+    }
+  ]
+}

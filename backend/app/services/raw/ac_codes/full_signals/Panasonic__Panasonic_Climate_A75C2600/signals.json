@@ -1,0 +1,34 @@
+{
+  "brand": "Panasonic",
+  "model": "Panasonic_Climate_A75C2600",
+  "signals": [
+    {
+      "name": "On_off",
+      "file": "On_off.txt"
+    },
+    {
+      "name": "Powerfull",
+      "file": "Powerfull.txt"
+    },
+    {
+      "name": "Up",
+      "file": "Up.txt"
+    },
+    {
+      "name": "Down",
+      "file": "Down.txt"
+    },
+    {
+      "name": "Quiet",
+      "file": "Quiet.txt"
+    },
+    {
+      "name": "Ion",
+      "file": "Ion.txt"
+    },
+    {
+      "name": "Air_swing",
+      "file": "Air_swing.txt"
+    }
+  ]
+}

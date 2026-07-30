@@ -1,0 +1,50 @@
+{
+  "brand": "TCL",
+  "model": "Tcl",
+  "signals": [
+    {
+      "name": "Power",
+      "file": "Power.txt"
+    },
+    {
+      "name": "Fan_speed",
+      "file": "Fan_speed.txt"
+    },
+    {
+      "name": "Sleep",
+      "file": "Sleep.txt"
+    },
+    {
+      "name": "Eco",
+      "file": "Eco.txt"
+    },
+    {
+      "name": "Timer",
+      "file": "Timer.txt"
+    },
+    {
+      "name": "Display",
+      "file": "Display.txt"
+    },
+    {
+      "name": "Up",
+      "file": "Up.txt"
+    },
+    {
+      "name": "Down",
+      "file": "Down.txt"
+    },
+    {
+      "name": "Auto",
+      "file": "Auto.txt"
+    },
+    {
+      "name": "Fan_only",
+      "file": "Fan_only.txt"
+    },
+    {
+      "name": "Cool",
+      "file": "Cool.txt"
+    }
+  ]
+}

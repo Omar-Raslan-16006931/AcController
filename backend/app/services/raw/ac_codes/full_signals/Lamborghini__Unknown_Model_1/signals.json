@@ -1,0 +1,34 @@
+{
+  "brand": "Lamborghini",
+  "model": "Unknown_Model_1",
+  "signals": [
+    {
+      "name": "Power On",
+      "file": "Power_On.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "+ temp",
+      "file": "temp.txt"
+    },
+    {
+      "name": "- temp",
+      "file": "-_temp.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Louver",
+      "file": "Louver.txt"
+    }
+  ]
+}

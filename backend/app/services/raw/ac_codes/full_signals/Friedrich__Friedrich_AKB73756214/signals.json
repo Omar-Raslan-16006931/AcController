@@ -1,0 +1,42 @@
+{
+  "brand": "Friedrich",
+  "model": "Friedrich_AKB73756214",
+  "signals": [
+    {
+      "name": "On",
+      "file": "On.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Temp Up",
+      "file": "Temp_Up.txt"
+    },
+    {
+      "name": "Temp down",
+      "file": "Temp_down.txt"
+    },
+    {
+      "name": "Mode",
+      "file": "Mode.txt"
+    },
+    {
+      "name": "Fan _Speed",
+      "file": "Fan_Speed.txt"
+    },
+    {
+      "name": "Timer Clear",
+      "file": "Timer_Clear.txt"
+    },
+    {
+      "name": "Swing",
+      "file": "Swing.txt"
+    },
+    {
+      "name": "Money Saver",
+      "file": "Money_Saver.txt"
+    }
+  ]
+}

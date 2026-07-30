@@ -1,0 +1,174 @@
+{
+  "brand": "Samsung",
+  "model": "Samsung_AR13TYHZCWKN",
+  "signals": [
+    {
+      "name": "On",
+      "file": "On.txt"
+    },
+    {
+      "name": "Off",
+      "file": "Off.txt"
+    },
+    {
+      "name": "Auto",
+      "file": "Auto.txt"
+    },
+    {
+      "name": "Dry",
+      "file": "Dry.txt"
+    },
+    {
+      "name": "Fan",
+      "file": "Fan.txt"
+    },
+    {
+      "name": "Cool",
+      "file": "Cool.txt"
+    },
+    {
+      "name": "Heat",
+      "file": "Heat.txt"
+    },
+    {
+      "name": "Fast",
+      "file": "Fast.txt"
+    },
+    {
+      "name": "Eco",
+      "file": "Eco.txt"
+    },
+    {
+      "name": "Fan auto",
+      "file": "Fan_auto.txt"
+    },
+    {
+      "name": "Fan 1",
+      "file": "Fan_1.txt"
+    },
+    {
+      "name": "Fan 2",
+      "file": "Fan_2.txt"
+    },
+    {
+      "name": "Fan 3",
+      "file": "Fan_3.txt"
+    },
+    {
+      "name": "Fan 4",
+      "file": "Fan_4.txt"
+    },
+    {
+      "name": "Display off",
+      "file": "Display_off.txt"
+    },
+    {
+      "name": "Display on",
+      "file": "Display_on.txt"
+    },
+    {
+      "name": "Usage kwh",
+      "file": "Usage_kwh.txt"
+    },
+    {
+      "name": "Beep toggle",
+      "file": "Beep_toggle.txt"
+    },
+    {
+      "name": "Filter reset",
+      "file": "Filter_reset.txt"
+    },
+    {
+      "name": "Clean off",
+      "file": "Clean_off.txt"
+    },
+    {
+      "name": "Clean on",
+      "file": "Clean_on.txt"
+    },
+    {
+      "name": "Quiet on",
+      "file": "Quiet_on.txt"
+    },
+    {
+      "name": "Quiet off",
+      "file": "Quiet_off.txt"
+    },
+    {
+      "name": "Vert on",
+      "file": "Vert_on.txt"
+    },
+    {
+      "name": "Vert off",
+      "file": "Vert_off.txt"
+    },
+    {
+      "name": "Horiz on",
+      "file": "Horiz_on.txt"
+    },
+    {
+      "name": "Horiz off",
+      "file": "Horiz_off.txt"
+    },
+    {
+      "name": "16",
+      "file": "16.txt"
+    },
+    {
+      "name": "17",
+      "file": "17.txt"
+    },
+    {
+      "name": "18",
+      "file": "18.txt"
+    },
+    {
+      "name": "19",
+      "file": "19.txt"
+    },
+    {
+      "name": "20",
+      "file": "20.txt"
+    },
+    {
+      "name": "21",
+      "file": "21.txt"
+    },
+    {
+      "name": "22",
+      "file": "22.txt"
+    },
+    {
+      "name": "23",
+      "file": "23.txt"
+    },
+    {
+      "name": "24",
+      "file": "24.txt"
+    },
+    {
+      "name": "25",
+      "file": "25.txt"
+    },
+    {
+      "name": "26",
+      "file": "26.txt"
+    },
+    {
+      "name": "27",
+      "file": "27.txt"
+    },
+    {
+      "name": "28",
+      "file": "28.txt"
+    },
+    {
+      "name": "29",
+      "file": "29.txt"
+    },
+    {
+      "name": "30",
+      "file": "30.txt"
+    }
+  ]
+}
