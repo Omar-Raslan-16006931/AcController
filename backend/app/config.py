@@ -43,6 +43,15 @@ class Settings(BaseSettings):
 
     simulate_ir: bool = False
 
+    # --- Manual IR learning (app/services/ac_learn.py) -----------------------
+    # Separate device from ir_device above -- that one is the TX-only
+    # gpio-ir-tx lirc device used for sending. Learning RECEIVES, which needs
+    # a physically different piece of hardware (an IR receiver module, e.g.
+    # a TSOP38238) wired to its own GPIO pin with the plain `gpio-ir` overlay
+    # (not gpio-ir-tx). See docs/AC_LEARN.md for wiring + config.txt steps.
+    ir_rx_device: str = "/dev/lirc1"
+    learned_signals_dir: str = "./learned_signals"
+
     scheduler_poll_seconds: int = 20
 
     # --- AC brute-force detector (app/services/ac_detector.py) --------------

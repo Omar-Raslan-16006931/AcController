@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import get_settings
-from app.routers import aux_commands, command, detect, fan, history, mode, power, scheduler, settings as settings_router, shortcuts, status, system, temperature, wifi
+from app.routers import aux_commands, command, detect, fan, history, learn, mode, power, scheduler, settings as settings_router, shortcuts, status, system, temperature, wifi
 from app.scheduler_worker import run_scheduler_loop
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)s: %(message)s")
@@ -88,6 +88,7 @@ app.include_router(system.router)
 app.include_router(shortcuts.router)
 app.include_router(aux_commands.router)
 app.include_router(detect.router)
+app.include_router(learn.router)
 app.include_router(wifi.router)
 
 
