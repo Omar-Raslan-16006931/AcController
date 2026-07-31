@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useStatus } from "@/features/dashboard/use-status"
 import {
   useSetPower,
@@ -23,6 +24,7 @@ import { ModeSelector } from "@/features/remote/mode-selector"
 import { FanSelector } from "@/features/remote/fan-selector"
 import { AuxButtons } from "@/features/remote/aux-buttons"
 import { TimerControls } from "@/features/remote/timer-controls"
+import { LearnedRemotePanel } from "@/features/remote/learned-remote-panel"
 import type { AcMode, FanSpeed } from "@/types/database"
 
 const AUTO_SEND_STORAGE_KEY = "ac-controller-auto-send"
@@ -31,6 +33,20 @@ function getStoredAutoSend(): boolean {
   if (typeof window === "undefined") return true
   const stored = window.localStorage.getItem(AUTO_SEND_STORAGE_KEY)
   return stored === null ? true : stored === "1"
+}
+
+// Which AC the Remote page controls. "carrier" is the original home unit
+// (structured power/temp/mode/fan state, unchanged below); "learned" is a
+// flat send-only list of whatever's been captured via Detect AC -> Learn
+// manually -- there's no shared state model for those, so no dial/mode
+// mapping, just tap a button name to replay that exact capture.
+type RemoteProfile = "carrier" | "learned"
+const REMOTE_PROFILE_STORAGE_KEY = "ac-controller-remote-profile"
+
+function getStoredProfile(): RemoteProfile {
+  if (typeof window === "undefined") return "carrier"
+  const stored = window.localStorage.getItem(REMOTE_PROFILE_STORAGE_KEY)
+  return stored === "learned" ? "learned" : "carrier"
 }
 
 export function RemotePage() {
@@ -44,6 +60,12 @@ export function RemotePage() {
 
   const [autoSend, setAutoSend] = React.useState(getStoredAutoSend)
   const [draft, setDraft] = React.useState<DraftCommand>({})
+  const [profile, setProfile] = React.useState<RemoteProfile>(getStoredProfile)
+
+  const applyProfileChange = (next: RemoteProfile) => {
+    window.localStorage.setItem(REMOTE_PROFILE_STORAGE_KEY, next)
+    setProfile(next)
+  }
 
   const pendingCount = Object.keys(draft).length
   const hasPendingChanges = pendingCount > 0
@@ -108,8 +130,21 @@ export function RemotePage() {
 
       <PageHeader
         title="Remote"
-        description={autoSend ? "Every change is sent right away." : "Automatic Send is off."}
+        description={
+          profile === "learned"
+            ? "Learned profile — tap a button to replay that exact captured signal."
+            : autoSend
+              ? "Every change is sent right away."
+              : "Automatic Send is off."
+        }
       />
+
+      <Tabs value={profile} onValueChange={(v) => applyProfileChange(v as RemoteProfile)} className="mx-auto w-full max-w-sm">
+        <TabsList className="w-full">
+          <TabsTrigger value="carrier">Carrier</TabsTrigger>
+          <TabsTrigger value="learned">Learned</TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       {isLoading && (
         <Card className="mx-auto w-full max-w-sm">
@@ -135,7 +170,15 @@ export function RemotePage() {
         </Card>
       )}
 
-      {status && (
+      {status && profile === "learned" && (
+        <Card glass className="mx-auto w-full max-w-sm gap-0">
+          <CardContent className="pt-0.5 pb-3">
+            <LearnedRemotePanel />
+          </CardContent>
+        </Card>
+      )}
+
+      {status && profile === "carrier" && (
         <Card glass className="mx-auto w-full max-w-sm gap-0">
           <CardContent className="flex flex-col items-center gap-2.5 pt-0.5 pb-3">
             <div className="flex w-full items-center justify-between">
