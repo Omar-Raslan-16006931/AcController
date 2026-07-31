@@ -10,4 +10,6 @@ export const queryKeys = {
   detectStatus: ["detect-status"] as const,
   detectCodes: ["detect-codes"] as const,
   detectSignals: ["detect-signals"] as const,
+  learnStatus: ["learn-status"] as const,
+  learnButtons: ["learn-buttons"] as const,
 }

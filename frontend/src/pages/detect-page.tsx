@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Slider } from "@/components/ui/slider"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   useDetectStatus,
   useStartDetect,
@@ -31,6 +32,7 @@ import {
   useSendSignal,
   type DetectSignal,
 } from "@/features/detect/use-detect"
+import { LearnPanel } from "@/features/learn/learn-panel"
 
 export function DetectPage() {
   const { data: status, isLoading } = useDetectStatus()
@@ -49,9 +51,16 @@ export function DetectPage() {
     <div className="space-y-4">
       <PageHeader
         title="Detect AC"
-        description="For an AC that isn't your Carrier unit — e.g. a hotel or rental. Cycles through 116 real captured codes from 70+ brands; tap the bell the moment you hear it beep."
+        description="For an AC that isn't your Carrier unit — e.g. a hotel or rental. Auto-detect cycles through 116 real captured codes from 70+ brands; Learn manually captures buttons straight from the real remote."
       />
 
+      <Tabs defaultValue="auto">
+        <TabsList>
+          <TabsTrigger value="auto">Auto-detect</TabsTrigger>
+          <TabsTrigger value="learn">Learn manually</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="auto" className="space-y-4">
       <Card>
         <CardHeader>
           <CardTitle className="text-sm">Live run</CardTitle>
@@ -196,6 +205,12 @@ export function DetectPage() {
           <p>Codes sourced from the community Flipper-IRDB project (CC0 license). See NOTICE.md.</p>
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="learn">
+          <LearnPanel />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
