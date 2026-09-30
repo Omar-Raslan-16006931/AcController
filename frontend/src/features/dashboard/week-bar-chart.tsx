@@ -35,8 +35,8 @@ export function WeekBarChart({ bars, onSelectDay }: WeekBarChartProps) {
   const avgHeightPct = Math.min(100, (avgHours / maxHours) * 100)
 
   return (
-    <Card className="gap-3 px-5 py-4">
-      <p className="text-muted-foreground text-[13px]">Hours on, last 7 days</p>
+    <Card className="gap-3 p-4">
+      <p className="text-muted-foreground text-[11px] font-semibold tracking-[0.08em] uppercase">Hours on · last 7 days</p>
 
       <div className="flex h-36 flex-col gap-1.5">
         <div className="flex justify-between gap-2">
@@ -84,7 +84,7 @@ export function WeekBarChart({ bars, onSelectDay }: WeekBarChartProps) {
                   transition={{ type: "spring", stiffness: 160, damping: 24, delay: i * 0.02 }}
                   className={cn(
                     "w-full min-h-[3px] rounded-full transition-colors duration-200",
-                    bar.isToday ? "bg-primary" : "bg-raised group-hover:bg-muted-foreground/40"
+                    bar.isToday ? "bg-primary" : "bg-secondary group-hover:bg-muted-foreground/40"
                   )}
                 />
               </button>

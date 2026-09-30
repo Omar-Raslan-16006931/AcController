@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { motion, AnimatePresence } from "framer-motion"
-import { CheckCircle2, Loader2, Lock, Mail, ScanFace } from "lucide-react"
+import { CheckCircle2, Loader2, Lock, Mail, ScanFace, Snowflake } from "lucide-react"
 import { toast } from "sonner"
 
 import { useAuth } from "@/context/auth-context"
@@ -91,19 +91,24 @@ export function LoginPage() {
 
   return (
     <div
-      className="flex min-h-svh items-center justify-center px-4 py-10 sm:p-6"
+      className="relative flex min-h-svh items-center justify-center overflow-hidden px-4 py-10 sm:p-6"
       style={{ paddingTop: "max(2.5rem, env(safe-area-inset-top))" }}
     >
+      <div aria-hidden className="bg-glow-orb pointer-events-none absolute -top-24 left-1/2 size-[420px] -translate-x-1/2" />
       <motion.div
-        initial={{ y: 12 }}
-        animate={{ y: 0 }}
+        initial={{ y: 12, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 300, damping: 32 }}
-        className="w-full max-w-sm"
+        className="relative w-full max-w-sm"
       >
-        <Card>
-          <CardHeader className="px-6 pt-4">
-            <CardTitle className="font-heading text-[34px] leading-tight font-medium tracking-[-0.015em]">
-              Ac<span className="text-primary">°</span>Controller
+        <Card glass className="card-glow">
+          <CardHeader className="items-center px-6 pt-4 text-center">
+            <div className="brand-gradient mx-auto mb-2 flex size-14 items-center justify-center rounded-2xl text-white shadow-lg">
+              <Snowflake className="size-7" strokeWidth={2.2} />
+            </div>
+            <p className="label-accent text-[11px] font-semibold tracking-[0.12em] uppercase">AC Controller</p>
+            <CardTitle className="text-[26px] leading-tight font-bold tracking-tight">
+              {mode === "sign-in" ? "Welcome back" : "Get started"}
             </CardTitle>
             <CardDescription className="text-[14px]">
               {mode === "sign-in"

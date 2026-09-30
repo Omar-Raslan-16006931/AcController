@@ -1,30 +1,17 @@
 <!doctype html>
-<html lang="en" class="dark" style="color-scheme: dark; background: #0f100e">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <!--
-      maximum-scale=1 + user-scalable=no stop iOS Safari from auto-zooming
-      into inputs on focus and from pinch/double-tap zooming the app shell.
-      viewport-fit=cover lets the layout use safe-area insets (notch/home bar).
-    -->
+    <!-- maximum-scale=1 + user-scalable=no: no pinch/double-tap zoom and no
+         iOS auto-zoom when an input is focused. -->
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
     />
-    <meta name="theme-color" content="#0f100e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="format-detection" content="telephone=no" />
-    <meta name="description" content="Control your air conditioner from anywhere." />
-    <!-- Sentient (Fontshare / ITF): display face for the numerals and titles.
-         Body text stays on the platform system font. -->
-    <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://api.fontshare.com/v2/css?f[]=sentient@400,500,700&display=swap"
-    />
+    <meta name="description" content="Smart control for a Carrier air conditioner via Raspberry Pi and IR." />
     <title>AcController</title>
   </head>
   <body>

@@ -70,7 +70,7 @@ export function LearnPanel() {
           <ol className="space-y-2.5 px-1">
             {STEPS.map((step, i) => (
               <li key={i} className="flex gap-3 text-[14px]">
-                <span className="font-heading tnum text-muted-foreground w-3 shrink-0 text-[15px]">{i + 1}</span>
+                <span className="bg-primary/15 text-primary flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold tabular-nums">{i + 1}</span>
                 <span className="text-foreground/85">{step}</span>
               </li>
             ))}
@@ -185,7 +185,7 @@ function StatusLine({ status, timeoutSeconds }: { status: LearnStatus | undefine
       <div className="px-1">
         <p className="text-[14px]">
           Listening for <span className="text-primary font-medium">{status.button_name}</span>. Press it now.
-          <span className="text-muted-foreground tnum ml-1">{Math.ceil(secondsLeft)}s</span>
+          <span className="text-muted-foreground ml-1 tabular-nums">{Math.ceil(secondsLeft)}s</span>
         </p>
         <div className="bg-secondary mt-2.5 h-1 w-full overflow-hidden rounded-full">
           <div

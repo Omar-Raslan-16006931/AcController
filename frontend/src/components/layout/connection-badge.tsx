@@ -1,24 +1,24 @@
+import { Wifi, WifiOff, Loader2 } from "lucide-react"
+
 import { cn } from "@/lib/utils"
 import { useConnectionStatus } from "@/hooks/use-connection-status"
 
-/** Plain typographic status: a small solid dot and a word, no pill. */
 export function ConnectionBadge() {
   const { state } = useConnectionStatus()
 
   const config = {
-    online: { label: "Online", text: "text-foreground/80", dot: "bg-success" },
-    offline: { label: "Offline", text: "text-destructive", dot: "bg-destructive" },
-    checking: { label: "Checking", text: "text-muted-foreground", dot: "bg-muted-foreground/50" },
+    online: { icon: Wifi, label: "Pi online", className: "bg-success/10 text-success", dot: "bg-success" },
+    offline: { icon: WifiOff, label: "Pi offline", className: "bg-destructive/10 text-destructive", dot: "bg-destructive" },
+    checking: { icon: Loader2, label: "Checking…", className: "bg-muted text-muted-foreground", dot: "bg-muted-foreground" },
   }[state]
 
+  const Icon = config.icon
+
   return (
-    <div
-      role="status"
-      aria-label={`Raspberry Pi ${config.label.toLowerCase()}`}
-      className={cn("flex items-center gap-2 text-[13px] font-medium transition-colors duration-300", config.text)}
-    >
-      <span className={cn("size-[7px] rounded-full transition-colors duration-300", config.dot)} />
-      {config.label}
+    <div className={cn("flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium", config.className)}>
+      <span className={cn("size-1.5 rounded-full", config.dot, state === "online" && "animate-pulse")} />
+      <Icon className={cn("size-3.5", state === "checking" && "animate-spin")} />
+      <span className="hidden sm:inline">{config.label}</span>
     </div>
   )
 }

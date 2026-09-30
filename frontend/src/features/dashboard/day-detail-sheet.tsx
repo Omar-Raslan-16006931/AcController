@@ -137,7 +137,7 @@ function IntervalRow({
         </div>
         {interval.temperature != null && (
           <span
-            className="text-background shrink-0 rounded-full px-2 py-0.5 text-[12px] font-semibold"
+            className="shrink-0 rounded-full text-white px-2 py-0.5 text-[12px] font-semibold"
             style={{ backgroundColor: chipColor }}
           >
             {interval.temperature}°
@@ -224,7 +224,7 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="bg-card border-border flex max-h-[85svh] flex-col gap-0 overflow-hidden rounded-t-[1.75rem] border-t p-0 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
+        className="dashboard-flat dark text-foreground bg-card border-border flex max-h-[85svh] flex-col gap-0 overflow-hidden rounded-t-[1.75rem] border-t p-0 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
       >
         <div className="flex shrink-0 justify-center pt-2.5 pb-1" aria-hidden>
           <div className="bg-muted-foreground/40 h-1 w-9 rounded-full" />

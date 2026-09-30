@@ -23,8 +23,8 @@ export function UserMenu() {
           aria-label="Account"
           className="focus-visible:ring-ring/50 rounded-full outline-none focus-visible:ring-[3px]"
         >
-          <Avatar className="size-8">
-            <AvatarFallback className="text-muted-foreground hover:text-foreground bg-transparent transition-colors">
+          <Avatar>
+            <AvatarFallback className="bg-transparent text-foreground">
               <UserIcon className="size-4" />
             </AvatarFallback>
           </Avatar>

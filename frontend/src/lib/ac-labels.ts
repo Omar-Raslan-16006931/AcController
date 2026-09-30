@@ -15,9 +15,9 @@ export const commandSourceLabels: Record<CommandSource, string> = {
 }
 
 export const modeConfig: Record<AcMode, { label: string; icon: LucideIcon; className: string }> = {
-  cool: { label: "Cool", icon: Snowflake, className: "text-primary" },
-  heat: { label: "Heat", icon: Flame, className: "text-heat" },
-  dry: { label: "Dry", icon: Droplets, className: "text-warning" },
+  cool: { label: "Cool", icon: Snowflake, className: "text-sky-500" },
+  heat: { label: "Heat", icon: Flame, className: "text-orange-500" },
+  dry: { label: "Dry", icon: Droplets, className: "text-amber-500" },
 }
 
 // Same Fan icon for every speed -- differentiated by icon size (see
