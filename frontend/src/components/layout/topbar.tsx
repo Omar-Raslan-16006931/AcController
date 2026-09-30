@@ -1,20 +1,28 @@
+import { Snowflake } from "lucide-react"
+
+import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { ConnectionBadge } from "@/components/layout/connection-badge"
 import { UserMenu } from "@/components/layout/user-menu"
 
 /**
- * Slim sticky top bar: a typographic wordmark (no icon tile) on the left,
- * Pi status and account on the right. Pages own their large titles.
+ * Slim iOS-style navigation bar: brand mark on the left, status + actions on
+ * the right. Pages own their large titles; navigation lives in MobileMenu.
  */
 export function Topbar() {
   return (
-    <header className="bar pt-safe sticky top-0 z-30 shrink-0">
-      <div className="mx-auto flex h-14 w-full max-w-lg items-center gap-3 px-5 sm:max-w-2xl sm:px-6">
-        <span className="font-heading text-[19px] leading-none font-medium tracking-[-0.01em]">
-          Ac<span className="text-primary">°</span>Controller
-        </span>
+    <header
+      className="ios-bar hairline-b sticky top-0 z-30 shrink-0"
+      style={{ paddingTop: "env(safe-area-inset-top)" }}
+    >
+      <div className="mx-auto flex h-12 w-full max-w-7xl items-center gap-2 px-4">
+        <div className="text-foreground flex size-7 items-center justify-center">
+          <Snowflake className="size-4" />
+        </div>
+        <span className="text-[15px] font-semibold tracking-tight">AcController</span>
 
-        <div className="ml-auto flex items-center gap-3">
+        <div className="ml-auto flex items-center gap-1">
           <ConnectionBadge />
+          <ThemeToggle />
           <UserMenu />
         </div>
       </div>

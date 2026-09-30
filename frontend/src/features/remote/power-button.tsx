@@ -1,15 +1,14 @@
-import { Power } from "lucide-react"
+import { Power, PowerOff } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
 const base =
-  "flex h-14 flex-1 cursor-pointer items-center justify-center gap-2 rounded-[1rem] text-[15px] font-semibold transition-colors duration-300 ease-out outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-40"
+  "flex h-10 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full text-[13px] font-semibold transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none active:opacity-80 disabled:pointer-events-none disabled:opacity-40"
 
 /**
  * Two independent buttons instead of one toggle: IR is one-way and
- * occasionally lossy, so either can be tapped again to make sure the AC
- * hears it, and neither is disabled while a request is in flight. The one
- * matching the last known state carries the fill; the other stays tonal.
+ * occasionally lossy, so either can be tapped again, and neither is
+ * disabled while a request is in flight.
  */
 export function PowerButtons({
   on,
@@ -23,7 +22,7 @@ export function PowerButtons({
   onPowerOff: () => void
 }) {
   return (
-    <div className="flex w-full items-center gap-2.5">
+    <div className="flex w-full items-center gap-2">
       <button
         type="button"
         disabled={!connected}
@@ -33,11 +32,11 @@ export function PowerButtons({
         className={cn(
           base,
           on
-            ? "bg-primary text-primary-foreground active:bg-primary/80"
-            : "bg-secondary text-muted-foreground hover:text-foreground active:bg-raised"
+            ? "bg-primary text-primary-foreground shadow-[0_4px_14px_-4px_var(--frost)]"
+            : "bg-secondary text-muted-foreground hover:text-foreground"
         )}
       >
-        <Power className="size-[18px]" strokeWidth={2.4} />
+        <Power className="size-4" strokeWidth={2.25} />
         On
       </button>
 
@@ -49,11 +48,10 @@ export function PowerButtons({
         aria-label="Turn AC off"
         className={cn(
           base,
-          !on
-            ? "bg-raised text-foreground active:bg-raised/70"
-            : "bg-secondary text-muted-foreground hover:text-foreground active:bg-raised"
+          !on ? "bg-foreground text-background" : "bg-secondary text-muted-foreground hover:text-foreground"
         )}
       >
+        <PowerOff className="size-4" strokeWidth={2.25} />
         Off
       </button>
     </div>

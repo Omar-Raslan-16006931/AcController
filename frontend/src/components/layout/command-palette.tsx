@@ -1,9 +1,10 @@
 import * as React from "react"
 import { useNavigate } from "react-router-dom"
-import { LogOut } from "lucide-react"
+import { LogOut, Moon, Sun, Monitor } from "lucide-react"
 
 import { navItems } from "@/components/layout/nav-items"
 import { useAuth } from "@/context/auth-context"
+import { useTheme } from "@/context/theme-context"
 import {
   CommandDialog,
   CommandEmpty,
@@ -22,6 +23,7 @@ interface CommandPaletteProps {
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const navigate = useNavigate()
   const { signOut } = useAuth()
+  const { setTheme } = useTheme()
 
   React.useEffect(() => {
     const listener = (e: KeyboardEvent) => {
@@ -51,6 +53,18 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               {item.title}
             </CommandItem>
           ))}
+        </CommandGroup>
+        <CommandSeparator />
+        <CommandGroup heading="Theme">
+          <CommandItem onSelect={() => run(() => setTheme("light"))}>
+            <Sun /> Light mode
+          </CommandItem>
+          <CommandItem onSelect={() => run(() => setTheme("dark"))}>
+            <Moon /> Dark mode
+          </CommandItem>
+          <CommandItem onSelect={() => run(() => setTheme("system"))}>
+            <Monitor /> System theme
+          </CommandItem>
         </CommandGroup>
         <CommandSeparator />
         <CommandGroup heading="Account">

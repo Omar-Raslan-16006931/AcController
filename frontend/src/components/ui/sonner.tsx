@@ -9,12 +9,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme={resolvedTheme as ToasterProps["theme"]}
       className="toaster group"
       position="top-center"
-      offset="calc(env(safe-area-inset-top) + 12px)"
-      mobileOffset={{ top: "calc(env(safe-area-inset-top) + 12px)", left: 12, right: 12 }}
       toastOptions={{
         classNames: {
           toast:
-            "group toast group-[.toaster]:bg-popover group-[.toaster]:text-popover-foreground group-[.toaster]:border-border group-[.toaster]:shadow-[0_2px_6px_rgb(0_0_0/0.35)] group-[.toaster]:rounded-[1.125rem]",
+            "group toast group-[.toaster]:bg-card group-[.toaster]:text-card-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg group-[.toaster]:rounded-xl",
           description: "group-[.toast]:text-muted-foreground",
           actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
           cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",

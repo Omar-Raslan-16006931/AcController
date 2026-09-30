@@ -1,13 +1,8 @@
+import { motion } from "framer-motion"
+
+import { cn } from "@/lib/utils"
 import { modeConfig, modeOrder } from "@/lib/ac-labels"
 import type { AcMode } from "@/types/database"
-import { Segmented } from "@/features/remote/segmented"
-
-const options = modeOrder.map((mode) => ({
-  value: mode,
-  label: modeConfig[mode].label,
-  icon: modeConfig[mode].icon,
-  activeTone: modeConfig[mode].className,
-}))
 
 export function ModeSelector({
   value,
@@ -18,5 +13,38 @@ export function ModeSelector({
   disabled?: boolean
   onChange: (mode: AcMode) => void
 }) {
-  return <Segmented label="Mode" options={options} value={value} disabled={disabled} onChange={onChange} />
+  return (
+    <div className="bg-secondary/60 flex items-center gap-1 rounded-full p-1">
+      {modeOrder.map((mode) => {
+        const config = modeConfig[mode]
+        const Icon = config.icon
+        const active = value === mode
+        return (
+          <button
+            key={mode}
+            type="button"
+            disabled={disabled}
+            onClick={() => onChange(mode)}
+            className={cn(
+              "relative flex-1 cursor-pointer rounded-full py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+              active ? "text-foreground" : "text-muted-foreground hover:text-foreground/80"
+            )}
+            aria-pressed={active}
+          >
+            {active && (
+              <motion.span
+                layoutId="mode-active-pill"
+                className="border-frost bg-frost/10 absolute inset-0 rounded-full border-2"
+                transition={{ type: "spring", stiffness: 420, damping: 34 }}
+              />
+            )}
+            <span className="relative flex items-center justify-center gap-1">
+              <Icon className={cn("size-3.5", active && "text-frost")} />
+              {config.label}
+            </span>
+          </button>
+        )
+      })}
+    </div>
+  )
 }
