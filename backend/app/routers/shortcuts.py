@@ -12,7 +12,7 @@ small set of named "scene" presets since no such concept existed before.
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from app.dependencies import CurrentUser, get_shortcut_or_current_user
@@ -26,7 +26,7 @@ from app.models.ac_state import (
 )
 from app.models.scheduler import TimerCreate, TimerOut
 from app.routers.scheduler import create_timer
-from app.services import ir_transmitter
+from app.services import ac_learn, ir_transmitter
 from app.services.command_executor import apply_command
 
 router = APIRouter(prefix="/api/shortcuts", tags=["shortcuts"])
@@ -173,6 +173,47 @@ def shortcut_scene_sleep(user: CurrentUser = Depends(get_shortcut_or_current_use
 )
 def shortcut_scene_home(user: CurrentUser = Depends(get_shortcut_or_current_user)) -> CommandResponse:
     return _apply_scene("home", user)
+
+
+class ShortcutButtonRequest(BaseModel):
+    name: str = Field(min_length=1, description="Learned button name, exactly as shown in the app.")
+
+
+class ShortcutButtonResponse(BaseModel):
+    success: bool
+    name: str
+    message: str | None = None
+
+
+@router.get(
+    "/buttons",
+    response_model=list[str],
+    summary="List learned button names",
+    description="For a Shortcuts 'Choose from List' step. Names are what "
+    "POST /api/shortcuts/button expects.",
+)
+def shortcut_list_buttons(user: CurrentUser = Depends(get_shortcut_or_current_user)) -> list[str]:
+    return [b["name"] for b in ac_learn.list_buttons()]
+
+
+@router.post(
+    "/button",
+    response_model=ShortcutButtonResponse,
+    summary="Press a learned button",
+    description='Body: `{"name": "POWER ON"}`. Replays a button captured on '
+    "Detect AC, Learn manually. Matching ignores letter case.",
+)
+def shortcut_press_button(
+    body: ShortcutButtonRequest, user: CurrentUser = Depends(get_shortcut_or_current_user)
+) -> ShortcutButtonResponse:
+    wanted = body.name.strip().lower()
+    match = next((b["name"] for b in ac_learn.list_buttons() if b["name"].lower() == wanted), None)
+    if match is None:
+        raise HTTPException(status_code=404, detail=f"No learned button named {body.name!r}")
+    result = ac_learn.send_learned(match)
+    if not result.success:
+        raise HTTPException(status_code=502, detail=result.error or "IR transmit failed")
+    return ShortcutButtonResponse(success=True, name=match, message=f"Sent {match}")
 
 
 @router.post(

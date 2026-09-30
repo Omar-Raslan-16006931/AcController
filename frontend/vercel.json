@@ -8,6 +8,13 @@
   ],
   "headers": [
     {
+      "source": "/pi-url.txt",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" },
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" }
+      ]
+    },
+    {
       "source": "/assets/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
