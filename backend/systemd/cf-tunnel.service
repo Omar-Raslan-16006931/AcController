@@ -1,0 +1,20 @@
+[Unit]
+Description=Cloudflare quick tunnel for AcController (public HTTPS -> localhost:8000)
+After=network-online.target ac-controller.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+# Fresh log per start so the sync script never picks up a stale URL.
+ExecStartPre=/bin/rm -f /home/pi/AcController/backend/.cf.log
+ExecStart=/usr/bin/cloudflared tunnel --no-autoupdate --url http://localhost:8000 --logfile /home/pi/AcController/backend/.cf.log
+# Push the new random URL to Vercel on every (re)start. Leading "-" means a
+# Vercel/API failure never takes the tunnel itself down.
+ExecStartPost=-/bin/bash /home/pi/AcController/backend/scripts/sync_tunnel_url.sh
+TimeoutStartSec=150
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
