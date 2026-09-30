@@ -90,44 +90,40 @@ export function LoginPage() {
   }
 
   return (
-    // No bg-background here: BackgroundPixelStars is mounted once at the
-    // App.tsx root and needs this page to stay transparent to show through
-    // (the card itself is already translucent via backdrop-blur-sm).
-    // `z-0` guarantees this stacking context paints above the canvas's -z-10.
-    <div className="relative z-0 flex min-h-svh items-center justify-center overflow-hidden px-4 py-10 sm:p-6">
-      <div
-        aria-hidden
-        className="bg-glow-orb absolute top-[18%] left-1/2 size-[26rem] -translate-x-1/2 blur-3xl sm:size-[36rem]"
-      />
+    <div
+      className="bg-background flex min-h-svh items-center justify-center px-4 py-10 sm:p-6"
+      style={{ paddingTop: "max(2.5rem, env(safe-area-inset-top))" }}
+    >
       <motion.div
-        initial={{ opacity: 0, y: 16, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="relative z-10 w-full max-w-sm"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
+        className="w-full max-w-sm"
       >
-        <Card className="card-glow border backdrop-blur-sm">
-          <CardHeader className="items-center pt-8 text-center">
-            <div className="brand-gradient mb-2 flex size-14 items-center justify-center rounded-2xl text-white shadow-lg shadow-primary/25">
+        <Card>
+          <CardHeader className="items-center pt-6 text-center">
+            <div className="bg-primary text-primary-foreground mx-auto mb-2 flex size-14 items-center justify-center rounded-2xl">
               <Snowflake className="size-7" />
             </div>
             <CardTitle className="text-2xl font-bold">AcController</CardTitle>
             <CardDescription>
               {mode === "sign-in"
-                ? "Sign in to control your Carrier AC"
+                ? "Sign in to control your AC"
                 : "Create an account to get started"}
             </CardDescription>
           </CardHeader>
-          <CardContent className="pb-8">
+          <CardContent className="pb-6">
             <AnimatePresence mode="wait">
               {signUpSuccess ? (
                 <motion.div
                   key="success"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
                   className="flex flex-col items-center gap-3 py-4 text-center"
                 >
-                  <CheckCircle2 className="text-mint size-10" />
+                  <CheckCircle2 className="text-success size-10" />
                   <p className="text-sm font-medium">Check your email to confirm your account</p>
                   <p className="text-muted-foreground text-xs">
                     We sent a confirmation link. Once confirmed, sign in below with the same
@@ -140,14 +136,15 @@ export function LoginPage() {
               ) : (
                 <motion.div
                   key={mode}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
                   className="space-y-5"
                 >
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
                     <div className="space-y-2">
-                      <Label htmlFor="email" className="label-accent">
+                      <Label htmlFor="email" className="text-[13px] font-semibold">
                         Email
                       </Label>
                       <div className="relative">
@@ -157,7 +154,7 @@ export function LoginPage() {
                           type="email"
                           autoComplete="email webauthn"
                           placeholder="you@example.com"
-                          className="bg-foreground/5 h-11 pl-9"
+                          className="h-12 pl-10"
                           aria-invalid={!!errors.email}
                           {...register("email")}
                         />
@@ -168,7 +165,7 @@ export function LoginPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="password" className="label-accent">
+                      <Label htmlFor="password" className="text-[13px] font-semibold">
                         Password
                       </Label>
                       <div className="relative">
@@ -178,7 +175,7 @@ export function LoginPage() {
                           type="password"
                           autoComplete={mode === "sign-in" ? "current-password webauthn" : "new-password"}
                           placeholder="********"
-                          className="bg-foreground/5 h-11 pl-9"
+                          className="h-12 pl-10"
                           aria-invalid={!!errors.password}
                           {...register("password")}
                         />
@@ -188,7 +185,7 @@ export function LoginPage() {
                       )}
                     </div>
 
-                    <Button type="submit" variant="brand" size="lg" className="h-12 w-full text-base" disabled={submitting}>
+                    <Button type="submit" size="lg" className="h-12 w-full text-base" disabled={submitting}>
                       {submitting && <Loader2 className="size-4 animate-spin" />}
                       {mode === "sign-in" ? "Sign In" : "Create account"}
                     </Button>
@@ -208,7 +205,7 @@ export function LoginPage() {
                         size="lg"
                         onClick={onPasskeySignIn}
                         disabled={passkeySubmitting}
-                        className="border-mint/40 text-mint hover:bg-mint/10 h-12 w-full text-base"
+                        className="h-12 w-full text-base"
                       >
                         {passkeySubmitting ? (
                           <Loader2 className="size-5 animate-spin" />
@@ -225,12 +222,12 @@ export function LoginPage() {
           </CardContent>
         </Card>
         {!signUpSuccess && (
-          <p className="text-muted-foreground mt-6 text-center text-xs">
+          <p className="text-muted-foreground mt-6 text-center text-[13px]">
             {mode === "sign-in" ? "Don't have an account yet? " : "Already have an account? "}
             <button
               type="button"
               onClick={toggleMode}
-              className="text-foreground font-medium underline underline-offset-4"
+              className="text-primary cursor-pointer font-semibold"
             >
               {mode === "sign-in" ? "Create one" : "Sign in"}
             </button>

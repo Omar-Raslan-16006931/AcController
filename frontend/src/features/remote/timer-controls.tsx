@@ -21,9 +21,8 @@ function formatMinutes(total: number): string {
 }
 
 /**
- * "Turn on/off after" — a compact button that opens a dropdown containing a
- * duration slider (plus quick presets) instead of a full modal/page. Used
- * twice below with opposite `action`s.
+ * "Turn on/off after" -- opens a small popover with a duration slider and
+ * quick presets. Used twice below with opposite `action`s.
  */
 function TimerPopoverButton({
   action,
@@ -42,42 +41,36 @@ function TimerPopoverButton({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <motion.button
+        <button
           type="button"
-          whileTap={{ scale: 0.96 }}
-          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-          className={cn(
-            "border-border/70 bg-secondary/60 hover:bg-secondary flex h-11 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-xl border text-[13px] font-semibold transition-colors",
-            "focus-visible:ring-ring/50 focus-visible:outline-none focus-visible:ring-[3px]"
-          )}
+          className="border-border bg-card active:bg-secondary flex h-12 flex-1 cursor-pointer items-center justify-center gap-2 rounded-2xl border text-[14px] font-semibold transition-colors duration-150 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
         >
-          <Icon className={cn("size-4", isOff ? "text-destructive" : "text-success")} />
-          {isOff ? "Turn off after" : "Turn on after"}
-        </motion.button>
+          <Icon className={cn("size-4", isOff ? "text-destructive" : "text-success")} strokeWidth={2.4} />
+          {isOff ? "Off after…" : "On after…"}
+        </button>
       </PopoverTrigger>
-      <PopoverContent className="w-64">
-        <p className="text-center font-heading text-3xl font-bold tabular-nums">
-          {formatMinutes(minutes)}
+      <PopoverContent className="w-[min(18rem,calc(100vw-2rem))] rounded-2xl p-4" collisionPadding={16}>
+        <p className="text-muted-foreground text-center text-[12px] font-semibold tracking-wide uppercase">
+          {isOff ? "Turn off after" : "Turn on after"}
         </p>
+        <p className="font-heading mt-1 text-center text-3xl font-bold tabular-nums">{formatMinutes(minutes)}</p>
         <Slider
-          className="mt-4"
+          className="mt-5"
           value={[minutes]}
           min={MIN_MINUTES}
           max={MAX_MINUTES}
           step={1}
           onValueChange={([v]) => setMinutes(v ?? minutes)}
         />
-        <div className="mt-3 flex flex-wrap gap-1.5">
+        <div className="mt-4 grid grid-cols-4 gap-1.5">
           {PRESET_MINUTES.map((preset) => (
             <button
               key={preset}
               type="button"
               onClick={() => setMinutes(preset)}
               className={cn(
-                "flex-1 cursor-pointer rounded-lg py-1.5 text-xs font-semibold transition-colors",
-                minutes === preset
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-muted-foreground hover:text-foreground"
+                "h-9 cursor-pointer rounded-xl text-xs font-semibold transition-colors duration-150",
+                minutes === preset ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground"
               )}
             >
               {formatMinutes(preset)}
@@ -86,7 +79,6 @@ function TimerPopoverButton({
         </div>
         <Button
           type="button"
-          variant="brand"
           className="mt-4 w-full"
           disabled={submitting}
           onClick={() => {
@@ -107,33 +99,30 @@ function ActiveTimerRow({ timer, onCancel }: { timer: Timer; onCancel: () => voi
 
   return (
     <motion.div
-      layout
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
-      transition={{ type: "spring", stiffness: 400, damping: 34 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
       className="overflow-hidden"
     >
-      <div className="bg-secondary/50 flex items-center gap-2.5 rounded-xl px-3 py-2">
+      <div className="bg-secondary flex items-center gap-3 rounded-2xl px-3 py-2.5">
         <span
           className={cn(
-            "flex size-7 shrink-0 items-center justify-center rounded-full",
-            isOff ? "bg-destructive/12 text-destructive" : "bg-success/12 text-success"
+            "flex size-8 shrink-0 items-center justify-center rounded-full",
+            isOff ? "bg-destructive/10 text-destructive" : "bg-success/10 text-success"
           )}
         >
-          {isOff ? <PowerOff className="size-3.5" /> : <Power className="size-3.5" />}
+          {isOff ? <PowerOff className="size-4" /> : <Power className="size-4" />}
         </span>
-        <p className="min-w-0 flex-1 truncate text-xs font-medium">
-          {isOff ? "Turning off" : "Turning on"}
-        </p>
-        <span className="text-sm font-semibold tabular-nums">{label}</span>
+        <p className="min-w-0 flex-1 truncate text-[14px] font-medium">{isOff ? "Turning off in" : "Turning on in"}</p>
+        <span className="text-[15px] font-bold tabular-nums">{label}</span>
         <button
           type="button"
           onClick={onCancel}
           aria-label="Cancel timer"
-          className="text-muted-foreground hover:text-foreground cursor-pointer p-0.5"
+          className="text-muted-foreground active:bg-card flex size-9 cursor-pointer items-center justify-center rounded-full transition-colors"
         >
-          <X className="size-3.5" />
+          <X className="size-4" />
         </button>
       </div>
     </motion.div>
@@ -148,8 +137,8 @@ export function TimerControls() {
   const activeTimers = timers ?? []
 
   return (
-    <div className="w-full space-y-2">
-      <div className="flex w-full items-center gap-2">
+    <div className="w-full space-y-3">
+      <div className="flex w-full items-center gap-3">
         <TimerPopoverButton
           action="turn_on"
           submitting={createTimer.isPending}
@@ -162,28 +151,20 @@ export function TimerControls() {
         />
       </div>
 
-      <AnimatePresence initial={false}>
-        {activeTimers.length === 0 ? (
-          <motion.div
-            key="empty"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="text-muted-foreground flex items-center justify-center gap-1.5 py-1 text-xs"
-          >
-            <TimerReset className="size-3.5" />
-            No active timers
-          </motion.div>
-        ) : (
-          activeTimers.map((timer) => (
-            <ActiveTimerRow
-              key={timer.id}
-              timer={timer}
-              onCancel={() => cancelTimer.mutate(timer.id)}
-            />
-          ))
-        )}
-      </AnimatePresence>
+      {activeTimers.length === 0 ? (
+        <p className="text-muted-foreground flex items-center justify-center gap-1.5 text-[13px]">
+          <TimerReset className="size-4" />
+          No active timers
+        </p>
+      ) : (
+        <div className="space-y-2">
+          <AnimatePresence initial={false}>
+            {activeTimers.map((timer) => (
+              <ActiveTimerRow key={timer.id} timer={timer} onCancel={() => cancelTimer.mutate(timer.id)} />
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
     </div>
   )
 }

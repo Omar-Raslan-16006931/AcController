@@ -19,9 +19,12 @@ export function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="focus-visible:ring-ring/50 rounded-full outline-none focus-visible:ring-[3px]">
-          <Avatar>
-            <AvatarFallback className="bg-transparent text-foreground">
+        <button
+          aria-label="Account"
+          className="focus-visible:ring-ring/50 rounded-full outline-none focus-visible:ring-[3px]"
+        >
+          <Avatar className="size-8">
+            <AvatarFallback className="bg-card text-foreground border-border border">
               <UserIcon className="size-4" />
             </AvatarFallback>
           </Avatar>

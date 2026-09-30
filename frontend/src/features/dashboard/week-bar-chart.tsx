@@ -68,25 +68,23 @@ export function WeekBarChart({ bars, onSelectDay }: WeekBarChartProps) {
           {bars.map((bar, i) => {
             const heightPct = Math.max((bar.hours / maxHours) * 100, bar.hours > 0 ? 4 : 2)
             return (
-              <motion.button
+              <button
                 key={bar.date}
                 type="button"
                 onClick={() => onSelectDay(bar.date)}
-                whileTap={{ scale: 0.92 }}
-                transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                className="flex h-full flex-1 items-end justify-center"
+                className="flex h-full flex-1 cursor-pointer items-end justify-center rounded-full active:opacity-70"
                 aria-label={`${format(new Date(`${bar.date}T00:00:00`), "EEEE")}, ${formatBarHours(bar.hours)}`}
               >
                 <motion.span
                   initial={{ height: 0 }}
                   animate={{ height: `${heightPct}%` }}
-                  transition={{ type: "spring", stiffness: 130, damping: 20, delay: i * 0.04 }}
+                  transition={{ duration: 0.4, ease: "easeOut", delay: i * 0.03 }}
                   className={cn(
                     "w-full min-h-[3px] rounded-full",
-                    bar.isToday ? "bg-primary" : "bg-secondary"
+                    bar.isToday ? "bg-primary" : "bg-primary/20"
                   )}
                 />
-              </motion.button>
+              </button>
             )
           })}
         </div>

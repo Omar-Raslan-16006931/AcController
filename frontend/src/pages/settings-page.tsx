@@ -162,21 +162,21 @@ function PasskeysCard() {
 
 function DetectAcLinkCard() {
   return (
-    <Card className="lg:col-span-2">
+    <Card className="overflow-hidden py-0 lg:col-span-2">
       <Link
         to="/detect"
-        className="hover:bg-accent/40 flex items-center gap-2.5 rounded-[inherit] px-3 py-2.5 transition-colors"
+        className="active:bg-secondary flex min-h-14 items-center gap-3 rounded-[inherit] px-4 py-3 transition-colors"
       >
-        <div className="bg-secondary text-foreground/80 flex size-7 items-center justify-center rounded-xl">
-          <Radar className="size-3.5" />
+        <div className="bg-accent text-primary flex size-10 shrink-0 items-center justify-center rounded-xl">
+          <Radar className="size-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-medium">Detect AC</p>
-          <p className="text-muted-foreground text-[11px]">
-            For a non-Carrier AC while travelling — brute-force the brand
+          <p className="text-[15px] font-semibold">Detect &amp; learn AC</p>
+          <p className="text-muted-foreground text-[13px]">
+            Find a new AC's brand, or learn buttons from its remote
           </p>
         </div>
-        <ChevronRight className="text-muted-foreground/60 size-3.5" />
+        <ChevronRight className="text-muted-foreground/60 size-5" />
       </Link>
     </Card>
   )
@@ -184,19 +184,19 @@ function DetectAcLinkCard() {
 
 function SystemLinkCard() {
   return (
-    <Card className="lg:col-span-2">
+    <Card className="overflow-hidden py-0 lg:col-span-2">
       <Link
         to="/system"
-        className="hover:bg-accent/40 flex items-center gap-2.5 rounded-[inherit] px-3 py-2.5 transition-colors"
+        className="active:bg-secondary flex min-h-14 items-center gap-3 rounded-[inherit] px-4 py-3 transition-colors"
       >
-        <div className="bg-secondary text-foreground/80 flex size-7 items-center justify-center rounded-xl">
-          <Cpu className="size-3.5" />
+        <div className="bg-accent text-primary flex size-10 shrink-0 items-center justify-center rounded-xl">
+          <Cpu className="size-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-medium">System diagnostics</p>
-          <p className="text-muted-foreground text-[11px]">Pi metrics, restart, and shutdown</p>
+          <p className="text-[15px] font-semibold">System diagnostics</p>
+          <p className="text-muted-foreground text-[13px]">Pi metrics, restart, and shutdown</p>
         </div>
-        <ChevronRight className="text-muted-foreground/60 size-3.5" />
+        <ChevronRight className="text-muted-foreground/60 size-5" />
       </Link>
     </Card>
   )
@@ -230,7 +230,7 @@ export function SettingsPage() {
   if (isLoading) {
     return (
       <div>
-        <PageHeader title="Settings" description="Theme, defaults, and account security." />
+        <PageHeader title="Settings" description="Defaults, locale, and account security." />
         <div className="space-y-3">
           <Skeleton className="h-40 w-full" />
           <Skeleton className="h-40 w-full" />
@@ -244,7 +244,7 @@ export function SettingsPage() {
     <form onSubmit={onSubmit}>
       <PageHeader
         title="Settings"
-        description="Theme, defaults, and account security."
+        description="Defaults, locale, and account security."
         actions={
           <Button type="submit" size="sm" disabled={updateSettings.isPending} className="gap-1.5">
             {updateSettings.isPending ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />}
@@ -256,27 +256,10 @@ export function SettingsPage() {
       <div className="grid gap-3 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm">Appearance &amp; locale</CardTitle>
+            <CardTitle className="text-sm">Locale</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2.5">
-            <div className="grid grid-cols-2 gap-2.5">
-              <div className="space-y-1">
-                <Label htmlFor="theme" className="text-xs">Theme</Label>
-                <Controller
-                  control={control}
-                  name="theme"
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger id="theme" className="h-9 w-full text-xs"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="light">Light</SelectItem>
-                        <SelectItem value="dark">Dark</SelectItem>
-                        <SelectItem value="system">System</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
+            <div className="grid grid-cols-1 gap-2.5">
               <div className="space-y-1">
                 <Label htmlFor="language" className="text-xs">Language</Label>
                 <Controller
@@ -284,7 +267,7 @@ export function SettingsPage() {
                   name="language"
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger id="language" className="h-9 w-full text-xs"><SelectValue /></SelectTrigger>
+                      <SelectTrigger id="language" className="h-11 w-full text-sm"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {LANGUAGES.map((lang) => (
                           <SelectItem key={lang.value} value={lang.value}>{lang.label}</SelectItem>
@@ -302,7 +285,7 @@ export function SettingsPage() {
                 name="timezone"
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger id="timezone" className="h-9 w-full text-xs"><SelectValue /></SelectTrigger>
+                    <SelectTrigger id="timezone" className="h-11 w-full text-sm"><SelectValue /></SelectTrigger>
                     <SelectContent className="max-h-72">
                       {timezones.map((tz) => (
                         <SelectItem key={tz} value={tz}>{tz}</SelectItem>
@@ -323,7 +306,7 @@ export function SettingsPage() {
           <CardContent className="space-y-2.5">
             <div className="space-y-1">
               <Label htmlFor="default_temperature" className="text-xs">Default temperature (°C)</Label>
-              <Input id="default_temperature" type="number" min={20} max={28} className="h-9 text-xs" {...register("default_temperature")} />
+              <Input id="default_temperature" type="number" min={20} max={28} inputMode="numeric" className="h-11" {...register("default_temperature")} />
             </div>
             <div className="grid grid-cols-2 gap-2.5">
               <div className="space-y-1">
@@ -333,7 +316,7 @@ export function SettingsPage() {
                   name="default_mode"
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger id="default_mode" className="h-9 w-full text-xs"><SelectValue /></SelectTrigger>
+                      <SelectTrigger id="default_mode" className="h-11 w-full text-sm"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {modeOrder.map((mode) => (
                           <SelectItem key={mode} value={mode}>{modeConfig[mode].label}</SelectItem>
@@ -350,7 +333,7 @@ export function SettingsPage() {
                   name="default_fan"
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger id="default_fan" className="h-9 w-full text-xs"><SelectValue /></SelectTrigger>
+                      <SelectTrigger id="default_fan" className="h-11 w-full text-sm"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {fanOrder.map((fan) => (
                           <SelectItem key={fan} value={fan}>{fanConfig[fan].label}</SelectItem>

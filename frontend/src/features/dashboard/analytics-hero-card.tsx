@@ -22,7 +22,7 @@ interface AcHeroCardProps {
  * using the dashboard-flat theme's --primary blue instead of --frost).
  */
 export function AcHeroCard({ acState, lastCommandAt, lastCommandResult }: AcHeroCardProps) {
-  const mode = modeConfig[acState.mode]
+  const mode = modeConfig[acState.mode] ?? modeConfig.cool
   const ModeIcon = mode.icon
 
   return (
@@ -31,21 +31,20 @@ export function AcHeroCard({ acState, lastCommandAt, lastCommandResult }: AcHero
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          background:
-            "radial-gradient(110% 80% at 50% -20%, color-mix(in oklch, color-mix(in oklch, var(--primary) 32%, black 68%) 16%, transparent), transparent 40%)",
+          background: "radial-gradient(120% 90% at 50% -30%, var(--accent), transparent 60%)",
         }}
         animate={{ opacity: acState.power ? 1 : 0 }}
-        transition={{ duration: 0.6, ease: "easeInOut" }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
       />
 
       <div className="relative flex items-center justify-between">
-        <p className="text-muted-foreground text-[11px] font-semibold tracking-[0.08em] uppercase">
+        <p className="text-muted-foreground text-[12px] font-semibold tracking-wide uppercase">
           Air conditioner
         </p>
         <span
           className={cn(
             "flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-semibold",
-            acState.power ? "bg-emerald-500/15 text-emerald-400" : "bg-secondary text-muted-foreground"
+            acState.power ? "bg-success/12 text-success" : "bg-secondary text-muted-foreground"
           )}
         >
           <Power className="size-3" strokeWidth={2.5} />
@@ -82,7 +81,7 @@ export function AcHeroCard({ acState, lastCommandAt, lastCommandResult }: AcHero
             {lastCommandResult === "failure" ? (
               <XCircle className="text-destructive size-3.5" />
             ) : (
-              <CheckCircle2 className="size-3.5 text-emerald-400" />
+              <CheckCircle2 className="text-success size-3.5" />
             )}
             Last command {formatDistanceToNow(new Date(lastCommandAt), { addSuffix: true })}
             {lastCommandResult === "failure" && " · failed"}

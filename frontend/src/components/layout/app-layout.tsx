@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Suspense } from "react"
 import { Outlet, useLocation } from "react-router-dom"
-import { AnimatePresence, motion } from "framer-motion"
+import { motion } from "framer-motion"
 
 import { Topbar } from "@/components/layout/topbar"
 import { MobileMenu } from "@/components/layout/mobile-menu"
@@ -10,39 +10,42 @@ import { OfflineBanner } from "@/components/offline-banner"
 import { ErrorBoundary } from "@/components/error-boundary"
 import { PageLoader } from "@/components/page-loader"
 
+/**
+ * App shell. The document itself scrolls (not an inner overflow box) --
+ * that's what gives iOS its native momentum scrolling, tap-status-bar-to-top,
+ * and a stable address-bar collapse with no layout jumps. The top bar is
+ * sticky, the tab bar is fixed, and page content reserves room for both.
+ */
 export function AppLayout() {
   const location = useLocation()
   const [paletteOpen, setPaletteOpen] = React.useState(false)
 
-  return (
-    // No bg-background here on purpose: body already supplies that solid
-    // color, and BackgroundPixelStars is mounted once at the App.tsx root
-    // (above the router, so it covers /login too and never remounts on
-    // navigation) -- leaving this div transparent lets that fixed starfield
-    // canvas show through page gaps/margins instead of being hidden behind
-    // an opaque layer of its own. `relative z-0` establishes a stacking
-    // context above the canvas's `-z-10` so the whole app shell is
-    // guaranteed to paint in front of it, never behind.
-    <div className="relative z-0 flex h-svh flex-col overflow-hidden">
-      <OfflineBanner />
-      <Topbar />
+  // New page always starts at the top instead of inheriting the previous
+  // page's scroll position.
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" })
+  }, [location.pathname])
 
-      <main className="no-scrollbar flex-1 overflow-y-auto">
+  return (
+    <div className="bg-background flex min-h-svh flex-col">
+      <Topbar />
+      <OfflineBanner />
+
+      <main className="flex-1">
         <ErrorBoundary key={location.pathname}>
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={location.pathname}
-              initial={{ opacity: 0, y: 12, scale: 0.99 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -8, scale: 0.995 }}
-              transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.9 }}
-              className="pb-tabbar mx-auto w-full max-w-7xl px-4 pt-3 sm:px-6"
-            >
-              <Suspense fallback={<PageLoader />}>
-                <Outlet />
-              </Suspense>
-            </motion.div>
-          </AnimatePresence>
+          {/* Opacity-only fade: no scale, no slide -- nothing that reads as
+              a zoom or a jump when switching tabs. */}
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="pb-tabbar mx-auto w-full max-w-lg px-4 pt-4 sm:max-w-2xl sm:px-6"
+          >
+            <Suspense fallback={<PageLoader />}>
+              <Outlet />
+            </Suspense>
+          </motion.div>
         </ErrorBoundary>
       </main>
 
