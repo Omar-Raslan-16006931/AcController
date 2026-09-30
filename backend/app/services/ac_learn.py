@@ -202,6 +202,43 @@ def _capture_worker(
         _save_capture(button_name, tmp_path)
         return
 
+    if settings.ir_backend.lower() == "tuya":
+        # Learn through the Tuya WiFi IR blaster's own receiver (study mode)
+        # instead of the Pi's GPIO receiver. Same outcome: a "+mark -space"
+        # capture on disk, or an honest timed_out.
+        from app.services import tuya_ir
+
+        try:
+            pulses = tuya_ir.learn(timeout_seconds)
+        except tuya_ir.TuyaIRError as exc:
+            with _lock:
+                if _listen.button_name == button_name and not stop_event.is_set():
+                    _listen.state = "error"
+                    _listen.error = str(exc)
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+            return
+
+        if stop_event.is_set():
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+            return
+
+        if pulses and len(pulses) >= 4:
+            with open(tmp_path, "w") as f:
+                f.write(tuya_ir.pulses_to_text(pulses))
+            with _lock:
+                if _listen.button_name == button_name:
+                    _listen.state = "received"
+            _save_capture(button_name, tmp_path)
+        else:
+            with _lock:
+                if _listen.button_name == button_name:
+                    _listen.state = "timed_out"
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+        return
+
     try:
         proc = subprocess.Popen(
             ["ir-ctl", "-d", settings.ir_rx_device, f"--receive={tmp_path}"],

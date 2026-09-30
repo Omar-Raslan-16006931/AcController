@@ -112,6 +112,18 @@ def _transmit(ir_file: str) -> TransmitResult:
     if settings.simulate_ir:
         return TransmitResult(success=True, ir_file=ir_file)
 
+    if settings.ir_backend.lower() == "tuya":
+        # Same waveform file, emitted by the Tuya WiFi IR blaster instead of
+        # the Pi's GPIO LED (app/services/tuya_ir.py).
+        from app.services import tuya_ir
+
+        try:
+            with open(ir_file, "r") as f:
+                tuya_ir.send_text(f.read())
+        except (OSError, tuya_ir.TuyaIRError) as exc:
+            return TransmitResult(success=False, ir_file=ir_file, error=str(exc))
+        return TransmitResult(success=True, ir_file=ir_file)
+
     try:
         proc = subprocess.run(
             ["ir-ctl", "-d", settings.ir_device, f"--send={ir_file}"],
