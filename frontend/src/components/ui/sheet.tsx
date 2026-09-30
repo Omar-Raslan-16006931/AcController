@@ -47,7 +47,7 @@ function SheetOverlay({
 // more modern "pop up" presentation than a flat slide alone; duration is
 // a touch snappier on close than open, iOS-sheet style.
 const sheetVariants = cva(
-  "bg-background fixed z-50 flex flex-col gap-4 shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 data-[state=closed]:duration-[280ms] data-[state=open]:duration-[380ms]",
+  "bg-popover fixed z-50 flex flex-col gap-4 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 data-[state=closed]:duration-[280ms] data-[state=open]:duration-[380ms]",
   {
     variants: {
       side: {

@@ -118,7 +118,7 @@ export function ScheduleForm({ schedule, submitting, onSubmit, onCancel }: Sched
           {errors.name && <p className="text-destructive text-xs">{errors.name.message}</p>}
         </div>
 
-        <div className="flex items-center justify-between rounded-xl border p-3">
+        <div className="bg-secondary flex items-center justify-between rounded-[1rem] p-3">
           <Label htmlFor="enabled" className="cursor-pointer">
             Enabled
           </Label>
@@ -208,7 +208,7 @@ export function ScheduleForm({ schedule, submitting, onSubmit, onCancel }: Sched
           />
         )}
 
-        <div className="flex items-center justify-between rounded-xl border p-3">
+        <div className="bg-secondary flex items-center justify-between rounded-[1rem] p-3">
           <Label htmlFor="power" className="cursor-pointer">
             Turn AC on
           </Label>

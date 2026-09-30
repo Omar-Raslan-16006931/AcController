@@ -24,7 +24,7 @@ export function UserMenu() {
           className="focus-visible:ring-ring/50 rounded-full outline-none focus-visible:ring-[3px]"
         >
           <Avatar className="size-8">
-            <AvatarFallback className="bg-card text-foreground border-border border">
+            <AvatarFallback className="text-muted-foreground hover:text-foreground bg-transparent transition-colors">
               <UserIcon className="size-4" />
             </AvatarFallback>
           </Avatar>

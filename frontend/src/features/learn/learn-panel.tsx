@@ -1,9 +1,10 @@
 import * as React from "react"
-import { AlertTriangle, CheckCircle2, Ear, Loader2, Radio, Send, Trash2, XCircle } from "lucide-react"
+import { AlertTriangle, CheckCircle2, Loader2, Trash2, XCircle } from "lucide-react"
 
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import {
   useLearnStatus,
   useLearnedButtons,
@@ -17,10 +18,9 @@ import {
 const TIMEOUT_SECONDS = 10
 
 const STEPS = [
-  'Name the button below (e.g. "Power", "Cool 22", "Swing").',
-  "Point the real remote directly at the Pi's IR receiver, close range (within ~10cm).",
-  'Tap "Listen", then immediately press that button once on the real remote.',
-  "The Pi checks whether it actually received a signal and tells you either way.",
+  "Name the button, like Power or Cool 22.",
+  "Hold the real remote close to the Pi's receiver.",
+  "Tap Listen, then press that button once.",
 ]
 
 export function LearnPanel() {
@@ -53,9 +53,8 @@ export function LearnPanel() {
     del.mutate(buttonName, { onSettled: () => setPendingDelete(null) })
   }
 
-  // Clear the name field once a capture succeeds so the next button starts
-  // fresh; leave it in place on timeout/error so retrying doesn't require
-  // retyping the same name.
+  // Clear the name once a capture succeeds so the next button starts fresh;
+  // keep it on timeout/error so a retry doesn't need retyping.
   const prevStateRef = React.useRef<string | undefined>(undefined)
   React.useEffect(() => {
     if (status?.state === "received" && prevStateRef.current !== "received") {
@@ -65,35 +64,21 @@ export function LearnPanel() {
   }, [status?.state])
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">How to learn a button</CardTitle>
-          <CardDescription className="text-xs">
-            For an AC whose remote isn't in the built-in library at all. Requires a physical IR
-            receiver wired to the Pi, separate from the transmitter blaster — see docs/AC_LEARN.md
-            if every attempt times out.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ol className="text-muted-foreground space-y-2 text-xs">
+        <CardContent className="space-y-4">
+          <ol className="space-y-2.5 px-1">
             {STEPS.map((step, i) => (
-              <li key={i} className="flex gap-2">
-                <span className="bg-muted text-foreground flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold">
-                  {i + 1}
-                </span>
-                <span>{step}</span>
+              <li key={i} className="flex gap-3 text-[14px]">
+                <span className="font-heading tnum text-muted-foreground w-3 shrink-0 text-[15px]">{i + 1}</span>
+                <span className="text-foreground/85">{step}</span>
               </li>
             ))}
           </ol>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardContent className="space-y-3 pt-4">
           <div className="flex gap-2">
             <Input
-              placeholder="Button name, e.g. Cool 22"
+              placeholder="Button name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               disabled={listening}
@@ -101,22 +86,14 @@ export function LearnPanel() {
               onKeyDown={(e) => e.key === "Enter" && handleListen()}
             />
             {!listening ? (
-              <Button
-                className="h-11 shrink-0 gap-1.5"
-                disabled={!canListen || start.isPending}
-                onClick={handleListen}
-              >
-                {start.isPending ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : (
-                  <Ear className="size-4" />
-                )}
+              <Button className="h-11 shrink-0 px-5" disabled={!canListen || start.isPending} onClick={handleListen}>
+                {start.isPending && <Loader2 className="size-4 animate-spin" />}
                 Listen
               </Button>
             ) : (
               <Button
                 variant="outline"
-                className="h-11 shrink-0 gap-1.5"
+                className="h-11 shrink-0 px-5"
                 disabled={cancel.isPending}
                 onClick={() => cancel.mutate()}
               >
@@ -125,60 +102,52 @@ export function LearnPanel() {
             )}
           </div>
 
-          <StatusBanner status={status} timeoutSeconds={TIMEOUT_SECONDS} />
+          <StatusLine status={status} timeoutSeconds={TIMEOUT_SECONDS} />
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">Learned buttons</CardTitle>
-        </CardHeader>
         <CardContent>
+          <p className="text-muted-foreground mb-3 px-1 text-[13px]">Learned buttons</p>
           {buttonsLoading ? (
-            <p className="text-muted-foreground text-xs">Loading…</p>
+            <Loader2 className="text-muted-foreground mx-1 size-4 animate-spin" />
           ) : !buttonsData?.buttons.length ? (
-            <p className="text-muted-foreground text-xs">
-              Nothing learned yet — name a button above and tap Listen to add your first one.
-            </p>
+            <p className="text-muted-foreground px-1 text-[14px]">None yet.</p>
           ) : (
             <div className="space-y-1.5">
-              {buttonsData.buttons.map((b) => (
-                <div
-                  key={b.name}
-                  className="bg-muted/50 flex items-center justify-between gap-2 rounded-lg px-3 py-2"
-                >
-                  <span className="truncate text-sm font-medium">{b.name}</span>
-                  <div className="flex shrink-0 gap-1.5">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 gap-1 text-xs"
-                      disabled={listening || (send.isPending && pendingSend === b.name)}
-                      onClick={() => handleSend(b.name)}
-                    >
-                      {send.isPending && pendingSend === b.name ? (
-                        <Loader2 className="size-3 animate-spin" />
-                      ) : (
-                        <Send className="size-3" />
-                      )}
-                      Send
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-destructive h-7 gap-1 text-xs"
-                      disabled={del.isPending && pendingDelete === b.name}
-                      onClick={() => handleDelete(b.name)}
-                    >
-                      {del.isPending && pendingDelete === b.name ? (
-                        <Loader2 className="size-3 animate-spin" />
-                      ) : (
-                        <Trash2 className="size-3" />
-                      )}
-                    </Button>
+              {buttonsData.buttons.map((b) => {
+                const sending = send.isPending && pendingSend === b.name
+                const deleting = del.isPending && pendingDelete === b.name
+                return (
+                  <div
+                    key={b.name}
+                    className="bg-secondary flex items-center justify-between gap-2 rounded-[1rem] py-1.5 pr-1.5 pl-4"
+                  >
+                    <span className="truncate text-[15px] font-medium">{b.name}</span>
+                    <div className="flex shrink-0 items-center gap-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={listening || sending}
+                        onClick={() => handleSend(b.name)}
+                      >
+                        {sending && <Loader2 className="size-3.5 animate-spin" />}
+                        Send
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`Delete ${b.name}`}
+                        className="hover:text-destructive size-9 rounded-full"
+                        disabled={deleting}
+                        onClick={() => handleDelete(b.name)}
+                      >
+                        {deleting ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </CardContent>
@@ -187,13 +156,11 @@ export function LearnPanel() {
   )
 }
 
-function StatusBanner({
-  status,
-  timeoutSeconds,
-}: {
-  status: LearnStatus | undefined
-  timeoutSeconds: number
-}) {
+/**
+ * One line of state under the input. While listening, a thin bar drains
+ * across the full width over the timeout -- a real countdown, not a pulse.
+ */
+function StatusLine({ status, timeoutSeconds }: { status: LearnStatus | undefined; timeoutSeconds: number }) {
   const [secondsLeft, setSecondsLeft] = React.useState(timeoutSeconds)
 
   React.useEffect(() => {
@@ -201,66 +168,53 @@ function StatusBanner({
     const startedAt = new Date(status.started_at).getTime()
     const tick = () => {
       const elapsed = (Date.now() - startedAt) / 1000
-      setSecondsLeft(Math.max(0, Math.ceil(timeoutSeconds - elapsed)))
+      setSecondsLeft(Math.max(0, timeoutSeconds - elapsed))
     }
     tick()
-    const id = setInterval(tick, 250)
+    const id = setInterval(tick, 100)
     return () => clearInterval(id)
   }, [status?.state, status?.started_at, timeoutSeconds])
 
   if (!status || status.state === "idle") {
-    return (
-      <p className="text-muted-foreground text-xs">
-        Ready — name a button above to start listening.
-      </p>
-    )
+    return <p className="text-muted-foreground px-1 text-[13px]">Ready when you are.</p>
   }
 
   if (status.state === "listening") {
+    const pct = Math.max(0, Math.min(100, (secondsLeft / timeoutSeconds) * 100))
     return (
-      <div className="border-primary/30 bg-primary/5 flex items-center gap-2 rounded-lg border px-3 py-2.5">
-        <Radio className="text-primary size-4 shrink-0 animate-pulse" />
-        <p className="text-xs">
-          Listening for <span className="font-semibold">"{status.button_name}"</span> — press it
-          now. Giving up in {secondsLeft}s.
+      <div className="px-1">
+        <p className="text-[14px]">
+          Listening for <span className="text-primary font-medium">{status.button_name}</span>. Press it now.
+          <span className="text-muted-foreground tnum ml-1">{Math.ceil(secondsLeft)}s</span>
         </p>
-      </div>
-    )
-  }
-
-  if (status.state === "received") {
-    return (
-      <div className="border-success/30 bg-success/10 flex items-center gap-2 rounded-xl border px-3 py-2.5">
-        <CheckCircle2 className="text-success size-4 shrink-0" />
-        <p className="text-xs">
-          Signal received and saved as <span className="font-semibold">"{status.button_name}"</span>.
-        </p>
-      </div>
-    )
-  }
-
-  if (status.state === "timed_out") {
-    return (
-      <div className="border-destructive/30 bg-destructive/5 flex items-start gap-2 rounded-lg border px-3 py-2.5">
-        <XCircle className="text-destructive mt-0.5 size-4 shrink-0" />
-        <div className="text-xs">
-          <p>
-            No signal received for <span className="font-semibold">"{status.button_name}"</span>.
-            Move closer to the receiver, aim directly at it, and try again.
-          </p>
-          {status.error && <p className="text-destructive mt-1 font-mono text-[10px]">{status.error}</p>}
+        <div className="bg-secondary mt-2.5 h-1 w-full overflow-hidden rounded-full">
+          <div
+            className="bg-primary h-full rounded-full transition-[width] duration-100 ease-linear"
+            style={{ width: `${pct}%` }}
+          />
         </div>
       </div>
     )
   }
 
-  // error
+  const tone =
+    status.state === "received" ? "text-success" : status.state === "timed_out" ? "text-destructive" : "text-warning"
+  const Icon = status.state === "received" ? CheckCircle2 : status.state === "timed_out" ? XCircle : AlertTriangle
+  const message =
+    status.state === "received"
+      ? `Got it. Saved as ${status.button_name}.`
+      : status.state === "timed_out"
+        ? `Nothing received for ${status.button_name}. Move closer and try again.`
+        : "Couldn't listen. The IR receiver may not be wired up."
+
   return (
-    <div className="border-warning/30 bg-warning/10 flex items-start gap-2 rounded-xl border px-3 py-2.5">
-      <AlertTriangle className="text-warning mt-0.5 size-4 shrink-0" />
-      <div className="text-xs">
-        <p>Couldn't listen — this usually means the IR receiver isn't wired up yet.</p>
-        {status.error && <p className="text-warning mt-1 font-mono text-[11px] break-all">{status.error}</p>}
+    <div className="flex items-start gap-2.5 px-1">
+      <Icon className={cn("mt-0.5 size-4 shrink-0", tone)} />
+      <div className="min-w-0 text-[14px]">
+        <p>{message}</p>
+        {status.state !== "received" && status.error && (
+          <p className={cn("mt-1 text-[12px] break-all", tone)}>{status.error}</p>
+        )}
       </div>
     </div>
   )

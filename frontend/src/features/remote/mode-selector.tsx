@@ -6,6 +6,7 @@ const options = modeOrder.map((mode) => ({
   value: mode,
   label: modeConfig[mode].label,
   icon: modeConfig[mode].icon,
+  activeTone: modeConfig[mode].className,
 }))
 
 export function ModeSelector({

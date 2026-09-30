@@ -18,7 +18,7 @@ export function OfflineBanner() {
         >
           <div className="bg-destructive text-destructive-foreground flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium">
             <WifiOff className="size-4" />
-            You&apos;re offline — reconnect to control your AC.
+            You&apos;re offline. Reconnect to control your AC.
           </div>
         </motion.div>
       )}

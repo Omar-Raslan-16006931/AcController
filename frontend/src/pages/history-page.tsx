@@ -118,7 +118,7 @@ export function HistoryPage() {
       {!isLoading && total === 0 && (
         <Card>
           <CardContent className="flex flex-col items-center gap-2 py-12 text-center">
-            <div className="bg-muted text-muted-foreground flex size-12 items-center justify-center rounded-2xl">
+            <div className="text-muted-foreground flex items-center justify-center">
               <HistoryIcon className="size-6" />
             </div>
             <p className="text-muted-foreground text-sm">No commands recorded yet.</p>

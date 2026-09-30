@@ -28,13 +28,13 @@ export function ScheduleCard({ schedule, onToggle, onEdit, onDuplicate, onDelete
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ y: 8 }}
+      animate={{ y: 0 }}
       exit={{ opacity: 0, y: -8 }}
     >
       <Card className={schedule.enabled ? "" : "opacity-60"}>
         <CardContent className="flex items-center gap-3.5">
-          <div className="bg-primary/10 text-primary flex size-11 shrink-0 items-center justify-center rounded-xl">
+          <div className="text-primary flex size-8 shrink-0 items-center justify-center">
             <Clock className="size-5" />
           </div>
 

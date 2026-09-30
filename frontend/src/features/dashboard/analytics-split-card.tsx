@@ -1,6 +1,3 @@
-import { Timer, TrendingUp } from "lucide-react"
-import { motion } from "framer-motion"
-
 import { Card } from "@/components/ui/card"
 
 function formatHours(hours: number): string {
@@ -17,38 +14,20 @@ interface AnalyticsSplitCardProps {
   weekAverageHours: number
 }
 
+/** Two figures side by side on one shared baseline. */
 export function AnalyticsSplitCard({ todayHours, weekAverageHours }: AnalyticsSplitCardProps) {
   return (
-    <Card className="flex-row gap-0 divide-x divide-border p-0">
-      <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 460, damping: 32 }}
-        className="flex flex-1 items-center gap-2.5 p-3.5"
-      >
-        <span className="text-foreground flex size-8 shrink-0 items-center justify-center">
-          <Timer className="size-4" />
-        </span>
-        <div className="min-w-0">
-          <p className="text-muted-foreground truncate text-[11px] leading-tight font-medium">On today</p>
-          <p className="text-[15px] leading-tight font-bold tabular-nums">{formatHours(todayHours)}</p>
-        </div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 460, damping: 32, delay: 0.04 }}
-        className="flex flex-1 items-center gap-2.5 p-3.5"
-      >
-        <span className="text-foreground flex size-8 shrink-0 items-center justify-center">
-          <TrendingUp className="size-4" />
-        </span>
-        <div className="min-w-0">
-          <p className="text-muted-foreground truncate text-[11px] leading-tight font-medium">7-day average</p>
-          <p className="text-[15px] leading-tight font-bold tabular-nums">{formatHours(weekAverageHours)}</p>
-        </div>
-      </motion.div>
+    <Card className="grid grid-cols-2 gap-0 px-5 py-4">
+      <div className="min-w-0">
+        <p className="text-muted-foreground text-[13px]">On today</p>
+        <p className="font-heading tnum mt-1 text-[30px] leading-none font-medium">{formatHours(todayHours)}</p>
+      </div>
+      <div className="min-w-0">
+        <p className="text-muted-foreground text-[13px]">Daily average</p>
+        <p className="font-heading tnum text-foreground/70 mt-1 text-[30px] leading-none font-medium">
+          {formatHours(weekAverageHours)}
+        </p>
+      </div>
     </Card>
   )
 }

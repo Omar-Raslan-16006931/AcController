@@ -60,11 +60,9 @@ function PasskeyRow({ passkey, onDelete, deleting }: { passkey: Passkey; onDelet
   const [confirmOpen, setConfirmOpen] = React.useState(false)
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border px-3 py-2">
+    <div className="bg-secondary flex items-center justify-between gap-3 rounded-[1rem] px-3 py-2">
       <div className="flex items-center gap-2.5 overflow-hidden">
-        <div className="bg-muted flex size-7 shrink-0 items-center justify-center rounded-full">
-          <ScanFace className="text-muted-foreground size-3.5" />
-        </div>
+        <ScanFace className="text-muted-foreground size-4 shrink-0" />
         <div className="min-w-0">
           <p className="truncate text-xs font-medium">{passkey.friendly_name ?? "Passkey"}</p>
           <p className="text-muted-foreground truncate text-[11px]">
@@ -167,7 +165,7 @@ function DetectAcLinkCard() {
         to="/detect"
         className="active:bg-secondary flex min-h-14 items-center gap-3 rounded-[inherit] px-4 py-3 transition-colors"
       >
-        <div className="bg-accent text-primary flex size-10 shrink-0 items-center justify-center rounded-xl">
+        <div className="text-primary flex size-7 shrink-0 items-center justify-center">
           <Radar className="size-5" />
         </div>
         <div className="min-w-0 flex-1">
@@ -189,7 +187,7 @@ function SystemLinkCard() {
         to="/system"
         className="active:bg-secondary flex min-h-14 items-center gap-3 rounded-[inherit] px-4 py-3 transition-colors"
       >
-        <div className="bg-accent text-primary flex size-10 shrink-0 items-center justify-center rounded-xl">
+        <div className="text-primary flex size-7 shrink-0 items-center justify-center">
           <Cpu className="size-5" />
         </div>
         <div className="min-w-0 flex-1">

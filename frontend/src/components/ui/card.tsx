@@ -3,9 +3,10 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 /**
- * Clean white card on the beige canvas: hairline warm border + a very soft
- * shadow for lift. `glass` is still accepted for backwards compatibility
- * but renders identically -- there's one surface style now.
+ * Tonal card: the surface sits one value step above the near-black page,
+ * with an edge in its own tone and a faint top lip (see `.surface` in
+ * index.css). No drop shadow, no bright outline. `glass` is still accepted
+ * for backwards compatibility but renders identically.
  */
 function Card({
   className,
@@ -17,7 +18,7 @@ function Card({
       data-slot="card"
       data-glass={glass ? "" : undefined}
       className={cn(
-        "bg-card text-card-foreground border-border shadow-soft flex flex-col gap-3 rounded-[1.25rem] border py-4",
+        "surface text-card-foreground flex flex-col gap-3 rounded-[1.375rem] py-4",
         className
       )}
       {...props}

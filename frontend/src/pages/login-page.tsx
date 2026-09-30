@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { motion, AnimatePresence } from "framer-motion"
-import { CheckCircle2, Loader2, Lock, Mail, ScanFace, Snowflake } from "lucide-react"
+import { CheckCircle2, Loader2, Lock, Mail, ScanFace } from "lucide-react"
 import { toast } from "sonner"
 
 import { useAuth } from "@/context/auth-context"
@@ -91,35 +91,34 @@ export function LoginPage() {
 
   return (
     <div
-      className="bg-background flex min-h-svh items-center justify-center px-4 py-10 sm:p-6"
+      className="flex min-h-svh items-center justify-center px-4 py-10 sm:p-6"
       style={{ paddingTop: "max(2.5rem, env(safe-area-inset-top))" }}
     >
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.25, ease: "easeOut" }}
+        initial={{ y: 12 }}
+        animate={{ y: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 32 }}
         className="w-full max-w-sm"
       >
         <Card>
-          <CardHeader className="items-center pt-6 text-center">
-            <div className="bg-primary text-primary-foreground mx-auto mb-2 flex size-14 items-center justify-center rounded-2xl">
-              <Snowflake className="size-7" />
-            </div>
-            <CardTitle className="text-2xl font-bold">AcController</CardTitle>
-            <CardDescription>
+          <CardHeader className="px-6 pt-4">
+            <CardTitle className="font-heading text-[34px] leading-tight font-medium tracking-[-0.015em]">
+              Ac<span className="text-primary">°</span>Controller
+            </CardTitle>
+            <CardDescription className="text-[14px]">
               {mode === "sign-in"
                 ? "Sign in to control your AC"
                 : "Create an account to get started"}
             </CardDescription>
           </CardHeader>
-          <CardContent className="pb-6">
+          <CardContent className="px-6 pb-6">
             <AnimatePresence mode="wait">
               {signUpSuccess ? (
                 <motion.div
                   key="success"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                  initial={{ y: 6 }}
+                  animate={{ y: 0 }}
+                  exit={{ y: -6 }}
                   transition={{ duration: 0.15 }}
                   className="flex flex-col items-center gap-3 py-4 text-center"
                 >
@@ -136,15 +135,15 @@ export function LoginPage() {
               ) : (
                 <motion.div
                   key={mode}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                  initial={{ y: 6 }}
+                  animate={{ y: 0 }}
+                  exit={{ y: -6 }}
                   transition={{ duration: 0.15 }}
                   className="space-y-5"
                 >
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
                     <div className="space-y-2">
-                      <Label htmlFor="email" className="text-[13px] font-semibold">
+                      <Label htmlFor="email" className="text-muted-foreground text-[13px] font-normal">
                         Email
                       </Label>
                       <div className="relative">
@@ -165,7 +164,7 @@ export function LoginPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="password" className="text-[13px] font-semibold">
+                      <Label htmlFor="password" className="text-muted-foreground text-[13px] font-normal">
                         Password
                       </Label>
                       <div className="relative">
@@ -187,17 +186,13 @@ export function LoginPage() {
 
                     <Button type="submit" size="lg" className="h-12 w-full text-base" disabled={submitting}>
                       {submitting && <Loader2 className="size-4 animate-spin" />}
-                      {mode === "sign-in" ? "Sign In" : "Create account"}
+                      {mode === "sign-in" ? "Sign in" : "Create account"}
                     </Button>
                   </form>
 
                   {mode === "sign-in" && (
                     <>
-                      <div className="flex items-center gap-3">
-                        <div className="bg-border h-px flex-1" />
-                        <span className="text-muted-foreground text-xs">or</span>
-                        <div className="bg-border h-px flex-1" />
-                      </div>
+                      <p className="text-muted-foreground text-center text-[13px]">or</p>
 
                       <Button
                         type="button"

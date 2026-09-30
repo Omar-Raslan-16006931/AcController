@@ -35,8 +35,8 @@ export function WeekBarChart({ bars, onSelectDay }: WeekBarChartProps) {
   const avgHeightPct = Math.min(100, (avgHours / maxHours) * 100)
 
   return (
-    <Card className="gap-3 p-4">
-      <p className="text-[15px] font-semibold">This week</p>
+    <Card className="gap-3 px-5 py-4">
+      <p className="text-muted-foreground text-[13px]">Hours on, last 7 days</p>
 
       <div className="flex h-36 flex-col gap-1.5">
         <div className="flex justify-between gap-2">
@@ -44,8 +44,8 @@ export function WeekBarChart({ bars, onSelectDay }: WeekBarChartProps) {
             <span
               key={bar.date}
               className={cn(
-                "flex-1 text-center text-[10px] font-semibold tabular-nums",
-                bar.isToday ? "text-primary" : "text-muted-foreground"
+                "flex-1 text-center text-[11px] tabular-nums",
+                bar.isToday ? "text-foreground font-medium" : "text-muted-foreground"
               )}
             >
               {formatBarHours(bar.hours)}
@@ -56,10 +56,10 @@ export function WeekBarChart({ bars, onSelectDay }: WeekBarChartProps) {
         <div className="relative flex flex-1 items-end justify-between gap-2">
           {avgHours > 0 && (
             <div
-              className="border-muted-foreground/35 pointer-events-none absolute inset-x-0 z-10 border-t border-dashed"
+              className="border-muted-foreground/30 pointer-events-none absolute inset-x-0 z-10 border-t border-dashed"
               style={{ bottom: `${avgHeightPct}%` }}
             >
-              <span className="text-muted-foreground bg-card absolute -top-2 right-0 pl-1.5 text-[9px] font-semibold tracking-wide uppercase">
+              <span className="text-muted-foreground bg-card absolute -top-2.5 right-0 pl-2 text-[11px]">
                 avg {formatBarHours(avgHours)}
               </span>
             </div>
@@ -72,16 +72,19 @@ export function WeekBarChart({ bars, onSelectDay }: WeekBarChartProps) {
                 key={bar.date}
                 type="button"
                 onClick={() => onSelectDay(bar.date)}
-                className="flex h-full flex-1 cursor-pointer items-end justify-center rounded-full active:opacity-70"
+                className="group flex h-full flex-1 cursor-pointer items-end justify-center rounded-full"
                 aria-label={`${format(new Date(`${bar.date}T00:00:00`), "EEEE")}, ${formatBarHours(bar.hours)}`}
               >
+                {/* Height eases between values on data changes; initial={false}
+                    so a bar is always drawn at its real height, never gated
+                    on a mount animation. */}
                 <motion.span
-                  initial={{ height: 0 }}
+                  initial={false}
                   animate={{ height: `${heightPct}%` }}
-                  transition={{ duration: 0.4, ease: "easeOut", delay: i * 0.03 }}
+                  transition={{ type: "spring", stiffness: 160, damping: 24, delay: i * 0.02 }}
                   className={cn(
-                    "w-full min-h-[3px] rounded-full",
-                    bar.isToday ? "bg-primary" : "bg-primary/20"
+                    "w-full min-h-[3px] rounded-full transition-colors duration-200",
+                    bar.isToday ? "bg-primary" : "bg-raised group-hover:bg-muted-foreground/40"
                   )}
                 />
               </button>
@@ -94,8 +97,8 @@ export function WeekBarChart({ bars, onSelectDay }: WeekBarChartProps) {
             <span
               key={bar.date}
               className={cn(
-                "flex-1 text-center text-[11px] font-medium",
-                bar.isToday ? "text-primary" : "text-muted-foreground"
+                "flex-1 text-center text-[12px]",
+                bar.isToday ? "text-primary font-medium" : "text-muted-foreground"
               )}
             >
               {format(new Date(`${bar.date}T00:00:00`), "EEEEE")}

@@ -15,24 +15,21 @@ import { FanModeCard } from "@/features/dashboard/fan-mode-card"
 import { UsageEnergyCard } from "@/features/dashboard/usage-energy-card"
 import { DayDetailSheet } from "@/features/dashboard/day-detail-sheet"
 
-// Gentle staggered fade-in on mount -- opacity only, no movement.
-const cardListVariants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.04 } },
-}
-const cardItemVariants = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { duration: 0.2, ease: "easeOut" as const } },
+// Cards settle up into place one after another. y-axis only: every card is
+// fully visible from the first frame even if the animation never runs.
+const listVariants = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } }
+const itemVariants = {
+  hidden: { y: 14 },
+  show: { y: 0, transition: { type: "spring" as const, stiffness: 380, damping: 34 } },
 }
 
 function DashboardSkeleton() {
   return (
     <div className="space-y-3">
-      <Skeleton className="h-[168px] w-full rounded-[1.25rem]" />
-      <Skeleton className="h-16 w-full rounded-[1.25rem]" />
-      <Skeleton className="h-52 w-full rounded-[1.25rem]" />
-      <Skeleton className="h-28 w-full rounded-[1.25rem]" />
-      <Skeleton className="h-40 w-full rounded-[1.25rem]" />
+      <Skeleton className="bg-card h-[150px] w-full rounded-[1.375rem]" />
+      <Skeleton className="bg-card h-[84px] w-full rounded-[1.375rem]" />
+      <Skeleton className="bg-card h-52 w-full rounded-[1.375rem]" />
+      <Skeleton className="bg-card h-28 w-full rounded-[1.375rem]" />
     </div>
   )
 }
@@ -48,18 +45,17 @@ export function DashboardPage() {
   return (
     <div>
       <PageHeader
-        title="Dashboard"
-        description="Today's usage at a glance."
+        title="Today"
         actions={
           <Button
-            variant="outline"
+            variant="ghost"
             size="icon"
             aria-label="Refresh"
             onClick={() => refetch()}
             disabled={isFetching}
-            className="size-10"
+            className="size-10 rounded-full"
           >
-            <RefreshCw className={`size-4 ${isFetching ? "animate-spin" : ""}`} />
+            <RefreshCw className={`size-[18px] ${isFetching ? "animate-spin" : ""}`} />
           </Button>
         }
       />
@@ -68,17 +64,11 @@ export function DashboardPage() {
 
       {isError && !isLoading && (
         <Card>
-          <CardContent className="flex flex-col items-center gap-3 py-8 text-center">
-            <div className="bg-destructive/10 text-destructive flex size-12 items-center justify-center rounded-2xl">
-              <WifiOff className="size-6" />
-            </div>
-            <div>
-              <p className="font-semibold">Can't reach the Raspberry Pi</p>
-              <p className="text-muted-foreground mt-1 text-[13px]">
-                Check that the backend is running and VITE_API_BASE_URL points to it.
-              </p>
-            </div>
-            <Button variant="secondary" size="sm" onClick={() => refetch()}>
+          <CardContent className="py-6">
+            <WifiOff className="text-destructive size-5" />
+            <p className="font-heading mt-3 text-[22px] leading-tight font-medium">Can't reach the Pi</p>
+            <p className="text-muted-foreground mt-1 text-[14px]">Check that it's powered and online.</p>
+            <Button variant="secondary" className="mt-5" onClick={() => refetch()}>
               Try again
             </Button>
           </CardContent>
@@ -86,13 +76,8 @@ export function DashboardPage() {
       )}
 
       {status && analytics && !isLoading && (
-        <motion.div
-          variants={cardListVariants}
-          initial="hidden"
-          animate="show"
-          className="space-y-3"
-        >
-          <motion.div variants={cardItemVariants}>
+        <motion.div variants={listVariants} initial="hidden" animate="show" className="space-y-3">
+          <motion.div variants={itemVariants}>
             <AcHeroCard
               acState={status.ac_state}
               lastCommandAt={status.last_command_at}
@@ -100,14 +85,11 @@ export function DashboardPage() {
             />
           </motion.div>
 
-          <motion.div variants={cardItemVariants}>
-            <AnalyticsSplitCard
-              todayHours={analytics.todayHours}
-              weekAverageHours={analytics.weekAverageHours}
-            />
+          <motion.div variants={itemVariants}>
+            <AnalyticsSplitCard todayHours={analytics.todayHours} weekAverageHours={analytics.weekAverageHours} />
           </motion.div>
 
-          <motion.div variants={cardItemVariants}>
+          <motion.div variants={itemVariants}>
             <WeekBarChart
               bars={analytics.weekBars}
               onSelectDay={(date) => {
@@ -117,11 +99,11 @@ export function DashboardPage() {
             />
           </motion.div>
 
-          <motion.div variants={cardItemVariants}>
+          <motion.div variants={itemVariants}>
             <FanModeCard distribution={analytics.fanDistribution} />
           </motion.div>
 
-          <motion.div variants={cardItemVariants}>
+          <motion.div variants={itemVariants}>
             <UsageEnergyCard
               weekKwh={analytics.weekKwh}
               weekCostEgp={analytics.weekCostEgp}

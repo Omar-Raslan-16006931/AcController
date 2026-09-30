@@ -27,19 +27,20 @@ export function AppLayout() {
   }, [location.pathname])
 
   return (
-    <div className="bg-background flex min-h-svh flex-col">
+    <div className="flex min-h-svh flex-col">
       <Topbar />
       <OfflineBanner />
 
       <main className="flex-1">
         <ErrorBoundary key={location.pathname}>
-          {/* Opacity-only fade: no scale, no slide -- nothing that reads as
-              a zoom or a jump when switching tabs. */}
+          {/* A short settle on the y-axis only. Content is never hidden
+              behind the animation (no opacity-from-0), and there is no scale,
+              so nothing reads as a zoom. */}
           <motion.div
             key={location.pathname}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
+            initial={{ y: 10 }}
+            animate={{ y: 0 }}
+            transition={{ type: "spring", stiffness: 420, damping: 38, mass: 0.7 }}
             className="pb-tabbar mx-auto w-full max-w-lg px-4 pt-4 sm:max-w-2xl sm:px-6"
           >
             <Suspense fallback={<PageLoader />}>

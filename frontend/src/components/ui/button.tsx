@@ -7,19 +7,20 @@ import { cn } from "@/lib/utils"
 const buttonVariants = cva(
   // Press feedback is a color/opacity change only -- no scale, so nothing
   // ever "zooms" under the finger.
-  "inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-semibold transition-[background-color,color,box-shadow,border-color,opacity] duration-150 ease-out disabled:pointer-events-none disabled:opacity-45 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring aria-invalid:ring-destructive/20 aria-invalid:border-destructive",
+  "inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-[0.875rem] text-sm font-medium transition-[background-color,color,opacity] duration-200 ease-out disabled:pointer-events-none disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:ring-destructive/20",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80",
+          "bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/75",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 active:bg-destructive/80",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 active:bg-destructive/75",
+        // Tonal, not outlined -- avoids the filled-next-to-ghost button pair.
         outline:
-          "border border-input bg-card text-foreground hover:bg-secondary active:bg-secondary/80",
+          "bg-raised text-foreground hover:bg-raised/80 active:bg-secondary",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 active:bg-secondary/70",
-        ghost: "hover:bg-secondary active:bg-secondary/80",
+          "bg-secondary text-secondary-foreground hover:bg-raised active:bg-raised/70",
+        ghost: "text-muted-foreground hover:text-foreground hover:bg-secondary active:bg-raised",
         link: "text-primary underline-offset-4 hover:underline",
         brand:
           "bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80",
