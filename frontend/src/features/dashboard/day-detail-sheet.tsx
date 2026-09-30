@@ -84,7 +84,7 @@ function DayRadialDial({ day, totalHours }: { day: AcUsageDayDetail | undefined;
                 strokeLinecap="round"
                 strokeDasharray={`${arcLength} ${DIAL_CIRCUMFERENCE - arcLength}`}
                 transform={`rotate(${rotationDeg} ${DIAL_CENTER} ${DIAL_CENTER})`}
-                initial={{ opacity: 0 }}
+                initial={false}
                 animate={{ opacity: 0.95 }}
                 transition={{ delay: 0.1 + i * 0.05 }}
               />
@@ -115,8 +115,8 @@ function IntervalRow({
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -8 }}
-      animate={{ opacity: 1, x: 0 }}
+      initial={{ x: -8 }}
+      animate={{ x: 0 }}
       transition={{ delay: 0.05 + index * 0.05 }}
       className="relative flex gap-3 pb-5 pl-1 last:pb-0"
     >
@@ -137,7 +137,7 @@ function IntervalRow({
         </div>
         {interval.temperature != null && (
           <span
-            className="shrink-0 rounded-full px-2 py-0.5 text-[12px] font-semibold text-white"
+            className="text-background shrink-0 rounded-full px-2 py-0.5 text-[12px] font-semibold"
             style={{ backgroundColor: chipColor }}
           >
             {interval.temperature}°

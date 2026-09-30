@@ -1,25 +1,23 @@
 import { cn } from "@/lib/utils"
 import { useConnectionStatus } from "@/hooks/use-connection-status"
 
+/** Plain typographic status: a small solid dot and a word, no pill. */
 export function ConnectionBadge() {
   const { state } = useConnectionStatus()
 
   const config = {
-    online: { label: "Online", className: "bg-success/10 text-success", dot: "bg-success" },
-    offline: { label: "Offline", className: "bg-destructive/10 text-destructive", dot: "bg-destructive" },
-    checking: { label: "Checking", className: "bg-secondary text-muted-foreground", dot: "bg-muted-foreground/60" },
+    online: { label: "Online", text: "text-foreground/80", dot: "bg-success" },
+    offline: { label: "Offline", text: "text-destructive", dot: "bg-destructive" },
+    checking: { label: "Checking", text: "text-muted-foreground", dot: "bg-muted-foreground/50" },
   }[state]
 
   return (
     <div
       role="status"
       aria-label={`Raspberry Pi ${config.label.toLowerCase()}`}
-      className={cn(
-        "flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold",
-        config.className
-      )}
+      className={cn("flex items-center gap-2 text-[13px] font-medium transition-colors duration-300", config.text)}
     >
-      <span className={cn("size-2 rounded-full", config.dot)} />
+      <span className={cn("size-[7px] rounded-full transition-colors duration-300", config.dot)} />
       {config.label}
     </div>
   )

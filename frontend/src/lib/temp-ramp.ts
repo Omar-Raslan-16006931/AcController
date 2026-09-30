@@ -10,7 +10,9 @@ import type { FanSpeed } from "@/types/database"
  *    the 4 stops, so "lower fan speed" and "cooler shade" both read as
  *    the same visual language without introducing a second palette.
  */
-const TEMP_RAMP_STOPS = ["#3C86D8", "#4C9EF0", "#5AC8FA", "#7CD9FF"] as const
+// Tonal frost ramp: deep sea-grey up to the frost accent. Desaturated on
+// purpose so it reads as one family with the rest of the dark UI.
+const TEMP_RAMP_STOPS = ["#4e6b66", "#6f928b", "#97bdb4", "#bfe3da"] as const
 
 const TEMP_MIN = 20
 const TEMP_MAX = 28

@@ -1,15 +1,15 @@
-import { Power, PowerOff } from "lucide-react"
+import { Power } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
 const base =
-  "flex h-14 flex-1 cursor-pointer items-center justify-center gap-2 rounded-2xl text-[15px] font-bold transition-colors duration-150 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-40"
+  "flex h-14 flex-1 cursor-pointer items-center justify-center gap-2 rounded-[1rem] text-[15px] font-semibold transition-colors duration-300 ease-out outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-40"
 
 /**
- * Two independent buttons instead of one toggle. IR is one-way and
- * occasionally lossy, so either can be tapped repeatedly to make sure the
- * AC receives it -- neither is disabled while a request is in flight. The
- * button matching the last known state is filled; the other is outlined.
+ * Two independent buttons instead of one toggle: IR is one-way and
+ * occasionally lossy, so either can be tapped again to make sure the AC
+ * hears it, and neither is disabled while a request is in flight. The one
+ * matching the last known state carries the fill; the other stays tonal.
  */
 export function PowerButtons({
   on,
@@ -23,7 +23,7 @@ export function PowerButtons({
   onPowerOff: () => void
 }) {
   return (
-    <div className="flex w-full items-center gap-3">
+    <div className="flex w-full items-center gap-2.5">
       <button
         type="button"
         disabled={!connected}
@@ -33,11 +33,11 @@ export function PowerButtons({
         className={cn(
           base,
           on
-            ? "bg-primary text-primary-foreground active:bg-primary/85"
-            : "bg-card text-foreground border-border active:bg-secondary border"
+            ? "bg-primary text-primary-foreground active:bg-primary/80"
+            : "bg-secondary text-muted-foreground hover:text-foreground active:bg-raised"
         )}
       >
-        <Power className="size-5" strokeWidth={2.4} />
+        <Power className="size-[18px]" strokeWidth={2.4} />
         On
       </button>
 
@@ -50,11 +50,10 @@ export function PowerButtons({
         className={cn(
           base,
           !on
-            ? "bg-foreground text-background active:bg-foreground/85"
-            : "bg-card text-foreground border-border active:bg-secondary border"
+            ? "bg-raised text-foreground active:bg-raised/70"
+            : "bg-secondary text-muted-foreground hover:text-foreground active:bg-raised"
         )}
       >
-        <PowerOff className="size-5" strokeWidth={2.4} />
         Off
       </button>
     </div>

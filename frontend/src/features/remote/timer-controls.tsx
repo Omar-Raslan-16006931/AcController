@@ -43,17 +43,15 @@ function TimerPopoverButton({
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="border-border bg-card active:bg-secondary flex h-12 flex-1 cursor-pointer items-center justify-center gap-2 rounded-2xl border text-[14px] font-semibold transition-colors duration-150 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          className="bg-secondary text-foreground/90 hover:bg-raised active:bg-raised/70 flex h-12 flex-1 cursor-pointer items-center justify-center gap-2 rounded-[1rem] text-[14px] font-medium transition-colors duration-200 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
         >
-          <Icon className={cn("size-4", isOff ? "text-destructive" : "text-success")} strokeWidth={2.4} />
-          {isOff ? "Off after…" : "On after…"}
+          <Icon className="text-muted-foreground size-4" strokeWidth={2} />
+          {isOff ? "Off after" : "On after"}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-[min(18rem,calc(100vw-2rem))] rounded-2xl p-4" collisionPadding={16}>
-        <p className="text-muted-foreground text-center text-[12px] font-semibold tracking-wide uppercase">
-          {isOff ? "Turn off after" : "Turn on after"}
-        </p>
-        <p className="font-heading mt-1 text-center text-3xl font-bold tabular-nums">{formatMinutes(minutes)}</p>
+      <PopoverContent className="bg-popover w-[min(18rem,calc(100vw-2rem))] rounded-[1.25rem] border-0 p-4" collisionPadding={16}>
+        <p className="text-muted-foreground text-center text-[13px]">{isOff ? "Turn off after" : "Turn on after"}</p>
+        <p className="font-heading tnum mt-1 text-center text-[40px] leading-none font-medium">{formatMinutes(minutes)}</p>
         <Slider
           className="mt-5"
           value={[minutes]}
@@ -69,8 +67,8 @@ function TimerPopoverButton({
               type="button"
               onClick={() => setMinutes(preset)}
               className={cn(
-                "h-9 cursor-pointer rounded-xl text-xs font-semibold transition-colors duration-150",
-                minutes === preset ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground"
+                "h-9 cursor-pointer rounded-[0.75rem] text-[13px] font-medium transition-colors duration-200",
+                minutes === preset ? "bg-raised text-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"
               )}
             >
               {formatMinutes(preset)}
@@ -99,28 +97,27 @@ function ActiveTimerRow({ timer, onCancel }: { timer: Timer; onCancel: () => voi
 
   return (
     <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: "auto" }}
+      initial={{ y: 8 }}
+      animate={{ y: 0 }}
       exit={{ opacity: 0, height: 0 }}
-      transition={{ duration: 0.18, ease: "easeOut" }}
+      transition={{ type: "spring", stiffness: 420, damping: 34 }}
       className="overflow-hidden"
     >
-      <div className="bg-secondary flex items-center gap-3 rounded-2xl px-3 py-2.5">
-        <span
-          className={cn(
-            "flex size-8 shrink-0 items-center justify-center rounded-full",
-            isOff ? "bg-destructive/10 text-destructive" : "bg-success/10 text-success"
-          )}
-        >
-          {isOff ? <PowerOff className="size-4" /> : <Power className="size-4" />}
-        </span>
-        <p className="min-w-0 flex-1 truncate text-[14px] font-medium">{isOff ? "Turning off in" : "Turning on in"}</p>
-        <span className="text-[15px] font-bold tabular-nums">{label}</span>
+      <div className="bg-secondary flex items-center gap-3 rounded-[1rem] py-2 pr-1.5 pl-4">
+        {isOff ? (
+          <PowerOff className="text-muted-foreground size-4 shrink-0" />
+        ) : (
+          <Power className="text-primary size-4 shrink-0" />
+        )}
+        <p className="text-muted-foreground min-w-0 flex-1 truncate text-[14px]">
+          {isOff ? "Turning off in" : "Turning on in"}
+        </p>
+        <span className="font-heading tnum text-[20px] leading-none font-medium">{label}</span>
         <button
           type="button"
           onClick={onCancel}
           aria-label="Cancel timer"
-          className="text-muted-foreground active:bg-card flex size-9 cursor-pointer items-center justify-center rounded-full transition-colors"
+          className="text-muted-foreground hover:text-foreground active:bg-raised flex size-9 cursor-pointer items-center justify-center rounded-full transition-colors"
         >
           <X className="size-4" />
         </button>

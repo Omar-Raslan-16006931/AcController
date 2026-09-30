@@ -38,9 +38,9 @@ export function StatRow({
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.2, delay: index * 0.02 }}
+      initial={{ y: 6 }}
+      animate={{ y: 0 }}
+      transition={{ type: "spring", stiffness: 420, damping: 34, delay: index * 0.02 }}
       className="flex items-center gap-2.5 py-2 first:pt-0 last:pb-0"
     >
       {/* No colored box behind the icon anymore -- just the glyph itself,

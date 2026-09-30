@@ -11,16 +11,16 @@ interface ThemeContextValue {
 const ThemeContext = React.createContext<ThemeContextValue | undefined>(undefined)
 
 /**
- * The app ships a single light (beige/white/blue) design. The provider's API
- * is kept so existing consumers keep compiling, but it always resolves to
- * light and ignores OS dark mode / any previously stored preference.
+ * The app ships a single dark design. The provider API is kept so existing
+ * consumers compile, but it always resolves to dark and ignores OS
+ * appearance and any previously stored preference.
  */
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     const root = window.document.documentElement
-    root.classList.remove("dark")
-    root.classList.add("light")
-    root.style.colorScheme = "light"
+    root.classList.remove("light")
+    root.classList.add("dark")
+    root.style.colorScheme = "dark"
     try {
       window.localStorage.removeItem("ac-controller-theme")
     } catch {
@@ -29,7 +29,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const value = React.useMemo<ThemeContextValue>(
-    () => ({ theme: "light", resolvedTheme: "light", setTheme: () => {} }),
+    () => ({ theme: "dark", resolvedTheme: "dark", setTheme: () => {} }),
     []
   )
 

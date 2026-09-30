@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 export function NotFoundPage() {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center">
-      <div className="bg-muted text-muted-foreground flex size-14 items-center justify-center rounded-2xl">
+      <div className="text-muted-foreground flex items-center justify-center">
         <CompassIcon className="size-7" />
       </div>
       <div className="space-y-1">

@@ -51,7 +51,7 @@ export function DetectPage() {
     <div className="space-y-4">
       <PageHeader
         title="Detect AC"
-        description="For an AC that isn't your Carrier unit — e.g. a hotel or rental. Auto-detect cycles through 116 real captured codes from 70+ brands; Learn manually captures buttons straight from the real remote."
+        description="For any AC that isn't your Carrier. Find its brand automatically, or learn buttons from its remote."
       />
 
       <Tabs defaultValue="auto">
@@ -67,7 +67,7 @@ export function DetectPage() {
           {!running && (
             <CardDescription className="text-xs">
               Point the IR blaster at the AC, start the run, and listen. One code fires every{" "}
-              {interval.toFixed(1)}s — a beep or click means that brand's protocol matched.
+              {interval.toFixed(1)}s. A beep or click means that brand matched.
             </CardDescription>
           )}
         </CardHeader>
@@ -196,8 +196,8 @@ export function DetectPage() {
       <Card>
         <CardContent className="text-muted-foreground space-y-1.5 pt-4 text-[11px]">
           <p>
-            Once confirmed, every button captured for that model — not just the probe signal used
-            during detection — becomes available above. Each is an independent captured waveform
+            Once confirmed, every button captured for that model (not just the probe signal used
+            during detection) becomes available above. Each is an independent captured waveform
             replayed as-is, same as pressing that button on the real remote; there's no shared state
             model backing it the way the Carrier integration has, so button names/labels are a
             best-effort guess and may not perfectly match your unit.
@@ -259,7 +259,7 @@ function ControlPanel({ disabled }: { disabled: boolean }) {
         const Icon = config.icon
         return (
           <div key={cat}>
-            <div className="text-muted-foreground mb-1.5 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide">
+            <div className="text-muted-foreground mb-2 flex items-center gap-1.5 text-[13px]">
               <Icon className="size-3" />
               {config.title}
             </div>
@@ -292,7 +292,7 @@ function StateBadge({ state }: { state?: string }) {
   const config: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "success" }> = {
     idle: { label: "Idle", variant: "secondary" },
     running: { label: "Running", variant: "default" },
-    finished: { label: "Finished — no confirm", variant: "outline" },
+    finished: { label: "Finished, no match", variant: "outline" },
     confirmed: { label: "Confirmed", variant: "success" },
   }
   const c = config[state] ?? { label: state, variant: "secondary" as const }

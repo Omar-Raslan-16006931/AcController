@@ -23,7 +23,7 @@ export function SystemPage() {
   const actionConfig = {
     restart: {
       title: "Restart the backend service?",
-      description: "The FastAPI service restarts in place — the Pi itself stays on. Takes a few seconds.",
+      description: "Restarts the backend only. The Pi stays on. Takes a few seconds.",
       confirmLabel: "Restart backend",
       run: () => restartBackend.mutate(),
       loading: restartBackend.isPending,
@@ -59,7 +59,7 @@ export function SystemPage() {
       {isError && !isLoading && (
         <Card className="border-destructive/30">
           <CardContent className="flex flex-col items-center gap-3 py-10 text-center">
-            <div className="bg-destructive/10 text-destructive flex size-12 items-center justify-center rounded-2xl">
+            <div className="text-destructive flex items-center justify-center">
               <WifiOff className="size-6" />
             </div>
             <p className="font-medium">Can't reach the Raspberry Pi</p>
@@ -72,7 +72,7 @@ export function SystemPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Power controls</CardTitle>
-          <CardDescription>These take effect immediately — use with care.</CardDescription>
+          <CardDescription>These take effect immediately.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-2.5 sm:grid-cols-3">
           <Button variant="outline" className="h-12 gap-2" onClick={() => setPending("restart")}>

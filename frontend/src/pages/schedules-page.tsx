@@ -78,13 +78,13 @@ export function SchedulesPage() {
       {!isLoading && schedules?.length === 0 && (
         <Card>
           <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
-            <div className="bg-muted text-muted-foreground flex size-12 items-center justify-center rounded-2xl">
+            <div className="text-muted-foreground flex items-center justify-center">
               <CalendarClock className="size-6" />
             </div>
             <div>
               <p className="font-medium">No schedules yet</p>
               <p className="text-muted-foreground mt-1 text-sm">
-                Create one to automate your AC — e.g. cool down before bedtime.
+                Automate your AC, like cooling the room before bedtime.
               </p>
             </div>
             <Button onClick={openCreate} variant="outline" size="sm">
