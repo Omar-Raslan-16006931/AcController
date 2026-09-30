@@ -19,7 +19,7 @@ const TIMEOUT_SECONDS = 10
 
 const STEPS = [
   "Name the button, like Power or Cool 22.",
-  "Hold the real remote close to the Pi's receiver.",
+  "Hold the real remote close to the IR receiver (the Pi or your IR hub).",
   "Tap Listen, then press that button once.",
 ]
 

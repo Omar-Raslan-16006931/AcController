@@ -52,6 +52,22 @@ class Settings(BaseSettings):
     ir_rx_device: str = "/dev/lirc1"
     learned_signals_dir: str = "./learned_signals"
 
+    # --- Which hardware actually emits / learns IR ---------------------------
+    # "gpio": the Pi's own IR LED + receiver via ir-ctl (the settings above).
+    # "tuya": a Tuya / Smart Life WiFi IR blaster on the same network, driven
+    #         locally with tinytuya (app/services/tuya_ir.py). Every send and
+    #         learn path routes through it; the Pi stays the brain.
+    # See docs/TUYA_IR.md for getting the device id / local key.
+    ir_backend: str = "gpio"
+    tuya_device_id: str | None = None
+    # A fixed IP is fastest; "Auto" makes tinytuya scan the LAN for the id.
+    tuya_ip: str = "Auto"
+    tuya_local_key: str | None = None
+    tuya_version: float = 3.3
+    # 1 = older blasters (DPS 201/202), 2 = newer (DPS 1-13). Leave unset to
+    # auto-detect on first connect.
+    tuya_control_type: int | None = None
+
     scheduler_poll_seconds: int = 20
 
     # --- AC brute-force detector (app/services/ac_detector.py) --------------

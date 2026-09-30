@@ -8,3 +8,4 @@ cryptography==44.0.0
 psutil==6.1.1
 python-multipart==0.0.20
 apscheduler==3.11.0
+tinytuya>=1.16
