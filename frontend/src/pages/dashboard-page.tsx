@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/page-header"
 import { useStatus } from "@/features/dashboard/use-status"
 import { useDashboardAnalytics } from "@/features/dashboard/use-dashboard-analytics"
 import { AcHeroCard } from "@/features/dashboard/analytics-hero-card"
@@ -14,15 +15,14 @@ import { FanModeCard } from "@/features/dashboard/fan-mode-card"
 import { UsageEnergyCard } from "@/features/dashboard/usage-energy-card"
 import { DayDetailSheet } from "@/features/dashboard/day-detail-sheet"
 
-// Stagger the card list in on mount -- each card fades/slides up ~50ms
-// after the previous one instead of all popping in at once.
+// Gentle staggered fade-in on mount -- opacity only, no movement.
 const cardListVariants = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.06 } },
+  show: { transition: { staggerChildren: 0.04 } },
 }
 const cardItemVariants = {
-  hidden: { opacity: 0, y: 14 },
-  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 320, damping: 30 } },
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { duration: 0.2, ease: "easeOut" as const } },
 }
 
 function DashboardSkeleton() {
@@ -37,14 +37,6 @@ function DashboardSkeleton() {
   )
 }
 
-/**
- * The Dashboard's own analytics screen -- cards use a deliberately flatter,
- * darker palette than the rest of the app (via the `dashboard-flat` + `dark`
- * classes scoping Card/Button/etc.'s CSS custom properties, see index.css),
- * but the page itself no longer overrides the background -- the app's
- * fixed starfield canvas shows through here the same as on every other
- * page, per the user's request to drop the solid-black page cover.
- */
 export function DashboardPage() {
   const { data: status, isLoading: statusLoading, isError, refetch, isFetching } = useStatus()
   const { analytics, isLoading: analyticsLoading } = useDashboardAnalytics()
@@ -54,25 +46,23 @@ export function DashboardPage() {
   const isLoading = statusLoading || analyticsLoading
 
   return (
-    <div className="dashboard-flat dark text-foreground">
-      <motion.div
-        initial={{ opacity: 0, y: -4 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 400, damping: 32 }}
-        className="mb-4 flex items-center justify-between"
-      >
-        <h2 className="text-[28px] leading-tight font-bold tracking-tight">Dashboard</h2>
-        <Button
-          variant="secondary"
-          size="icon"
-          aria-label="Refresh"
-          onClick={() => refetch()}
-          disabled={isFetching}
-          className="size-9"
-        >
-          <RefreshCw className={`size-4 ${isFetching ? "animate-spin" : ""}`} />
-        </Button>
-      </motion.div>
+    <div>
+      <PageHeader
+        title="Dashboard"
+        description="Today's usage at a glance."
+        actions={
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="Refresh"
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="size-10"
+          >
+            <RefreshCw className={`size-4 ${isFetching ? "animate-spin" : ""}`} />
+          </Button>
+        }
+      />
 
       {isLoading && <DashboardSkeleton />}
 

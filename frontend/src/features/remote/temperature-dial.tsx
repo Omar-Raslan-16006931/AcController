@@ -1,9 +1,7 @@
 import * as React from "react"
-import { AnimatePresence, motion } from "framer-motion"
 import { Minus, Plus } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 
 const MIN_TEMP = 20
 const MAX_TEMP = 28
@@ -11,12 +9,10 @@ const START_ANGLE = -135
 const END_ANGLE = 135
 const SWEEP = END_ANGLE - START_ANGLE
 
-// Shrunk from 220/92/10 as part of the Remote-page compaction pass -- the
-// dial was the single tallest element on the page.
-const SIZE = 168
+const SIZE = 200
 const CENTER = SIZE / 2
-const RADIUS = 70
-const STROKE = 8
+const RADIUS = 84
+const STROKE = 12
 
 function angleForValue(value: number) {
   const t = (value - MIN_TEMP) / (MAX_TEMP - MIN_TEMP)
@@ -42,12 +38,35 @@ function describeArc(startAngle: number, endAngle: number) {
   return `M ${start.x} ${start.y} A ${RADIUS} ${RADIUS} 0 ${largeArc} 1 ${end.x} ${end.y}`
 }
 
+function StepButton({
+  label,
+  disabled,
+  onClick,
+  children,
+}: {
+  label: string
+  disabled?: boolean
+  onClick: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      disabled={disabled}
+      onClick={onClick}
+      className="bg-secondary text-foreground active:bg-secondary/70 flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-150 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-40"
+    >
+      {children}
+    </button>
+  )
+}
+
 /**
- * Drag (or tap) anywhere on the ring to preview a temperature in real time,
- * release to commit it. Committing only on release/keypress — not on every
- * pointermove — keeps this from firing a flood of requests mid-drag.
- * Flanking +/- buttons commit immediately (no drag preview needed) for a
- * quick one-degree nudge without touching the ring.
+ * Drag (or tap) anywhere on the ring to preview a temperature, release to
+ * commit it -- committing only on release keeps a drag from firing a flood
+ * of IR commands. The +/- buttons commit a one-degree nudge immediately.
+ * `touch-none` on the ring stops the page from scrolling while dragging.
  */
 export function TemperatureDial({
   value,
@@ -64,7 +83,7 @@ export function TemperatureDial({
 
   const displayValue = dragValue ?? value
 
-  const angleFromPointer = React.useCallback((clientX: number, clientY: number) => {
+  const valueFromPointer = React.useCallback((clientX: number, clientY: number) => {
     const svg = svgRef.current
     if (!svg) return null
     const rect = svg.getBoundingClientRect()
@@ -79,25 +98,21 @@ export function TemperatureDial({
     if (disabled) return
     e.currentTarget.setPointerCapture(e.pointerId)
     setIsDragging(true)
-    const next = angleFromPointer(e.clientX, e.clientY)
+    const next = valueFromPointer(e.clientX, e.clientY)
     if (next !== null) setDragValue(next)
   }
 
   const handlePointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
     if (!isDragging || disabled) return
-    const next = angleFromPointer(e.clientX, e.clientY)
+    const next = valueFromPointer(e.clientX, e.clientY)
     if (next !== null) setDragValue(next)
-  }
-
-  const commit = () => {
-    if (dragValue !== null && dragValue !== value) onChange(dragValue)
-    setDragValue(null)
-    setIsDragging(false)
   }
 
   const handlePointerUp = () => {
     if (!isDragging) return
-    commit()
+    if (dragValue !== null && dragValue !== value) onChange(dragValue)
+    setDragValue(null)
+    setIsDragging(false)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -111,31 +126,20 @@ export function TemperatureDial({
     }
   }
 
-  const trackPath = describeArc(START_ANGLE, END_ANGLE)
-  const fillPath = describeArc(START_ANGLE, angleForValue(displayValue))
-  const handlePos = polarToCartesian(angleForValue(displayValue))
-  const settleTransition = isDragging
-    ? { duration: 0 }
-    : { type: "spring" as const, stiffness: 340, damping: 30 }
-
   const step = (delta: number) => {
     if (disabled) return
     onChange(Math.max(MIN_TEMP, Math.min(MAX_TEMP, value + delta)))
   }
 
+  const trackPath = describeArc(START_ANGLE, END_ANGLE)
+  const fillPath = describeArc(START_ANGLE, angleForValue(displayValue))
+  const handlePos = polarToCartesian(angleForValue(displayValue))
+
   return (
-    <div className="flex items-center gap-3">
-      <Button
-        type="button"
-        variant="secondary"
-        size="icon"
-        disabled={disabled || value <= MIN_TEMP}
-        onClick={() => step(-1)}
-        aria-label="Decrease temperature"
-        className="size-9 shrink-0 rounded-full"
-      >
-        <Minus className="size-4" />
-      </Button>
+    <div className="flex w-full items-center justify-between gap-2">
+      <StepButton label="Decrease temperature" disabled={disabled || value <= MIN_TEMP} onClick={() => step(-1)}>
+        <Minus className="size-5" strokeWidth={2.4} />
+      </StepButton>
 
       <div
         role="slider"
@@ -148,64 +152,48 @@ export function TemperatureDial({
         aria-disabled={disabled}
         onKeyDown={handleKeyDown}
         className={cn(
-          "relative touch-none select-none rounded-full focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
-          disabled && "pointer-events-none opacity-40"
+          "relative touch-none rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+          disabled && "opacity-45"
         )}
       >
         <svg
           ref={svgRef}
           viewBox={`0 0 ${SIZE} ${SIZE}`}
-          className="size-40 cursor-pointer sm:size-44"
+          className={cn("size-48 sm:size-52", disabled ? "cursor-not-allowed" : "cursor-pointer")}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
         >
-          <path d={trackPath} fill="none" stroke="var(--color-border)" strokeWidth={STROKE} strokeLinecap="round" />
+          <path d={trackPath} fill="none" stroke="var(--color-secondary)" strokeWidth={STROKE} strokeLinecap="round" />
           {fillPath && (
-            <path d={fillPath} fill="none" stroke="var(--color-frost)" strokeWidth={STROKE} strokeLinecap="round" />
+            <path d={fillPath} fill="none" stroke="var(--color-primary)" strokeWidth={STROKE} strokeLinecap="round" />
           )}
-          <motion.circle
+          <circle
             cx={handlePos.x}
             cy={handlePos.y}
-            r={STROKE / 2 + 4}
-            fill="var(--color-background)"
-            stroke="var(--color-frost)"
-            strokeWidth={2.5}
-            animate={{ cx: handlePos.x, cy: handlePos.y }}
-            transition={settleTransition}
+            r={STROKE / 2 + 5}
+            fill="var(--color-card)"
+            stroke="var(--color-primary)"
+            strokeWidth={3}
           />
         </svg>
 
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-          <AnimatePresence mode="popLayout">
-            <motion.div
-              key={displayValue}
-              initial={{ opacity: 0, y: 10, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.9 }}
-              transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="font-heading text-3xl font-bold tabular-nums sm:text-4xl"
-            >
-              {displayValue}
-              <span className="text-muted-foreground align-top text-base font-medium">°</span>
-            </motion.div>
-          </AnimatePresence>
-          <p className="text-muted-foreground mt-0.5 text-[10px]">{MIN_TEMP}°–{MAX_TEMP}°C</p>
+          <p className="text-muted-foreground text-[11px] font-semibold tracking-wider uppercase">Set to</p>
+          <p className="font-heading text-[52px] leading-none font-bold tracking-tight tabular-nums">
+            {displayValue}
+            <span className="text-muted-foreground align-top text-2xl font-semibold">°</span>
+          </p>
+          <p className="text-muted-foreground mt-1 text-[11px] tabular-nums">
+            {MIN_TEMP}° – {MAX_TEMP}°C
+          </p>
         </div>
       </div>
 
-      <Button
-        type="button"
-        variant="secondary"
-        size="icon"
-        disabled={disabled || value >= MAX_TEMP}
-        onClick={() => step(1)}
-        aria-label="Increase temperature"
-        className="size-9 shrink-0 rounded-full"
-      >
-        <Plus className="size-4" />
-      </Button>
+      <StepButton label="Increase temperature" disabled={disabled || value >= MAX_TEMP} onClick={() => step(1)}>
+        <Plus className="size-5" strokeWidth={2.4} />
+      </StepButton>
     </div>
   )
 }

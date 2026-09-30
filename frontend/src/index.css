@@ -42,119 +42,80 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  /* iOS-native: always defer to the platform's system font (SF on Apple). */
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
     Roboto, "Helvetica Neue", ui-sans-serif, system-ui, sans-serif;
-  --font-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+  --font-heading: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display",
     "Segoe UI", Roboto, "Helvetica Neue", ui-sans-serif, system-ui, sans-serif;
-  --animate-in: enter 0.2s ease-out;
-  --animate-out: exit 0.2s ease-in;
+  --animate-in: enter 0.18s ease-out;
+  --animate-out: exit 0.15s ease-in;
 }
 
-:root {
-  --radius: 0.875rem;
-
-  /* iOS light "grouped" surfaces: #F2F2F7 background, white cards. */
-  --background: oklch(0.962 0.003 265);
-  --foreground: oklch(0.16 0.006 260);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.16 0.006 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.16 0.006 260);
-  /* iOS system blue (#007AFF) - vivid, not washed out. */
-  --primary: oklch(0.585 0.2 255);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.945 0.005 260);
-  --secondary-foreground: oklch(0.25 0.008 260);
-  --muted: oklch(0.945 0.005 260);
-  --muted-foreground: oklch(0.5 0.012 260);
-  --accent: oklch(0.93 0.03 255);
-  --accent-foreground: oklch(0.34 0.09 255);
-  --destructive: oklch(0.6 0.22 27);
-  --destructive-foreground: oklch(0.985 0 0);
-  --success: oklch(0.64 0.17 150);
-  --success-foreground: oklch(0.985 0 0);
-  --warning: oklch(0.74 0.16 70);
-  --warning-foreground: oklch(0.17 0.008 260);
-  --frost: oklch(0.585 0.2 255);
-  --frost-from: oklch(0.575 0.2 250);
-  --frost-to: oklch(0.62 0.2 265);
-  --mint: var(--frost);
-  --glow: var(--frost);
-  --brand-from: var(--frost-from);
-  --brand-to: var(--frost-to);
-  --tint-cool: oklch(0.65 0.13 250 / 12%);
-  --tint-heat: oklch(0.7 0.15 50 / 12%);
-  --border: oklch(0.89 0.005 260);
-  --input: oklch(0.89 0.005 260);
-  --ring: oklch(0.585 0.2 255 / 0.45);
-  --chart-1: oklch(0.585 0.2 255);
-  --chart-2: oklch(0.65 0.14 190);
-  --chart-3: oklch(0.68 0.15 145);
-  --chart-4: oklch(0.72 0.15 80);
-  --chart-5: oklch(0.62 0.18 25);
-  --sidebar: oklch(0.962 0.003 265);
-  --sidebar-foreground: oklch(0.16 0.006 260);
-  --sidebar-primary: oklch(0.585 0.2 255);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.93 0.03 255);
-  --sidebar-accent-foreground: oklch(0.34 0.09 255);
-  --sidebar-border: oklch(0.89 0.005 260);
-  --sidebar-ring: oklch(0.585 0.2 255 / 0.45);
-}
-
+/* ---------------------------------------------------------------------
+   Design tokens -- warm beige canvas, white cards, confident blue.
+   Light only: the whole app (including anything still carrying a `dark:`
+   class) renders from this single palette.
+   --------------------------------------------------------------------- */
+:root,
 .dark {
-  /* iOS dark "grouped" surfaces: near-black background, #1C1C1E cards. */
-  --background: oklch(0.115 0 0);
-  --foreground: oklch(0.95 0.002 260);
-  --card: oklch(0.225 0.004 265);
-  --card-foreground: oklch(0.95 0.002 260);
-  --popover: oklch(0.245 0.004 265);
-  --popover-foreground: oklch(0.95 0.002 260);
-  /* iOS dark system blue (#0A84FF). */
-  --primary: oklch(0.63 0.19 253);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.3 0.004 265);
-  --secondary-foreground: oklch(0.95 0.002 260);
-  --muted: oklch(0.3 0.004 265);
-  --muted-foreground: oklch(0.66 0.008 260);
-  --accent: oklch(0.31 0.05 255);
-  --accent-foreground: oklch(0.87 0.06 255);
-  --destructive: oklch(0.66 0.21 25);
-  --destructive-foreground: oklch(0.99 0 0);
-  --success: oklch(0.72 0.17 152);
-  --success-foreground: oklch(0.13 0.03 155);
-  --warning: oklch(0.78 0.15 75);
-  --warning-foreground: oklch(0.15 0.01 75);
-  --frost: oklch(0.63 0.19 253);
-  --frost-from: oklch(0.6 0.19 248);
-  --frost-to: oklch(0.66 0.19 263);
+  --radius: 1rem;
+
+  --background: #f7f3ec; /* warm beige canvas */
+  --foreground: #1b2333; /* ink navy */
+  --card: #ffffff;
+  --card-foreground: #1b2333;
+  --popover: #ffffff;
+  --popover-foreground: #1b2333;
+
+  --primary: #2563eb; /* royal blue */
+  --primary-foreground: #ffffff;
+  --secondary: #efe9df; /* soft sand */
+  --secondary-foreground: #1b2333;
+  --muted: #f1ece3;
+  --muted-foreground: #6f6a61;
+  --accent: #e8effd; /* pale blue wash */
+  --accent-foreground: #1e40af;
+
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --success: #16a34a;
+  --success-foreground: #ffffff;
+  --warning: #d97706;
+  --warning-foreground: #ffffff;
+
+  --frost: #2563eb;
+  --frost-from: #2563eb;
+  --frost-to: #3b82f6;
   --mint: var(--frost);
   --glow: var(--frost);
   --brand-from: var(--frost-from);
   --brand-to: var(--frost-to);
-  --tint-cool: oklch(0.55 0.13 250 / 16%);
-  --tint-heat: oklch(0.6 0.15 50 / 16%);
-  --border: oklch(1 0 0 / 0.1);
-  --input: oklch(1 0 0 / 0.09);
-  --ring: oklch(0.63 0.19 253 / 0.5);
-  --chart-1: oklch(0.63 0.19 253);
-  --chart-2: oklch(0.7 0.14 190);
-  --chart-3: oklch(0.74 0.15 145);
-  --chart-4: oklch(0.78 0.15 80);
-  --chart-5: oklch(0.7 0.18 25);
-  --sidebar: oklch(0.17 0.004 265);
-  --sidebar-foreground: oklch(0.95 0.002 260);
-  --sidebar-primary: oklch(0.63 0.19 253);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.31 0.05 255);
-  --sidebar-accent-foreground: oklch(0.87 0.06 255);
-  --sidebar-border: oklch(1 0 0 / 0.1);
-  --sidebar-ring: oklch(0.63 0.19 253 / 0.5);
+  --tint-cool: rgb(37 99 235 / 0.08);
+  --tint-heat: rgb(234 88 12 / 0.08);
+
+  --border: #e6dfd3;
+  --input: #ddd5c7;
+  --ring: rgb(37 99 235 / 0.35);
+
+  --chart-1: #2563eb;
+  --chart-2: #0ea5e9;
+  --chart-3: #16a34a;
+  --chart-4: #d97706;
+  --chart-5: #dc2626;
+
+  --sidebar: #f7f3ec;
+  --sidebar-foreground: #1b2333;
+  --sidebar-primary: #2563eb;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e8effd;
+  --sidebar-accent-foreground: #1e40af;
+  --sidebar-border: #e6dfd3;
+  --sidebar-ring: rgb(37 99 235 / 0.35);
+
+  color-scheme: light;
 }
 
 @layer base {
@@ -162,17 +123,45 @@
     @apply border-border outline-ring/50;
   }
   html {
-    @apply scroll-smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Kills double-tap-to-zoom everywhere without disabling scrolling. */
+    touch-action: manipulation;
+    overflow-x: hidden;
+    background: var(--background);
   }
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-sans);
-    font-feature-settings: "cv11", "ss01";
     -webkit-tap-highlight-color: transparent;
-    overscroll-behavior-y: none;
+    overscroll-behavior: none;
+    overflow-x: hidden;
+    min-height: 100svh;
   }
-  button {
+  button,
+  a,
+  [role="button"],
+  [role="slider"],
+  [role="tab"] {
     touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  img,
+  svg {
+    -webkit-user-drag: none;
+  }
+}
+
+/* Unlayered on purpose: beats every Tailwind utility (which lives in a
+   cascade layer), so no `text-sm` on an input can ever drop it below 16px --
+   the size iOS Safari uses as its "don't zoom on focus" threshold. */
+@media (max-width: 1023px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
   }
 }
 
@@ -185,25 +174,24 @@
     scrollbar-width: none;
   }
 
+  /* Kept for components that still opt into `glass` -- now just a clean
+     solid surface, no blur/distortion. */
   .glass {
-    background: color-mix(in oklch, var(--card) 80%, transparent);
-    backdrop-filter: blur(16px) saturate(150%);
-    -webkit-backdrop-filter: blur(16px) saturate(150%);
-    border: 1px solid color-mix(in oklch, var(--foreground) 7%, transparent);
+    background: var(--card);
+    border: 1px solid var(--border);
   }
 
-  /* iOS navigation-bar / tab-bar material: heavy blur + hairline edge. */
   .ios-bar {
-    background: color-mix(in oklch, var(--background) 72%, transparent);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    background: color-mix(in srgb, var(--background) 92%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   .hairline-t {
-    box-shadow: 0 -0.5px 0 0 color-mix(in oklch, var(--foreground) 16%, transparent);
+    border-top: 1px solid var(--border);
   }
   .hairline-b {
-    box-shadow: 0 0.5px 0 0 color-mix(in oklch, var(--foreground) 16%, transparent);
+    border-bottom: 1px solid var(--border);
   }
 
   .brand-gradient {
@@ -211,237 +199,36 @@
   }
 
   .label-accent {
-    color: var(--frost);
-    letter-spacing: 0.04em;
+    color: var(--primary);
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     font-weight: 600;
     font-size: 0.6875rem;
   }
 
   .card-glow {
-    border-color: color-mix(in oklch, var(--glow) 35%, transparent);
-    box-shadow: 0 0 24px -10px color-mix(in oklch, var(--glow) 40%, transparent);
+    border-color: color-mix(in srgb, var(--primary) 30%, transparent);
   }
 
   .bg-glow-orb {
-    background: radial-gradient(closest-side, color-mix(in oklch, var(--glow) 20%, transparent), transparent);
+    background: transparent;
   }
 
+  .shadow-soft {
+    box-shadow:
+      0 1px 2px rgb(27 35 51 / 0.04),
+      0 4px 16px -6px rgb(27 35 51 / 0.08);
+  }
+
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
   .pb-safe {
     padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
   }
 
-  /* Reserve room for the fixed bottom tab bar (+ home indicator). */
+  /* Room for the fixed bottom tab bar (+ home indicator). */
   .pb-tabbar {
-    /* Tightened from 5.5rem -- the InteractiveMenu pill dock (.menu +
-       .menu__item padding + icon + label) plus its own wrapper padding
-       measures out to ~4.75rem, so 5rem leaves a small intentional buffer
-       instead of an oversized gap between page content and the nav. */
-    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
   }
-}
-
-/* ---------------------------------------------------------------------
-   Modern Mobile Menu (components/ui/modern-mobile-menu.tsx)
-   Tokens below are from the component's own integration snippet; the
-   .menu* selector rules are this app's own -- the snippet only shipped
-   CSS variables + the iconBounce keyframe, not the actual layout/visual
-   rules, so this is a from-scratch pill-dock implementation matching the
-   component's stated behavior (active item gets a colored pill + its
-   label reveals via the JS-measured --lineWidth).
-   --------------------------------------------------------------------- */
-:root {
-  --component-inactive-color: var(--muted-foreground);
-  /* Liquid-glass redesign: translucent card tint instead of an opaque
-     surface, meant to be used with backdrop-filter blur on .menu below. */
-  --component-bg: color-mix(in oklch, var(--card) 55%, transparent);
-  --component-shadow: var(--border);
-  --component-active-bg: color-mix(in oklch, var(--primary) 16%, transparent);
-  --component-active-border: color-mix(in oklch, var(--primary) 32%, transparent);
-  --component-line-inactive-color: var(--border);
-  --component-active-color-default: var(--accent-foreground);
-}
-
-.dark {
-  --component-inactive-color: var(--muted-foreground);
-  --component-bg: color-mix(in oklch, var(--card) 45%, transparent);
-  --component-shadow: var(--border);
-  --component-active-bg: color-mix(in oklch, var(--primary) 22%, transparent);
-  --component-active-border: color-mix(in oklch, var(--primary) 38%, transparent);
-  --component-line-inactive-color: var(--muted-foreground);
-  --component-active-color-default: var(--accent-foreground);
-}
-
-@keyframes iconBounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  20% {
-    transform: translateY(-0.3em);
-  }
-  40% {
-    transform: translateY(0);
-  }
-  60% {
-    transform: translateY(-0.1em);
-  }
-  80% {
-    transform: translateY(0);
-  }
-}
-
-@layer components {
-  .menu {
-    /* Simple liquid-glass style: heavy blur + saturation over a translucent
-       tint, a hairline border, and a soft inner top highlight to read as a
-       glass surface rather than a flat opaque bar. */
-    display: flex;
-    align-items: center;
-    gap: 0.125rem;
-    width: 100%;
-    padding: 0.3rem;
-    background: var(--component-bg);
-    /* url(#container-glass) is the actual liquid-distortion SVG filter
-       (see glass-filter.tsx) -- it ripples whatever's scrolling underneath
-       the bar. -webkit-backdrop-filter omits the url() ref since Safari's
-       support for SVG filters inside backdrop-filter is unreliable; it
-       still gets the blur/saturate glass look as a safe fallback. */
-    backdrop-filter: url(#container-glass) blur(22px) saturate(180%);
-    -webkit-backdrop-filter: blur(22px) saturate(180%);
-    border: 1px solid color-mix(in oklch, var(--foreground) 10%, transparent);
-    border-radius: 9999px;
-    box-shadow:
-      inset 0 1px 0 0 color-mix(in oklch, white 22%, transparent),
-      0 1px 2px color-mix(in oklch, var(--component-shadow) 60%, transparent),
-      0 12px 32px -14px color-mix(in oklch, var(--foreground) 20%, transparent);
-  }
-
-  .menu__item {
-    /* Fixed height + absolutely-positioned icon/label (below) instead of a
-       flex column that reserves the label's box at all times. That earlier
-       approach fixed the "icon jumps on selection" bug but traded it for a
-       new problem: every INACTIVE item still reserved the label's full
-       height (invisible), which read as a dead gap of empty space below
-       the icon. Pinning both icon and label to fixed offsets inside a
-       fixed-height item removes that reserved gap entirely while keeping
-       the icon's position 100% constant regardless of active state --
-       fixes both issues at once. */
-    position: relative;
-    display: block;
-    flex: 1 1 0%;
-    min-width: 0;
-    height: 3rem;
-    padding: 0;
-    border: none;
-    background: transparent;
-    border-radius: 9999px;
-    color: var(--component-inactive-color);
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    transition:
-      color 0.25s ease,
-      background-color 0.25s ease;
-  }
-
-  .menu__item:hover {
-    color: var(--foreground);
-  }
-
-  .menu__item.active {
-    color: var(--component-active-color, var(--component-active-color-default));
-    background: var(--component-active-bg);
-    border: 1px solid var(--component-active-border);
-    backdrop-filter: blur(6px);
-  }
-
-  .menu__item.active .menu__icon .icon {
-    animation: iconBounce 0.5s ease;
-  }
-
-  .menu__icon {
-    position: absolute;
-    top: 0.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .menu__icon .icon {
-    width: 1.35rem;
-    height: 1.35rem;
-  }
-
-  .menu__text {
-    position: absolute;
-    bottom: 0.35rem;
-    left: 50%;
-    transform: translateX(-50%);
-    max-width: 0;
-    overflow: hidden;
-    opacity: 0;
-    white-space: nowrap;
-    font-size: 0.625rem;
-    font-weight: 600;
-    line-height: 0.75rem;
-    text-transform: capitalize;
-    pointer-events: none;
-    transition:
-      max-width 0.3s ease,
-      opacity 0.2s ease;
-  }
-
-  .menu__text.active {
-    max-width: var(--lineWidth, 6rem);
-    opacity: 1;
-  }
-}
-
-/* ---------------------------------------------------------------------
-   Dashboard analytics screen -- a deliberately different, flatter dark
-   design system than the rest of the app (no glass/frost/starfield),
-   scoped to just this page. Rather than hardcoding new hex values into
-   every component, this overrides the same CSS custom properties the
-   whole app's components already consume (Card, Button, etc. all read
-   var(--card)/var(--foreground)/etc.), so existing components render
-   correctly here for free just by nesting under this class + `dark`
-   (Tailwind's `dark:` variant just checks for a `.dark` ancestor, so this
-   works regardless of the user's actual light/dark/system preference).
-   --------------------------------------------------------------------- */
-.dashboard-flat {
-  --background: #0a0a0c;
-  --foreground: #f4f4f6;
-  --card: #151414;
-  --card-foreground: #f4f4f6;
-  --popover: #050506;
-  --popover-foreground: #f4f4f6;
-  --primary: #4c9ef0;
-  --primary-foreground: #ffffff;
-  --secondary: #1f2023;
-  --secondary-foreground: #f4f4f6;
-  --muted: #1f2023;
-  --muted-foreground: #86868b;
-  --accent: color-mix(in oklch, #4c9ef0 16%, transparent);
-  --accent-foreground: #4c9ef0;
-  --border: rgba(255, 255, 255, 0.06);
-  --input: rgba(255, 255, 255, 0.08);
-  --ring: rgba(76, 158, 240, 0.4);
-  /* Darker navy-blue base for the card wash below -- mixing the bright
-     accent blue with black instead of using it at full saturation, so
-     the glow reads as a deep ambient shadow-blue rather than a bright
-     highlight. */
-  --glow-blue-dark: color-mix(in oklch, #4c9ef0 32%, black 68%);
-}
-
-/* Slight dark-blue wash (top-left, fading into the card's own flat fill)
-   on this screen's cards -- no grid texture, just the tint. */
-.dashboard-flat [data-slot="card"] {
-  background-image: linear-gradient(
-    160deg,
-    color-mix(in oklch, var(--glow-blue-dark) 16%, rgb(255, 255, 255) 6%) 0%,
-    color-mix(in oklch, var(--glow-blue-dark) 6%, transparent) 25%,
-    transparent 42%
-  );
 }

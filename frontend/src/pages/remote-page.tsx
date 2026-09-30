@@ -1,7 +1,7 @@
 import * as React from "react"
-import { motion } from "framer-motion"
-import { Send, Undo2, WifiOff, Zap } from "lucide-react"
+import { Send, Undo2, WifiOff } from "lucide-react"
 
+import { cn } from "@/lib/utils"
 import { PageHeader } from "@/components/page-header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -25,6 +25,7 @@ import { FanSelector } from "@/features/remote/fan-selector"
 import { AuxButtons } from "@/features/remote/aux-buttons"
 import { TimerControls } from "@/features/remote/timer-controls"
 import { LearnedRemotePanel } from "@/features/remote/learned-remote-panel"
+import { modeConfig, fanConfig } from "@/lib/ac-labels"
 import type { AcMode, FanSpeed } from "@/types/database"
 
 const AUTO_SEND_STORAGE_KEY = "ac-controller-auto-send"
@@ -35,11 +36,9 @@ function getStoredAutoSend(): boolean {
   return stored === null ? true : stored === "1"
 }
 
-// Which AC the Remote page controls. "carrier" is the original home unit
-// (structured power/temp/mode/fan state, unchanged below); "learned" is a
-// flat send-only list of whatever's been captured via Detect AC -> Learn
-// manually -- there's no shared state model for those, so no dial/mode
-// mapping, just tap a button name to replay that exact capture.
+// Which AC the Remote page controls. "carrier" is the home unit (structured
+// power/temp/mode/fan state); "learned" is a send-only grid of buttons
+// captured via Detect AC -> Learn manually.
 type RemoteProfile = "carrier" | "learned"
 const REMOTE_PROFILE_STORAGE_KEY = "ac-controller-remote-profile"
 
@@ -47,6 +46,12 @@ function getStoredProfile(): RemoteProfile {
   if (typeof window === "undefined") return "carrier"
   const stored = window.localStorage.getItem(REMOTE_PROFILE_STORAGE_KEY)
   return stored === "learned" ? "learned" : "carrier"
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-muted-foreground mb-2 px-1 text-[12px] font-semibold tracking-wide uppercase">{children}</p>
+  )
 }
 
 export function RemotePage() {
@@ -105,41 +110,23 @@ export function RemotePage() {
     sendCommand.mutate(draft, { onSuccess: () => setDraft({}) })
   }
 
-  const handleDiscardDraft = () => setDraft({})
-
-  const effectiveMode = draft.mode ?? status?.ac_state.mode
-  const isCoolGlow = !!status?.ac_state.power && effectiveMode === "cool"
-  const isHeatGlow = !!status?.ac_state.power && effectiveMode === "heat"
+  const ac = status?.ac_state
+  const controlsDisabled = !ac?.power || busy
 
   return (
-    <div className="relative">
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <motion.div
-          className="absolute inset-0"
-          style={{ background: "radial-gradient(closest-side at 50% 10%, var(--tint-cool), transparent 65%)" }}
-          animate={{ opacity: isCoolGlow ? 1 : 0 }}
-          transition={{ duration: 1, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute inset-0"
-          style={{ background: "radial-gradient(closest-side at 50% 10%, var(--tint-heat), transparent 65%)" }}
-          animate={{ opacity: isHeatGlow ? 1 : 0 }}
-          transition={{ duration: 1, ease: "easeInOut" }}
-        />
-      </div>
-
+    <div>
       <PageHeader
         title="Remote"
         description={
           profile === "learned"
-            ? "Learned profile — tap a button to replay that exact captured signal."
+            ? "Tap a learned button to send it."
             : autoSend
-              ? "Every change is sent right away."
-              : "Automatic Send is off."
+              ? "Changes are sent instantly."
+              : "Changes wait until you tap Send."
         }
       />
 
-      <Tabs value={profile} onValueChange={(v) => applyProfileChange(v as RemoteProfile)} className="mx-auto w-full max-w-sm">
+      <Tabs value={profile} onValueChange={(v) => applyProfileChange(v as RemoteProfile)} className="mb-4 w-full">
         <TabsList className="w-full">
           <TabsTrigger value="carrier">Carrier</TabsTrigger>
           <TabsTrigger value="learned">Learned</TabsTrigger>
@@ -147,106 +134,120 @@ export function RemotePage() {
       </Tabs>
 
       {isLoading && (
-        <Card className="mx-auto w-full max-w-sm">
-          <CardContent className="flex flex-col items-center gap-3">
-            <Skeleton className="size-40 rounded-full sm:size-44" />
-            <Skeleton className="h-10 w-full rounded-full" />
-            <Skeleton className="h-16 w-full rounded-xl" />
-          </CardContent>
-        </Card>
+        <div className="space-y-3">
+          <Skeleton className="h-[380px] w-full rounded-[1.25rem]" />
+          <Skeleton className="h-40 w-full rounded-[1.25rem]" />
+        </div>
       )}
 
       {isError && !isLoading && (
-        <Card className="mx-auto w-full max-w-sm">
-          <CardContent className="flex flex-col items-center gap-2.5 py-10 text-center">
-            <div className="bg-destructive/10 text-destructive flex size-10 items-center justify-center rounded-xl">
-              <WifiOff className="size-5" />
+        <Card>
+          <CardContent className="flex flex-col items-center gap-3 py-8 text-center">
+            <div className="bg-destructive/10 text-destructive flex size-12 items-center justify-center rounded-2xl">
+              <WifiOff className="size-6" />
             </div>
-            <p className="text-sm font-medium">Can't reach the Raspberry Pi</p>
-            <p className="text-muted-foreground text-xs">
-              The remote needs a live connection to send commands.
-            </p>
+            <div>
+              <p className="text-[15px] font-semibold">Can't reach the Raspberry Pi</p>
+              <p className="text-muted-foreground mt-1 text-[13px]">The remote needs a live connection to send commands.</p>
+            </div>
           </CardContent>
         </Card>
       )}
 
       {status && profile === "learned" && (
-        <Card glass className="mx-auto w-full max-w-sm gap-0">
-          <CardContent className="pt-0.5 pb-3">
+        <Card>
+          <CardContent>
             <LearnedRemotePanel />
           </CardContent>
         </Card>
       )}
 
-      {status && profile === "carrier" && (
-        <Card glass className="mx-auto w-full max-w-sm gap-0">
-          <CardContent className="flex flex-col items-center gap-2.5 pt-0.5 pb-3">
-            <div className="flex w-full items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <Zap className={autoSend ? "text-frost size-3.5" : "text-muted-foreground size-3.5"} />
-                <Label htmlFor="auto-send" className="cursor-pointer text-xs font-medium">
-                  Automatic Send
-                </Label>
-              </div>
-              <Switch id="auto-send" checked={autoSend} onCheckedChange={applyAutoSendChange} />
-            </div>
-
-            <TemperatureDial
-              value={draft.temperature ?? status.ac_state.temperature}
-              disabled={!status.ac_state.power || busy}
-              onChange={handleTemperatureChange}
-            />
-
-            <PowerButtons
-              on={status.ac_state.power}
-              onPowerOn={() => setPower.mutate(true)}
-              onPowerOff={() => setPower.mutate(false)}
-            />
-
-            <div className="w-full space-y-1.5">
-              <ModeSelector
-                value={draft.mode ?? status.ac_state.mode}
-                disabled={!status.ac_state.power || busy}
-                onChange={handleModeChange}
-              />
-              <FanSelector
-                value={draft.fan ?? status.ac_state.fan}
-                disabled={!status.ac_state.power || busy}
-                onChange={handleFanChange}
-              />
-            </div>
-
-            {/* Light and Self Clean aren't part of AcState (see
-                use-aux-control.ts) -- they're momentary remote buttons, so
-                they only gate on their own in-flight request, not on
-                power/busy the way the state-backed controls above do. */}
-            <AuxButtons />
-
-            {!autoSend && hasPendingChanges && (
-              <div className="bg-accent flex w-full items-center justify-between gap-2 rounded-2xl px-3 py-2">
-                <p className="text-xs font-medium">
-                  {pendingCount} change{pendingCount > 1 ? "s" : ""} pending
-                </p>
-                <div className="flex items-center gap-1.5">
-                  <Button type="button" variant="ghost" size="sm" onClick={handleDiscardDraft} disabled={sendCommand.isPending} className="h-7 px-2 text-xs">
-                    <Undo2 className="size-3.5" />
-                    Discard
-                  </Button>
-                  <Button type="button" variant="brand" size="sm" onClick={handleSendNow} disabled={sendCommand.isPending} className="h-7 px-2.5 text-xs">
-                    <Send className="size-3.5" />
-                    Send
-                  </Button>
+      {status && ac && profile === "carrier" && (
+        <div className="space-y-3">
+          {/* Hero: state summary + dial + power */}
+          <Card>
+            <CardContent className="flex flex-col gap-4">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className={cn("size-2.5 shrink-0 rounded-full", ac.power ? "bg-success" : "bg-muted-foreground/40")} />
+                  <p className="truncate text-[14px] font-semibold">
+                    {ac.power
+                      ? `On · ${modeConfig[ac.mode]?.label ?? ac.mode} · ${fanConfig[ac.fan]?.label ?? ac.fan} fan`
+                      : "AC is off"}
+                  </p>
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  <Label htmlFor="auto-send" className="text-muted-foreground cursor-pointer text-[13px] font-medium">
+                    Auto-send
+                  </Label>
+                  <Switch id="auto-send" checked={autoSend} onCheckedChange={applyAutoSendChange} />
                 </div>
               </div>
-            )}
-          </CardContent>
 
-          <div className="border-border/60 border-t" />
+              <TemperatureDial
+                value={draft.temperature ?? ac.temperature}
+                disabled={controlsDisabled}
+                onChange={handleTemperatureChange}
+              />
 
-          <CardContent className="pt-3">
-            <TimerControls />
-          </CardContent>
-        </Card>
+              <PowerButtons on={ac.power} onPowerOn={() => setPower.mutate(true)} onPowerOff={() => setPower.mutate(false)} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="flex flex-col gap-4">
+              <ModeSelector value={draft.mode ?? ac.mode} disabled={controlsDisabled} onChange={handleModeChange} />
+              <FanSelector value={draft.fan ?? ac.fan} disabled={controlsDisabled} onChange={handleFanChange} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent>
+              <SectionLabel>Extras</SectionLabel>
+              {/* Light / Self Clean aren't part of AcState -- momentary
+                  buttons that only gate on their own in-flight request. */}
+              <AuxButtons />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent>
+              <SectionLabel>Timers</SectionLabel>
+              <TimerControls />
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Pending-changes bar, pinned just above the tab bar. */}
+      {profile === "carrier" && !autoSend && hasPendingChanges && (
+        <div
+          className="fixed inset-x-0 z-30 px-4"
+          style={{ bottom: "calc(4rem + env(safe-area-inset-bottom) + 0.75rem)" }}
+        >
+          <div className="bg-foreground text-background mx-auto flex max-w-lg items-center justify-between gap-2 rounded-2xl py-2 pr-2 pl-4 shadow-lg sm:max-w-2xl">
+            <p className="text-[14px] font-semibold">
+              {pendingCount} change{pendingCount > 1 ? "s" : ""} pending
+            </p>
+            <div className="flex items-center gap-1.5">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setDraft({})}
+                disabled={sendCommand.isPending}
+                className="text-background hover:bg-background/10 active:bg-background/15"
+              >
+                <Undo2 className="size-4" />
+                Discard
+              </Button>
+              <Button type="button" size="sm" onClick={handleSendNow} disabled={sendCommand.isPending}>
+                <Send className="size-4" />
+                Send
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

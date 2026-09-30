@@ -102,7 +102,7 @@ export function LearnPanel() {
             />
             {!listening ? (
               <Button
-                className="h-10 shrink-0 gap-1.5"
+                className="h-11 shrink-0 gap-1.5"
                 disabled={!canListen || start.isPending}
                 onClick={handleListen}
               >
@@ -116,7 +116,7 @@ export function LearnPanel() {
             ) : (
               <Button
                 variant="outline"
-                className="h-10 shrink-0 gap-1.5"
+                className="h-11 shrink-0 gap-1.5"
                 disabled={cancel.isPending}
                 onClick={() => cancel.mutate()}
               >
@@ -230,8 +230,8 @@ function StatusBanner({
 
   if (status.state === "received") {
     return (
-      <div className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2.5">
-        <CheckCircle2 className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+      <div className="border-success/30 bg-success/10 flex items-center gap-2 rounded-xl border px-3 py-2.5">
+        <CheckCircle2 className="text-success size-4 shrink-0" />
         <p className="text-xs">
           Signal received and saved as <span className="font-semibold">"{status.button_name}"</span>.
         </p>
@@ -256,11 +256,11 @@ function StatusBanner({
 
   // error
   return (
-    <div className="flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2.5">
-      <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+    <div className="border-warning/30 bg-warning/10 flex items-start gap-2 rounded-xl border px-3 py-2.5">
+      <AlertTriangle className="text-warning mt-0.5 size-4 shrink-0" />
       <div className="text-xs">
         <p>Couldn't listen — this usually means the IR receiver isn't wired up yet.</p>
-        {status.error && <p className="mt-1 font-mono text-[10px] text-amber-700 dark:text-amber-400">{status.error}</p>}
+        {status.error && <p className="text-warning mt-1 font-mono text-[11px] break-all">{status.error}</p>}
       </div>
     </div>
   )

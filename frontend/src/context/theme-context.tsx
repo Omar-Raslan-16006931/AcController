@@ -10,48 +10,27 @@ interface ThemeContextValue {
 
 const ThemeContext = React.createContext<ThemeContextValue | undefined>(undefined)
 
-const STORAGE_KEY = "ac-controller-theme"
-
-function getSystemTheme(): "light" | "dark" {
-  if (typeof window === "undefined") return "light"
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
-}
-
-function getStoredTheme(): Theme {
-  if (typeof window === "undefined") return "system"
-  const stored = window.localStorage.getItem(STORAGE_KEY)
-  if (stored === "light" || stored === "dark" || stored === "system") return stored
-  return "system"
-}
-
+/**
+ * The app ships a single light (beige/white/blue) design. The provider's API
+ * is kept so existing consumers keep compiling, but it always resolves to
+ * light and ignores OS dark mode / any previously stored preference.
+ */
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = React.useState<Theme>(getStoredTheme)
-  const [systemTheme, setSystemTheme] = React.useState<"light" | "dark">(getSystemTheme)
-
-  React.useEffect(() => {
-    const mql = window.matchMedia("(prefers-color-scheme: dark)")
-    const listener = (e: MediaQueryListEvent) => setSystemTheme(e.matches ? "dark" : "light")
-    mql.addEventListener("change", listener)
-    return () => mql.removeEventListener("change", listener)
-  }, [])
-
-  const resolvedTheme = theme === "system" ? systemTheme : theme
-
   React.useEffect(() => {
     const root = window.document.documentElement
-    root.classList.remove("light", "dark")
-    root.classList.add(resolvedTheme)
-    root.style.colorScheme = resolvedTheme
-  }, [resolvedTheme])
-
-  const setTheme = React.useCallback((next: Theme) => {
-    window.localStorage.setItem(STORAGE_KEY, next)
-    setThemeState(next)
+    root.classList.remove("dark")
+    root.classList.add("light")
+    root.style.colorScheme = "light"
+    try {
+      window.localStorage.removeItem("ac-controller-theme")
+    } catch {
+      // storage unavailable (private mode) -- nothing to clean up
+    }
   }, [])
 
-  const value = React.useMemo(
-    () => ({ theme, resolvedTheme, setTheme }),
-    [theme, resolvedTheme, setTheme]
+  const value = React.useMemo<ThemeContextValue>(
+    () => ({ theme: "light", resolvedTheme: "light", setTheme: () => {} }),
+    []
   )
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
