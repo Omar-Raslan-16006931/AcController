@@ -101,6 +101,19 @@ def _get_device():
     except Exception as exc:  # noqa: BLE001 - surface a readable error
         raise TuyaIRError(f"Couldn't connect to the Tuya IR blaster: {exc}") from exc
 
+    # Blasters often don't answer status polls until they've been sent a
+    # command, so auto-detection can come back empty. Retry once, then fall
+    # back to the newer command set (type 2), which most current pucks use.
+    # Set TUYA_CONTROL_TYPE in .env to skip detection entirely.
+    if not getattr(dev, "control_type", None):
+        try:
+            dev.detect_control_type()
+        except Exception:  # noqa: BLE001 - detection is best-effort
+            pass
+    if not getattr(dev, "control_type", None):
+        log.warning("Tuya IR control type not detected; defaulting to 2 (set TUYA_CONTROL_TYPE to override)")
+        dev.control_type = 2
+
     if hasattr(dev, "set_socketTimeout"):
         dev.set_socketTimeout(6)
     _device, _device_sig = dev, sig
