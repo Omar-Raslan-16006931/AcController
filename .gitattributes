@@ -1,0 +1,6 @@
+# Shell scripts and systemd units run on the Pi -- always LF, even when
+# committed from Windows, or bash/systemd choke on the \r.
+*.sh text eol=lf
+*.service text eol=lf
+*.sudoers text eol=lf
+*.py text eol=lf
