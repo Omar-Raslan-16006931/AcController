@@ -1,28 +1,25 @@
 import * as React from "react"
 import { format } from "date-fns"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { AnimatePresence, motion, type PanInfo } from "framer-motion"
+import { ChevronLeft, ChevronRight, Wind } from "lucide-react"
 
+import { cn } from "@/lib/utils"
 import { fanConfig } from "@/lib/ac-labels"
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { tempRampColor } from "@/lib/temp-ramp"
 import { useAcUsageDetail, type AcUsageDayDetail, type AcUsageInterval } from "@/features/dashboard/use-ac-usage-detail"
 
-// Intervals shorter than this are almost always a stray button tap (e.g.
-// nudging the temperature twice in a row) rather than a real session --
-// they clutter the list without being useful, so the *rendered* rows are
-// filtered to this floor. Nothing else (radial dial, total on-time,
-// average temperature) is filtered -- those must stay accurate to real
-// elapsed on-time, including the brief sessions this hides from the list.
-const MIN_DISPLAYED_INTERVAL_MS = 10 * 60_000
+// Sessions shorter than this are almost always stray taps; they're hidden
+// from the list only. Totals/averages still count every second of on-time.
+const MIN_DISPLAYED_INTERVAL_MS = 5 * 60_000
 
-function formatDuration(hours: number): string {
-  const totalMinutes = Math.round(hours * 60)
-  const h = Math.floor(totalMinutes / 60)
-  const m = totalMinutes % 60
-  if (h === 0) return `${m}m`
-  if (m === 0) return `${h}h`
-  return `${h}h ${m}m`
+/** "27 min", "1 h", "1 h 5 min" */
+function formatMinutes(ms: number): string {
+  const total = Math.max(1, Math.round(ms / 60_000))
+  const h = Math.floor(total / 60)
+  const m = total % 60
+  if (h === 0) return `${m} min`
+  if (m === 0) return `${h} h`
+  return `${h} h ${m} min`
 }
 
 function formatClock(ms: number): string {
@@ -30,7 +27,7 @@ function formatClock(ms: number): string {
 }
 
 function dayStats(day: AcUsageDayDetail | undefined) {
-  if (!day) return { hours: 0, avgTemp: null as number | null }
+  if (!day) return { totalMs: 0, avgTemp: null as number | null }
   const totalMs = day.intervals.reduce((sum, iv) => sum + (iv.endMs - iv.startMs), 0)
   const weighted = day.intervals.filter((iv) => iv.temperature != null)
   const weightMs = weighted.reduce((sum, iv) => sum + (iv.endMs - iv.startMs), 0)
@@ -38,113 +35,71 @@ function dayStats(day: AcUsageDayDetail | undefined) {
     weightMs > 0
       ? Math.round(weighted.reduce((sum, iv) => sum + iv.temperature! * (iv.endMs - iv.startMs), 0) / weightMs)
       : null
-  return { hours: totalMs / 3_600_000, avgTemp }
+  return { totalMs, avgTemp }
 }
 
-const DIAL_SIZE = 168
-const DIAL_RADIUS = 70
-const DIAL_CENTER = DIAL_SIZE / 2
-const DIAL_CIRCUMFERENCE = 2 * Math.PI * DIAL_RADIUS
-
-/** Compact 24h radial dial: each session drawn as an arc at its true clock
- * position (midnight at top, clockwise). Built from a stack of circles,
- * each rotated to its session's start time and dashed to its duration --
- * the standard SVG "circle as an arc" trick, since <path> arc math for a
- * variable-length clock arc is much fussier to get right. */
-function DayRadialDial({ day, totalHours }: { day: AcUsageDayDetail | undefined; totalHours: number }) {
+/** Flat 24-hour strip: each session drawn at its real time of day. */
+function DayStrip({ day }: { day: AcUsageDayDetail | undefined }) {
   const dayStartMs = day ? new Date(`${day.date}T00:00:00`).getTime() : 0
-
+  const DAY_MS = 86_400_000
   return (
-    <div className="relative shrink-0" style={{ width: DIAL_SIZE, height: DIAL_SIZE }}>
-      <svg width={DIAL_SIZE} height={DIAL_SIZE} viewBox={`0 0 ${DIAL_SIZE} ${DIAL_SIZE}`}>
-        <circle
-          cx={DIAL_CENTER}
-          cy={DIAL_CENTER}
-          r={DIAL_RADIUS}
-          fill="none"
-          stroke="var(--secondary)"
-          strokeWidth={10}
-        />
-        <g transform={`rotate(-90 ${DIAL_CENTER} ${DIAL_CENTER})`}>
-          {day?.intervals.map((interval, i) => {
-            const startMinutes = (interval.startMs - dayStartMs) / 60_000
-            const durationMinutes = (interval.endMs - interval.startMs) / 60_000
-            const arcLength = Math.max((durationMinutes / 1440) * DIAL_CIRCUMFERENCE, 2)
-            const rotationDeg = (startMinutes / 1440) * 360
-            const color = interval.temperature != null ? tempRampColor(interval.temperature) : "var(--primary)"
-            return (
-              <motion.circle
-                key={i}
-                cx={DIAL_CENTER}
-                cy={DIAL_CENTER}
-                r={DIAL_RADIUS}
-                fill="none"
-                stroke={color}
-                strokeWidth={10}
-                strokeLinecap="round"
-                strokeDasharray={`${arcLength} ${DIAL_CIRCUMFERENCE - arcLength}`}
-                transform={`rotate(${rotationDeg} ${DIAL_CENTER} ${DIAL_CENTER})`}
-                initial={false}
-                animate={{ opacity: 0.95 }}
-                transition={{ delay: 0.1 + i * 0.05 }}
-              />
-            )
-          })}
-        </g>
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <p className="text-[22px] leading-none font-bold tabular-nums">{formatDuration(totalHours)}</p>
+    <div>
+      <div className="bg-secondary relative h-3 w-full overflow-hidden rounded-full">
+        {day?.intervals.map((iv, i) => {
+          const left = ((iv.startMs - dayStartMs) / DAY_MS) * 100
+          const width = Math.max(((iv.endMs - iv.startMs) / DAY_MS) * 100, 0.6)
+          return (
+            <span
+              key={i}
+              className="absolute inset-y-0 rounded-full"
+              style={{
+                left: `${left}%`,
+                width: `${width}%`,
+                backgroundColor: iv.temperature != null ? tempRampColor(iv.temperature) : "var(--primary)",
+              }}
+            />
+          )
+        })}
+      </div>
+      <div className="text-muted-foreground mt-1.5 flex justify-between text-[10px] tabular-nums">
+        <span>12a</span>
+        <span>6a</span>
+        <span>12p</span>
+        <span>6p</span>
+        <span>12a</span>
       </div>
     </div>
   )
 }
 
-function IntervalRow({
-  interval,
-  index,
-  isLast,
-}: {
-  interval: AcUsageInterval
-  index: number
-  isLast: boolean
-}) {
-  const hours = (interval.endMs - interval.startMs) / 3_600_000
+function IntervalRow({ interval }: { interval: AcUsageInterval }) {
+  const ms = interval.endMs - interval.startMs
   const fan = interval.fan ? fanConfig[interval.fan] : null
-  const FanIcon = fan?.icon
-  const chipColor = interval.temperature != null ? tempRampColor(interval.temperature) : undefined
 
   return (
-    <motion.div
-      initial={{ x: -8 }}
-      animate={{ x: 0 }}
-      transition={{ delay: 0.05 + index * 0.05 }}
-      className="relative flex gap-3 pb-5 pl-1 last:pb-0"
-    >
-      <div className="relative flex w-3 shrink-0 flex-col items-center">
-        <span className="bg-primary z-10 mt-1 size-2.5 rounded-full" />
-        {!isLast && <span className="bg-border absolute top-3 bottom-[-1.25rem] w-px" />}
+    <div className="bg-secondary flex items-center gap-3 rounded-2xl px-3.5 py-3">
+      <div className="min-w-0 flex-1">
+        <p className="text-[14px] font-semibold tabular-nums">
+          {formatClock(interval.startMs)} – {interval.ongoing ? "now" : formatClock(interval.endMs)}
+        </p>
+        <p className="text-muted-foreground mt-0.5 flex items-center gap-1.5 text-[12px]">
+          <Wind className="size-3" />
+          {fan ? `${fan.label} fan` : "Fan"}
+          {interval.temperature != null && (
+            <>
+              <span aria-hidden>·</span>
+              <span
+                className="size-2 rounded-full"
+                style={{ backgroundColor: tempRampColor(interval.temperature) }}
+                aria-hidden
+              />
+              {interval.temperature}°C
+            </>
+          )}
+        </p>
       </div>
-
-      <div className="flex min-w-0 flex-1 items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="text-[13.5px] font-semibold">
-            {formatClock(interval.startMs)} – {interval.ongoing ? "now" : formatClock(interval.endMs)}
-          </p>
-          <p className="text-muted-foreground mt-0.5 flex items-center gap-1 text-[12px]">
-            {FanIcon && <FanIcon className="size-3" />}
-            {fan ? `${fan.label} fan` : "Fan"} · {formatDuration(hours)}
-          </p>
-        </div>
-        {interval.temperature != null && (
-          <span
-            className="shrink-0 rounded-full text-white px-2 py-0.5 text-[12px] font-semibold"
-            style={{ backgroundColor: chipColor }}
-          >
-            {interval.temperature}°
-          </span>
-        )}
-      </div>
-    </motion.div>
+      <p className="text-primary shrink-0 text-[17px] font-bold tabular-nums">{formatMinutes(ms)}</p>
+    </div>
   )
 }
 
@@ -154,32 +109,14 @@ interface DayDetailSheetProps {
   initialDate: string | null
 }
 
-const SWIPE_DISTANCE_THRESHOLD = 60
-const SWIPE_VELOCITY_THRESHOLD = 400
-
-// Slide direction variants for the day-swap transition: `dir` is +1 when
-// moving to a later day (content travels right-to-left) and -1 when moving
-// to an earlier day (content travels left-to-right) -- matches the finger's
-// swipe direction so the motion feels directly manipulated rather than
-// just a generic fade.
-const dayVariants = {
-  enter: (dir: number) => ({ x: dir === 0 ? 0 : dir > 0 ? 36 : -36, opacity: 0 }),
-  center: { x: 0, opacity: 1 },
-  exit: (dir: number) => ({ x: dir > 0 ? -36 : 36, opacity: 0 }),
-}
-
 export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailSheetProps) {
   const { data: days } = useAcUsageDetail(open)
   const [selectedDate, setSelectedDate] = React.useState<string | null>(initialDate)
-  // Tracks swipe direction so the outgoing/incoming day content slides the
-  // correct way -- 1 = moving to a later day, -1 = moving to an earlier day.
-  const [direction, setDirection] = React.useState(0)
+  const scrollRef = React.useRef<HTMLDivElement>(null)
+  const touchStart = React.useRef<{ x: number; y: number } | null>(null)
 
   React.useEffect(() => {
-    if (open) {
-      setSelectedDate(initialDate)
-      setDirection(0)
-    }
+    if (open) setSelectedDate(initialDate)
   }, [open, initialDate])
 
   const activeIndex = days?.findIndex((d) => d.date === selectedDate) ?? -1
@@ -187,13 +124,11 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
   const stats = dayStats(activeDay)
   const isToday = activeDay?.date === days?.[days.length - 1]?.date
 
-  // The list only ever shows sessions >= MIN_DISPLAYED_INTERVAL_MS -- see
-  // the constant's comment. dayStats/DayRadialDial above intentionally use
-  // the unfiltered activeDay.intervals so total on-time stays accurate.
   const displayIntervals = React.useMemo(
     () => activeDay?.intervals.filter((iv) => iv.endMs - iv.startMs >= MIN_DISPLAYED_INTERVAL_MS) ?? [],
     [activeDay]
   )
+  const hiddenCount = (activeDay?.intervals.length ?? 0) - displayIntervals.length
 
   const resolvedIndex = days && activeDay ? days.findIndex((d) => d.date === activeDay.date) : -1
   const hasPrev = !!days && resolvedIndex > 0
@@ -201,140 +136,128 @@ export function DayDetailSheet({ open, onOpenChange, initialDate }: DayDetailShe
 
   const goToOffset = (delta: number) => {
     if (!days || resolvedIndex < 0) return
-    const nextIndex = resolvedIndex + delta
-    if (nextIndex < 0 || nextIndex >= days.length) return
-    setDirection(delta)
-    setSelectedDate(days[nextIndex].date)
+    const next = resolvedIndex + delta
+    if (next < 0 || next >= days.length) return
+    setSelectedDate(days[next].date)
+    scrollRef.current?.scrollTo({ top: 0 })
   }
 
-  const handleDragEnd = (_: unknown, info: PanInfo) => {
-    const { offset, velocity } = info
-    const passedDistance = Math.abs(offset.x) > SWIPE_DISTANCE_THRESHOLD
-    const passedVelocity = Math.abs(velocity.x) > SWIPE_VELOCITY_THRESHOLD
-    if (!passedDistance && !passedVelocity) return
-
-    // Swipe left (negative offset) = advance to the next (later) day;
-    // swipe right (positive offset) = go back to the previous day --
-    // matches the standard "swipe left for next" convention.
-    if (offset.x < 0) goToOffset(1)
-    else goToOffset(-1)
+  // Horizontal swipe changes day. Plain touch listeners (no drag handler)
+  // so vertical scrolling stays fully native.
+  const onTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0]
+    touchStart.current = { x: t.clientX, y: t.clientY }
   }
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const start = touchStart.current
+    touchStart.current = null
+    if (!start) return
+    const t = e.changedTouches[0]
+    const dx = t.clientX - start.x
+    const dy = t.clientY - start.y
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) goToOffset(dx < 0 ? 1 : -1)
+  }
+
+  const title = isToday
+    ? "Today"
+    : activeDay
+      ? format(new Date(`${activeDay.date}T00:00:00`), "EEEE, MMM d")
+      : ""
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="dashboard-flat dark text-foreground bg-card border-border flex max-h-[85svh] flex-col gap-0 overflow-hidden rounded-t-[1.75rem] border-t p-0 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+        className="dashboard-flat dark text-foreground bg-card border-border mx-auto flex h-[80svh] max-w-lg flex-col gap-0 rounded-t-[1.75rem] border-t p-0"
       >
         <div className="flex shrink-0 justify-center pt-2.5 pb-1" aria-hidden>
           <div className="bg-muted-foreground/40 h-1 w-9 rounded-full" />
         </div>
 
-        <div className="flex shrink-0 items-center justify-between px-3">
+        {/* Header: day switcher */}
+        <div className="flex shrink-0 items-center gap-2 px-3 pt-1 pr-12">
           <button
             type="button"
             aria-label="Previous day"
             disabled={!hasPrev}
             onClick={() => goToOffset(-1)}
-            className="text-muted-foreground flex size-7 items-center justify-center rounded-full transition-opacity disabled:opacity-0"
+            className="bg-secondary flex size-9 shrink-0 items-center justify-center rounded-full disabled:opacity-30"
           >
             <ChevronLeft className="size-4" />
           </button>
+          <div className="min-w-0 flex-1 text-center">
+            <SheetTitle className="truncate text-[17px] font-bold">{title}</SheetTitle>
+            <SheetDescription className="sr-only">AC usage for this day</SheetDescription>
+          </div>
           <button
             type="button"
             aria-label="Next day"
             disabled={!hasNext}
             onClick={() => goToOffset(1)}
-            className="text-muted-foreground flex size-7 items-center justify-center rounded-full transition-opacity disabled:opacity-0"
+            className="bg-secondary flex size-9 shrink-0 items-center justify-center rounded-full disabled:opacity-30"
           >
             <ChevronRight className="size-4" />
           </button>
         </div>
 
-        {/* This wrapper is the only flexible/scrollable region -- header
-            (above) and the day-dots footer (below) are shrink-0 and never
-            scroll. min-h-0 is required here: without it, a flex child
-            refuses to shrink below its content size, which is the classic
-            reason "overflow-y-auto" silently does nothing inside a flex
-            column. */}
-        <div className="min-h-0 flex-1 overflow-hidden">
-          <AnimatePresence initial={false} mode="popLayout" custom={direction}>
-            <motion.div
-              key={activeDay?.date ?? "empty"}
-              custom={direction}
-              variants={dayVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ type: "spring", stiffness: 340, damping: 32, mass: 0.6 }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.65}
-              dragTransition={{ power: 0.25, timeConstant: 200 }}
-              onDragEnd={handleDragEnd}
-              className="flex h-full flex-col touch-pan-y"
-              style={{ touchAction: "pan-y" }}
-            >
-              <div className="flex shrink-0 items-start justify-between gap-3 px-5 pt-2">
-                <DayRadialDial day={activeDay} totalHours={stats.hours} />
-                <div className="min-w-0 flex-1 pt-1 text-right">
-                  <SheetTitle className="text-[17px]">
-                    {isToday
-                      ? "Today"
-                      : activeDay
-                        ? format(new Date(`${activeDay.date}T00:00:00`), "EEEE, MMM d")
-                        : ""}
-                  </SheetTitle>
-                  <SheetDescription className="mt-0.5 text-[13px]">
-                    {formatDuration(stats.hours)} cooling
-                    {stats.avgTemp != null && ` · avg ${stats.avgTemp}°C`}
-                  </SheetDescription>
-                </div>
-              </div>
+        {/* Summary */}
+        <div className="shrink-0 px-5 pt-4">
+          <div className="grid grid-cols-3 gap-2">
+            <Stat label="Total on" value={stats.totalMs > 0 ? formatMinutes(stats.totalMs) : "0 min"} />
+            <Stat label="Sessions" value={String(activeDay?.intervals.length ?? 0)} />
+            <Stat label="Avg temp" value={stats.avgTemp != null ? `${stats.avgTemp}°C` : "–"} />
+          </div>
+          <div className="mt-4">
+            <DayStrip day={activeDay} />
+          </div>
+        </div>
 
-              {/* The actual scrollable interval list -- min-h-0 + flex-1
-                  again, plus overscroll-contain so an overscrolled list
-                  doesn't drag the whole sheet/page along with it. */}
-              <div
-                className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pt-4"
-                style={{ WebkitOverflowScrolling: "touch" }}
-              >
-                {activeDay && activeDay.intervals.length === 0 && (
-                  <p className="text-muted-foreground py-8 text-center text-[13px]">
-                    The AC wasn't used this day.
-                  </p>
-                )}
-                {activeDay && activeDay.intervals.length > 0 && displayIntervals.length === 0 && (
-                  <p className="text-muted-foreground py-8 text-center text-[13px]">
-                    Only brief taps under 10 minutes today.
-                  </p>
-                )}
-                {displayIntervals.map((interval, i) => (
-                  <IntervalRow
-                    key={i}
-                    interval={interval}
-                    index={i}
-                    isLast={i === displayIntervals.length - 1}
-                  />
-                ))}
-              </div>
-            </motion.div>
-          </AnimatePresence>
+        {/* The only scrolling region */}
+        <div
+          ref={scrollRef}
+          className="mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
+          style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}
+        >
+          {activeDay && activeDay.intervals.length === 0 && (
+            <p className="text-muted-foreground py-8 text-center text-[13px]">The AC wasn't used this day.</p>
+          )}
+          <div className="space-y-2">
+            {displayIntervals.map((interval, i) => (
+              <IntervalRow key={i} interval={interval} />
+            ))}
+          </div>
+          {hiddenCount > 0 && (
+            <p className="text-muted-foreground pt-3 text-center text-[12px]">
+              + {hiddenCount} short {hiddenCount === 1 ? "tap" : "taps"} under 5 min
+            </p>
+          )}
         </div>
 
         {days && days.length > 1 && (
-          <div className="flex shrink-0 items-center justify-center gap-1.5 pt-1 pb-3" aria-hidden>
+          <div className="border-border flex shrink-0 items-center justify-center gap-1.5 border-t py-2.5" aria-hidden>
             {days.map((day) => (
               <span
                 key={day.date}
-                className={`h-1.5 rounded-full transition-all ${
-                  day.date === activeDay?.date ? "bg-primary w-4" : "bg-secondary w-1.5"
-                }`}
+                className={cn(
+                  "h-1.5 rounded-full transition-all",
+                  day.date === activeDay?.date ? "bg-primary w-4" : "bg-muted-foreground/30 w-1.5"
+                )}
               />
             ))}
           </div>
         )}
       </SheetContent>
     </Sheet>
+  )
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="bg-secondary rounded-2xl px-3 py-2.5">
+      <p className="text-muted-foreground text-[11px] font-medium">{label}</p>
+      <p className="mt-0.5 text-[16px] font-bold tabular-nums">{value}</p>
+    </div>
   )
 }
