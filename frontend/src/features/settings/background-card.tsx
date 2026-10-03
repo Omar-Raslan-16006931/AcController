@@ -56,7 +56,7 @@ export function BackgroundCard() {
                   background: `radial-gradient(90% 90% at 20% 15%, ${p.a}, transparent 70%), radial-gradient(80% 80% at 90% 90%, ${p.b}, transparent 70%), ${p.base}`,
                 }}
               >
-                {active && <CheckIconclassName="size-4" strokeWidth={2.6} />}
+                {active && <CheckIcon className="size-4" strokeWidth={2.6} />}
               </span>
               <span className={cn("text-[10.5px] font-medium", active ? "text-foreground" : "text-muted-foreground")}>
                 {p.label}
@@ -79,7 +79,7 @@ export function BackgroundCard() {
                 : "conic-gradient(from 0deg, #ff5a4f, #ffb547, #3ee08f, #4b9dff, #8b5cf6, #ff5a4f)",
             }}
           >
-            {isCustom ? <CheckIconclassName="size-4" strokeWidth={2.6} /> : <span className="text-[18px] leading-none font-light">+</span>}
+            {isCustom ? <CheckIcon className="size-4" strokeWidth={2.6} /> : <span className="text-[18px] leading-none font-light">+</span>}
             <input
               ref={inputRef}
               type="color"
