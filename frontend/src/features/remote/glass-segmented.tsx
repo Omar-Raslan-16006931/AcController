@@ -39,12 +39,14 @@ export function GlassSegmented<T extends string>({
     >
       <span
         aria-hidden
-        className={cn(
-          "lens absolute top-[3px] bottom-[3px] left-[3px] transition-transform duration-500 ease-[cubic-bezier(.34,1.45,.5,1)]",
-          size === "sm" ? "rounded-[10px]" : "rounded-[12px]"
-        )}
+        className="absolute top-[3px] bottom-[3px] left-[3px] transition-transform duration-500 ease-[cubic-bezier(.34,1.45,.5,1)]"
         style={{ width: `calc((100% - 6px) / ${n})`, transform: `translateX(${index * 100}%)` }}
-      />
+      >
+        <span
+          key={index}
+          className={cn("lens lens-stretch absolute inset-0", size === "sm" ? "rounded-[10px]" : "rounded-[12px]")}
+        />
+      </span>
       {items.map((item) => {
         const on = item.value === value
         return (

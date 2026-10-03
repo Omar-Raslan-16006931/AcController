@@ -49,6 +49,21 @@ Sideloadly again (same file), or turn on Sideloadly's auto-refresh, or use
 **AltStore** (altstore.io) which refreshes over Wi-Fi automatically. A paid
 Apple Developer account (99 USD/year) makes it last a year.
 
+### Dynamic Island (sideloaded app only)
+
+- While the AC is on, the island shows the mode icon and temperature; while
+  a timer runs it shows a live countdown (green = turns on, red = turns off).
+  Long-press the island for the expanded view. The same shows on the lock
+  screen.
+- The countdown keeps ticking with the app closed. Other changes (Siri,
+  schedules) update the island the next time you open the app; live push
+  updates would need a paid Apple developer account.
+- If nothing appears: iPhone Settings > AC Controller > Live Activities: on.
+- Needs iOS 16.2+ (the app's minimum) and an iPhone with a Dynamic Island
+  for the island itself; other iPhones get the lock-screen version.
+- Settings > Notifications > Test checks notifications: lock the phone after
+  tapping it and the banner arrives 5 seconds later.
+
 ### Notes
 
 - Sign in with **email + password** inside the sideloaded app. Passkeys need

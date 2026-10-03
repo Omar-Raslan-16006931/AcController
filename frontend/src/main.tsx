@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client"
 
 import "@/index.css"
 import App from "@/App.tsx"
+import { registerServiceWorker } from "@/lib/native"
 
 // Vite fires this event when a dynamically-imported chunk fails to load --
 // most commonly right after a new deploy, when a tab that's been open since
@@ -19,6 +20,8 @@ window.addEventListener("vite:preloadError", () => {
   window.sessionStorage.setItem(CHUNK_RELOAD_GUARD_KEY, "1")
   window.location.reload()
 })
+
+registerServiceWorker()
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

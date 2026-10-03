@@ -68,6 +68,31 @@ export function TimerControls() {
 
   const toggle = (action: Action) => setOpen((o) => (o === action ? null : action))
 
+  // When the panel opens, glide the page down so the whole panel (and its
+  // Start button) sits above the tab bar. Runs again once the open
+  // animation has finished, since the panel grows while it opens.
+  // (Scrolls <main> by hand from a marker placed after the panel, instead
+  // of scrollIntoView, which could also scroll the panel's clipping wrapper
+  // and cut off its top.)
+  const panelRef = React.useRef<HTMLDivElement>(null)
+  React.useEffect(() => {
+    if (!open) return
+    const scroll = () => {
+      const marker = panelRef.current
+      const scroller = marker?.closest("main")
+      if (!marker || !scroller) return
+      const tabBarClearance = 104
+      const overflow = marker.getBoundingClientRect().bottom - (window.innerHeight - tabBarClearance)
+      if (overflow > 0) scroller.scrollBy({ top: overflow, behavior: "smooth" })
+    }
+    const a = window.setTimeout(scroll, 80)
+    const b = window.setTimeout(scroll, 420)
+    return () => {
+      window.clearTimeout(a)
+      window.clearTimeout(b)
+    }
+  }, [open])
+
   const start = () => {
     if (!open) return
     createTimer.mutate({ action: open, seconds: minutes * 60 })
@@ -152,6 +177,7 @@ export function TimerControls() {
           </div>
         </div>
       </div>
+      <div ref={panelRef} aria-hidden className="h-0" />
 
       <div className="mt-1.5 flex flex-col gap-1.5">
         {activeTimers.length === 0 ? (
