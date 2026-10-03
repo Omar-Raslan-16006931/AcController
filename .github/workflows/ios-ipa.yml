@@ -51,7 +51,11 @@ jobs:
           echo '<!doctype html><meta http-equiv="refresh" content="0;url=https://ac-controller-ten.vercel.app">' > dist/index.html
 
       - name: Create iOS project
-        run: npx cap add ios --packagemanager SPM
+        # CocoaPods (preinstalled on GitHub's macOS runners) is Capacitor 7's
+        # default and the most reliable path.
+        run: |
+          pod --version
+          npx cap add ios
 
       - name: Icon, name, dark status bar
         run: |
@@ -74,7 +78,7 @@ jobs:
       - name: Build (unsigned)
         run: |
           xcodebuild \
-            -project ios/App/App.xcodeproj \
+            -workspace ios/App/App.xcworkspace \
             -scheme App \
             -configuration Release \
             -sdk iphoneos \
