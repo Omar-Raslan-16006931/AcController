@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AC Controller - night glass</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0b0b0d; color: #e8e8ea; font: 15px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", sans-serif; padding: 56px 24px 96px; }
+  .dir { max-width: 880px; margin: 0 auto; }
+  .dir h2 { font-weight: 600; font-size: 20px; }
+  .dir p { color: #8a8a90; margin: 2px 0 28px; max-width: 620px; }
+  .phones { display: flex; gap: 36px; flex-wrap: wrap; justify-content: center; }
+  .shot { display: flex; flex-direction: column; align-items: center; gap: 10px; color: #8a8a90; font-size: 13px; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  svg { display: block; }  /* ---------- phone + living background ---------- */
+  .phone { width: 372px; height: 800px; border-radius: 52px; position: relative; overflow: hidden; isolation: isolate; user-select: none; -webkit-user-select: none; color: #fff; background: #03070e;
+           --sub: rgba(255,255,255,.58); --faint: rgba(255,255,255,.34); --ice: #8fd3ff; }
+  .field { position: absolute; inset: -20%; z-index: -1; }
+  .field i { position: absolute; border-radius: 50%; filter: blur(56px); transition: opacity 1.2s ease; }
+  .field i:nth-child(1) { width: 70%; height: 50%; left: -5%; top: 0%; background: #123a86; opacity: .85; animation: d1 22s ease-in-out infinite alternate; }
+  .field i:nth-child(2) { width: 62%; height: 46%; right: -10%; top: 34%; background: #07646e; opacity: .7; animation: d2 26s ease-in-out infinite alternate; }
+  .field i:nth-child(3) { width: 58%; height: 40%; left: 12%; bottom: -4%; background: #b8641f; opacity: .12; animation: d3 30s ease-in-out infinite alternate; }
+  .field::before { content: ""; position: absolute; inset: 0; background: radial-gradient(90% 70% at 50% 40%, transparent, rgba(2,5,10,.55)); z-index: 1; }
+  .field::after { content: ""; position: absolute; inset: 0; opacity: .07; mix-blend-mode: overlay; z-index: 2;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  @keyframes d1 { to { transform: translate(18%, 12%); } }
+  @keyframes d2 { to { transform: translate(-16%, -10%); } }
+  @keyframes d3 { to { transform: translate(10%, -14%); } }
+
+  /* ---------- the glass material ---------- */
+  .glass { position: relative; overflow: hidden;
+    background: linear-gradient(140deg, rgba(255,255,255,.11), rgba(255,255,255,.03));
+    -webkit-backdrop-filter: blur(28px) saturate(170%); backdrop-filter: blur(28px) saturate(170%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.24), inset 0 -1px 0 rgba(255,255,255,.04), inset 0 0 0 1px rgba(255,255,255,.08), 0 8px 20px -10px rgba(0,0,0,.6); }
+  .glass::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: radial-gradient(120% 70% at 18% 0%, rgba(255,255,255,.14), transparent 55%); }
+  .sub { color: var(--sub); } .faint { color: var(--faint); }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .screen { position: absolute; inset: 0; padding: 54px 14px 104px; overflow-y: auto; scrollbar-width: none; }
+  .screen::-webkit-scrollbar { display: none; }
+  .head { display: flex; justify-content: space-between; align-items: flex-end; padding: 0 6px; margin-bottom: 12px; }
+  .head .date { font-size: 12.5px; font-weight: 600; color: var(--sub); }
+  .head h1 { font-size: 30px; font-weight: 700; letter-spacing: -.6px; line-height: 1.1; }
+  .chip { height: 30px; padding: 0 12px; border-radius: 15px; display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; }
+  .live { width: 7px; height: 7px; border-radius: 50%; background: #3ee08f; box-shadow: 0 0 0 3px rgba(62,224,143,.18); }
+  .card { border-radius: 24px; padding: 14px 16px; margin-bottom: 10px; }
+  .ttl { display: flex; justify-content: space-between; align-items: baseline; font-size: 12.5px; font-weight: 600; margin-bottom: 8px; }
+  .ttl .sub { font-weight: 500; }
+
+  /* ---------- tab bar with liquid lens ---------- */
+  .tabbar { position: absolute; left: 18px; right: 18px; bottom: 22px; height: 62px; border-radius: 31px; display: grid; grid-template-columns: repeat(4, 1fr); padding: 6px; z-index: 5;
+            background: linear-gradient(140deg, rgba(30,36,48,.55), rgba(18,22,30,.55)); }
+  .tabbar .lens { position: absolute; top: 6px; bottom: 6px; left: 6px; width: calc((100% - 12px) / 4); border-radius: 25px;
+    background: rgba(255,255,255,.14); box-shadow: inset 0 1px 0 rgba(255,255,255,.4), inset 0 0 0 1px rgba(255,255,255,.1);
+    transition: transform .55s cubic-bezier(.34,1.45,.5,1); }
+  .tabbar button { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 10.5px; font-weight: 500; color: var(--sub); transition: color .25s; }
+  .tabbar button.on { color: #fff; }
+  .tabbar svg { width: 22px; height: 22px; }
+
+  /* ---------- power button (shared animation) ---------- */
+  .pbtn { position: relative; overflow: hidden; isolation: isolate; transition: background .45s ease, color .3s ease, box-shadow .45s ease; }
+  .pbtn .ring { position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; z-index: -1; pointer-events: none; opacity: 0; }
+  .pbtn.fire .ring { animation: ring .7s cubic-bezier(.2,.7,.3,1); }
+  @keyframes ring { 0% { opacity: .55; transform: scale(1); } 100% { opacity: 0; transform: scale(32); } }
+  .pbtn .sheen { position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%); transform: translateX(-120%); }
+  .pbtn.fire .sheen { animation: sheen .8s ease .1s; }
+  @keyframes sheen { to { transform: translateX(120%); } }
+  .pbtn .pi path { stroke-dasharray: 40; stroke-dashoffset: 0; }
+  .pbtn.fire .pi path { animation: draw .6s ease; }
+  @keyframes draw { from { stroke-dashoffset: 40; } }
+
+  /* ---------- HOME ---------- */
+  .ac { padding: 14px 14px 12px 16px; }
+  .acrow { display: flex; justify-content: space-between; align-items: center; }
+  .ac .big { font-size: 50px; font-weight: 200; letter-spacing: -2px; line-height: 1; margin-top: 2px; }
+  .ac .big sup { font-size: 22px; font-weight: 300; letter-spacing: 0; vertical-align: top; position: relative; top: 5px; margin-left: 2px; }
+  .ac .state { font-size: 12.5px; font-weight: 600; color: var(--ice); margin-top: 4px; transition: color .3s; }
+  .ac.isoff .state { color: var(--sub); }
+  .ac.isoff .big, .ac.isoff .acinfo .v { opacity: .4; }
+  .ac .big, .ac .acinfo .v { transition: opacity .4s; }
+  .homepwr { width: 62px; height: 62px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--sub); }
+  .homepwr svg { width: 26px; height: 26px; }
+  .homepwr.on { background: linear-gradient(140deg, #3ad46a, #22a44e); color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 6px 18px -6px rgba(52,199,89,.6); }
+  .homepwr .ring { background: rgba(255,255,255,.6); }
+  .acinfo { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.08); }
+  .acinfo > div + div { padding-left: 12px; border-left: 1px solid rgba(255,255,255,.08); }
+  .acinfo .k { font-size: 11px; color: var(--sub); }
+  .acinfo .v { display: flex; align-items: center; gap: 5px; font-size: 14px; font-weight: 600; margin-top: 1px; }
+  .acinfo svg { width: 15px; height: 15px; color: var(--ice); }
+
+  .timeline { position: relative; height: 22px; border-radius: 7px; background: rgba(255,255,255,.06); overflow: hidden; }
+  .timeline i { position: absolute; top: 0; bottom: 0; border-radius: 4px; background: linear-gradient(180deg, #7fd0ff, #3f8cff); }
+  .timeline .now { position: absolute; top: -3px; bottom: -3px; width: 2px; background: #fff; border-radius: 1px; }
+  .axis { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--faint); margin-top: 5px; }
+
+  .week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; height: 118px; position: relative; }
+  .week .col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 5px; cursor: pointer; }
+  .week .h { font-size: 10.5px; font-weight: 600; color: var(--sub); transition: color .2s; }
+  .week .bar { width: 100%; max-width: 28px; border-radius: 8px; background: rgba(255,255,255,.1); transition: background .25s; }
+  .week .d { font-size: 11.5px; color: var(--sub); font-weight: 500; }
+  .week .col.today .bar { background: linear-gradient(180deg, #8fd8ff, #3f8cff); }
+  .week .col.today .d, .week .col.today .h { color: #fff; }
+  .week .col.sel .bar { background: rgba(255,255,255,.32); }
+  .week .col.sel .h { color: #fff; }
+  .avg { position: absolute; left: 0; right: 0; border-top: 1px dashed rgba(255,255,255,.16); pointer-events: none; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.07); }
+  .stats > div + div { padding-left: 12px; border-left: 1px solid rgba(255,255,255,.07); }
+  .stats .v { font-size: 17px; font-weight: 600; letter-spacing: -.3px; }
+  .stats .k { font-size: 11px; color: var(--sub); }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mini .v { font-size: 24px; font-weight: 300; letter-spacing: -.8px; }
+  .mini .v small { font-size: 13px; font-weight: 500; letter-spacing: 0; margin-left: 3px; color: var(--sub); }
+  .fanbar { display: flex; height: 7px; border-radius: 4px; overflow: hidden; margin-top: 8px; gap: 2px; }
+  .fanbar i:nth-child(1) { background: #3f8cff; } .fanbar i:nth-child(2) { background: #6fc2ff; } .fanbar i:nth-child(3) { background: #a9e2ff; } .fanbar i:nth-child(4) { background: rgba(255,255,255,.35); }
+  .row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; font-size: 13.5px; }
+  .row + .row { border-top: 1px solid rgba(255,255,255,.07); }
+  .row .l { display: flex; align-items: center; gap: 10px; }
+  .row svg { width: 17px; height: 17px; color: var(--sub); }
+
+  /* ---------- REMOTE ---------- */
+  .src { position: relative; display: grid; grid-template-columns: 1fr 1fr; border-radius: 16px; padding: 4px; margin-bottom: 6px; }
+  .src .lens, .segg .lens { position: absolute; top: 4px; bottom: 4px; left: 4px; border-radius: 12px; background: rgba(255,255,255,.14);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.4), inset 0 0 0 1px rgba(255,255,255,.1); transition: transform .5s cubic-bezier(.34,1.45,.5,1); }
+  .src button { position: relative; height: 30px; font-size: 12.5px; font-weight: 600; color: var(--sub); transition: color .25s; }
+  .src button.on, .segg button.on { color: #fff; }
+  .dialrow { position: relative; display: flex; align-items: center; justify-content: center; }
+  .dialwrap { position: relative; width: 236px; height: 236px; }
+  .dialwrap svg { position: absolute; inset: 0; touch-action: none; cursor: grab; }
+  .dialcenter { position: absolute; inset: 40px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+  .dialcenter .t { font-size: 62px; font-weight: 200; letter-spacing: -3px; line-height: 1; padding-left: 10px; transition: opacity .4s; }
+  .dialcenter .t sup { font-size: 24px; font-weight: 300; letter-spacing: 0; vertical-align: top; position: relative; top: 8px; margin-left: 2px; }
+  .dialcenter .m { font-size: 12.5px; font-weight: 600; margin-top: 3px; color: var(--ice); transition: color .3s; }
+  .arc, .ticks { transition: opacity .4s; }
+  .off .dialcenter .t, .off .arc, .off .ticks { opacity: .25; }
+  .off .dialcenter .m { color: var(--sub); }
+  .stepbtn { position: absolute; bottom: 6px; width: 46px; height: 46px; border-radius: 50%; font-size: 24px; font-weight: 300; display: flex; align-items: center; justify-content: center; }
+  .stepbtn.minus { left: 14px; } .stepbtn.plus { right: 14px; }
+
+  .onoff { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0 0; }
+  .onoff button { height: 50px; border-radius: 18px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; font-weight: 600; color: var(--sub); }
+  .onoff svg { width: 19px; height: 19px; }
+  .onoff .b-on.active { background: linear-gradient(140deg, rgba(58,212,106,.95), rgba(34,164,78,.92)); color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 8px 20px -8px rgba(52,199,89,.65); }
+  .onoff .b-off.active { background: linear-gradient(140deg, rgba(255,80,68,.94), rgba(205,45,40,.9)); color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 8px 20px -8px rgba(255,69,58,.6); }
+  .onoff .ring { background: rgba(255,255,255,.55); }
+
+  .segg { position: relative; display: grid; border-radius: 18px; padding: 4px; }
+  .segg .lens { border-radius: 14px; }
+  .segg button { position: relative; height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; font-size: 11.5px; font-weight: 600; color: var(--sub); transition: color .25s; }
+  .segg button svg { transition: color .25s; }
+  .segg button.on svg { color: var(--ice); }
+  .lbl { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--sub); margin: 10px 6px 5px; }
+  .two-col { display: grid; grid-template-columns: 1.15fr 1fr; gap: 8px; }
+  .aux { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .aux button { height: 50px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 600; color: var(--sub); transition: background .25s, color .25s; }
+  .aux button svg { width: 18px; height: 18px; }
+  .aux button.active { background: rgba(255,255,255,.2); color: #fff; }
+
+  /* ---------- timer: same flow as the current app ---------- */
+  .tbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .tbtns button { height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 600; transition: background .25s; }
+  .tbtns button svg { width: 14px; height: 14px; }
+  .tbtns .t-on svg { color: #3ee08f; } .tbtns .t-off svg { color: #ff6a5f; }
+  .tbtns button.open { background: rgba(255,255,255,.18); }
+  .tpanel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .4s cubic-bezier(.3,.8,.3,1); }
+  .tpanel.open { grid-template-rows: 1fr; }
+  .tpanel > div { overflow: hidden; }
+  .tpanel .inner { margin-top: 6px; border-radius: 16px; padding: 10px 12px 12px; }
+  .tpanel .tt { display: flex; justify-content: space-between; align-items: baseline; }
+  .tpanel .tt .v { font-size: 26px; font-weight: 300; letter-spacing: -.6px; }
+  .tpanel .tt .s { font-size: 11px; color: var(--sub); }
+  .range { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; margin-top: 4px; cursor: pointer; --p: 12%; }
+  .range::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--ice) var(--p), rgba(255,255,255,.12) var(--p)); }
+  .range::-moz-range-track { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--ice) var(--p), rgba(255,255,255,.12) var(--p)); }
+  .range::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #fff; margin-top: -7px; box-shadow: 0 1px 3px rgba(0,0,0,.4); }
+  .range::-moz-range-thumb { width: 20px; height: 20px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.4); }
+  .presets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 4px; }
+  .presets button { height: 26px; border-radius: 8px; background: rgba(255,255,255,.07); font-size: 11px; font-weight: 600; color: var(--sub); transition: background .2s, color .2s; }
+  .presets button.active { background: var(--ice); color: #06223a; }
+  .setbtn { width: 100%; height: 34px; border-radius: 11px; margin-top: 8px; font-size: 12.5px; font-weight: 600; color: #fff; transition: background .25s; }
+  .setbtn.on { background: linear-gradient(140deg, rgba(58,212,106,.95), rgba(34,164,78,.92)); }
+  .setbtn.off { background: linear-gradient(140deg, rgba(255,80,68,.94), rgba(205,45,40,.9)); }
+  .tlist { margin-top: 6px; display: flex; flex-direction: column; gap: 5px; }
+  .tempty { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 11px; color: var(--sub); padding: 4px 0; }
+  .tempty svg { width: 13px; height: 13px; }
+  .trow { display: flex; align-items: center; gap: 8px; height: 38px; border-radius: 12px; padding: 0 6px 0 10px; animation: trin .4s cubic-bezier(.3,.8,.3,1); }
+  @keyframes trin { from { transform: translateY(-6px); } }
+  .trow .dot { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .trow .dot svg { width: 12px; height: 12px; }
+  .trow.on .dot { background: rgba(62,224,143,.16); color: #3ee08f; } .trow.off .dot { background: rgba(255,106,95,.16); color: #ff6a5f; }
+  .trow .l { flex: 1; font-size: 12px; font-weight: 500; }
+  .trow .c { font-size: 13px; font-weight: 600; }
+  .trow .x { width: 26px; height: 26px; border-radius: 50%; color: var(--sub); font-size: 15px; }
+
+  .duo { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .duo > div + div { padding-left: 10px; border-left: 1px solid rgba(255,255,255,.07); }
+  .duo .k { font-size: 10px; color: var(--sub); }
+  .duo .v { font-size: 15px; font-weight: 600; letter-spacing: -.2px; }
+  .sysline { display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; font-weight: 500; padding: 9px 14px !important; }
+  .sysline > span { display: flex; align-items: center; gap: 6px; }
+  .sysline .live { width: 6px; height: 6px; box-shadow: none; }
+
+  .strip { position: relative; height: 14px; border-radius: 5px; background: rgba(255,255,255,.06); overflow: hidden; }
+  .strip i { position: absolute; top: 0; bottom: 0; border-radius: 3px; min-width: 3px; }
+  .strip.big { height: 22px; border-radius: 7px; }
+
+  .scrim { position: absolute; inset: 0; z-index: 20; background: rgba(2,5,10,.55); opacity: 0; pointer-events: none; transition: opacity .35s ease; }
+  .scrim.open { opacity: 1; pointer-events: auto; }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; height: 74%; z-index: 21; border-radius: 30px 30px 0 0; display: flex; flex-direction: column;
+           background: linear-gradient(160deg, rgba(40,52,72,.82), rgba(16,22,32,.9)); transform: translateY(105%); transition: transform .5s cubic-bezier(.32,1.2,.5,1); }
+  .sheet.open { transform: translateY(0); }
+  .sheet .grab { width: 40px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.3); margin: 9px auto 4px; cursor: grab; flex-shrink: 0; }
+  .shead { display: flex; align-items: center; gap: 8px; padding: 4px 14px 10px; flex-shrink: 0; }
+  .shead .nav { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.1); font-size: 20px; line-height: 1; transition: opacity .2s; }
+  .shead .nav:disabled { opacity: .25; cursor: default; }
+  .shead .sd { flex: 1; text-align: center; }
+  .shead .st { font-size: 15px; font-weight: 700; }
+  .shead .ss { font-size: 11.5px; color: var(--sub); }
+  .sbody { flex: 1; min-height: 0; overflow-y: auto; padding: 2px 14px 20px; scrollbar-width: none; }
+  .sbody::-webkit-scrollbar { display: none; }
+  .sum { margin: 10px 0 8px; padding: 9px 0; border-top: 1px solid rgba(255,255,255,.07); border-bottom: 1px solid rgba(255,255,255,.07); }
+  .slist { display: flex; flex-direction: column; gap: 6px; }
+  .sitem { display: flex; align-items: center; gap: 10px; border-radius: 14px; padding: 8px 12px; background: rgba(255,255,255,.06); }
+  .sitem .tm { width: 62px; font-size: 12.5px; font-weight: 600; line-height: 1.25; }
+  .sitem .tm span { display: block; font-size: 11px; font-weight: 500; color: var(--sub); }
+  .sitem .info { flex: 1; min-width: 0; }
+  .sitem .m, .sitem .f { display: flex; align-items: center; gap: 5px; font-size: 12px; }
+  .sitem .f { color: var(--sub); font-size: 11px; }
+  .sitem svg { width: 12px; height: 12px; color: var(--ice); }
+  .sitem .f svg { color: var(--sub); }
+  .sitem .dur { font-size: 15px; font-weight: 700; color: var(--ice); }
+
+  /* ---------- compact pass: everything smaller ---------- */
+  .phone { height: 760px; }
+  .screen { padding: 48px 12px 88px; }
+  .head { margin-bottom: 8px; padding: 0 4px; }
+  .head .date { font-size: 11px; }
+  .head h1 { font-size: 24px; letter-spacing: -.4px; }
+  .chip { height: 26px; padding: 0 10px; font-size: 11px; border-radius: 13px; }
+  .card { border-radius: 18px; padding: 10px 12px; margin-bottom: 7px; }
+  .ttl { font-size: 11.5px; margin-bottom: 6px; }
+  .tabbar { left: 16px; right: 16px; bottom: 16px; height: 54px; border-radius: 27px; padding: 5px; }
+  .tabbar .lens { top: 5px; bottom: 5px; left: 5px; width: calc((100% - 10px) / 4); border-radius: 22px; }
+  .tabbar button { font-size: 9.5px; }
+  .tabbar svg { width: 19px; height: 19px; }
+  .ac { padding: 10px 10px 10px 12px; }
+  .ac .big { font-size: 40px; letter-spacing: -1.5px; }
+  .ac .big sup { font-size: 17px; top: 4px; }
+  .ac .state { font-size: 11.5px; margin-top: 2px; }
+  .homepwr { width: 48px; height: 48px; }
+  .homepwr svg { width: 21px; height: 21px; }
+  .acinfo { margin-top: 8px; padding-top: 7px; }
+  .acinfo > div + div { padding-left: 9px; }
+  .acinfo .k { font-size: 10px; }
+  .acinfo .v { font-size: 12.5px; gap: 4px; }
+  .acinfo svg { width: 13px; height: 13px; }
+  .timeline { height: 16px; border-radius: 5px; }
+  .axis { font-size: 9.5px; margin-top: 3px; }
+  .week { height: 92px; gap: 7px; }
+  .week .h { font-size: 9.5px; } .week .d { font-size: 10.5px; }
+  .week .bar { max-width: 22px; border-radius: 6px; }
+  .stats { margin-top: 7px; padding-top: 7px; }
+  .stats > div + div { padding-left: 9px; }
+  .stats .v { font-size: 14px; } .stats .k { font-size: 10px; }
+  .two { gap: 7px; }
+  .mini .v { font-size: 19px; } .mini .v small { font-size: 11px; }
+  .row { padding: 6px 0; font-size: 12px; }
+  .row svg { width: 15px; height: 15px; }
+  .src { border-radius: 13px; padding: 3px; margin-bottom: 2px; }
+  .src .lens { top: 3px; bottom: 3px; left: 3px; border-radius: 10px; width: calc((100% - 6px)/2) !important; }
+  .src button { height: 26px; font-size: 11.5px; }
+  .dialwrap { width: 196px; height: 196px; }
+  .dialcenter { inset: 33px; }
+  .dialcenter .t { font-size: 48px; letter-spacing: -2px; padding-left: 8px; }
+  .dialcenter .t sup { font-size: 18px; top: 6px; }
+  .dialcenter .m { font-size: 11px; margin-top: 1px; }
+  .stepbtn { width: 38px; height: 38px; font-size: 20px; bottom: 4px; }
+  .stepbtn.minus { left: 30px; } .stepbtn.plus { right: 30px; }
+  .onoff { gap: 6px; margin-top: 4px; }
+  .onoff button { height: 40px; border-radius: 14px; font-size: 13.5px; gap: 6px; }
+  .onoff svg { width: 16px; height: 16px; }
+  .segg { border-radius: 14px; padding: 3px; }
+  .segg .lens { top: 3px; bottom: 3px; left: 3px; border-radius: 11px; }
+  .segg button { height: 36px; font-size: 10.5px; gap: 0; }
+  .segg button > span { height: 17px !important; }
+  .lbl { font-size: 11px; margin: 7px 4px 4px; }
+  .aux { gap: 6px; }
+  .dialrow { margin-top: 26px; }
+  .onoff { margin-top: 18px; }
+  [data-screen="remote"] .lbl { margin-top: 14px; }
+  .tbtns + .tpanel { margin-top: 2px; }
+  .aux button { height: 38px; border-radius: 12px; flex-direction: row; gap: 5px; font-size: 11px; }
+  .aux button svg { width: 15px; height: 15px; }
+
+  @media (prefers-reduced-motion: reduce) { .field i, .pbtn.fire .ring, .pbtn.fire .sheen, .pbtn.fire .pi path { animation: none !important; } }
+</style>
+</head>
+<body>
+
+<section class="dir">
+  <h2>Night glass, compact</h2>
+  <p>Home: the AC card, the week tracker, a detailed Today card, usual settings and system status. Tap any day bar or the Today card to open the day sheet (swipe the handle down or tap outside to close). Remote: compact, animated On and Off, fan icons that grow with speed, no extras, and the same timer as the current app (Turn on after / Turn off after, slider, presets, active timers with cancel).</p>
+  <div class="phones">
+    <div class="shot"><div class="phone" data-screen="home"></div>Home · tap the power button, tap a day</div>
+    <div class="shot"><div class="phone" data-screen="remote"></div>Remote · drag the dial, tap anything</div>
+  </div>
+</section>
+
+<script>
+const I = {
+  home: '<path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>',
+  remote: '<circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7.5v4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+  cal: '<rect x="4" y="5.5" width="16" height="14.5" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 3.5v4M16 3.5v4M4 10h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+  gear: '<circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+  snow: '<path d="M12 3v18M4.2 7.5l15.6 9M19.8 7.5l-15.6 9M9.5 4.5 12 6.5l2.5-2M9.5 19.5 12 17.5l2.5 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+  sun: '<circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+  drop: '<path d="M12 3.5 6.8 11a6 6 0 1 0 10.4 0z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>',
+  fan: '<path d="M10.83 16.38a6.08 6.08 0 0 1-8.62-7l5.41 1.45a6.08 6.08 0 0 1 7-8.62l-1.45 5.41a6.08 6.08 0 0 1 8.62 7l-5.41-1.45a6.08 6.08 0 0 1-7 8.62l1.45-5.41Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 12v.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  leaf: '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  power: '<g class="pi"><path d="M12 3.5V12" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><path d="M7 6.2a7.5 7.5 0 1 0 10 0" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></g>',
+  swing: '<path d="M4 8c3-3 13-3 16 0M6 13c2.5-2 9.5-2 12 0M9 18c1.5-1 4.5-1 6 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+  bulb: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>',
+  moon: '<path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>',
+  clock: '<circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+  chip: '<rect x="6" y="6" width="12" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+  ir: '<path d="M5 12h3M9.5 8.5a5 5 0 0 1 0 7M13 6a8.5 8.5 0 0 1 0 12M16.5 3.5a12 12 0 0 1 0 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+};
+const svg = (k, s = 24) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}">${I[k]}</svg>`;
+const fx = '<span class="ring"></span><span class="sheen"></span>';
+function fire(b) { b.classList.remove('fire'); void b.offsetWidth; b.classList.add('fire'); }
+
+function shell(el, inner, active) {
+  el.innerHTML = `<div class="field"><i></i><i></i><i></i></div><div class="screen">${inner}</div>
+  <nav class="tabbar glass"><span class="lens" style="transform:translateX(${active * 100}%)"></span>
+    ${[['home','Home'],['remote','Remote'],['cal','Schedules'],['gear','Settings']].map(([k, l], i) => `<button class="${i === active ? 'on' : ''}">${svg(k)}${l}</button>`).join('')}</nav>`;
+  wireLens(el.querySelector('.tabbar'));
+}
+function wireLens(g, cb) {
+  const lens = g.querySelector(':scope > .lens'), btns = [...g.querySelectorAll(':scope > button')];
+  btns.forEach((b, i) => b.addEventListener('click', () => { lens.style.transform = `translateX(${i * 100}%)`; btns.forEach((x, k) => x.classList.toggle('on', k === i)); cb && cb(i); }));
+}
+function segg(items, active) {
+  return `<div class="segg glass" style="grid-template-columns:repeat(${items.length},1fr)">
+    <span class="lens" style="width:calc((100% - 8px)/${items.length});transform:translateX(${active * 100}%)"></span>
+    ${items.map(([ic, l, sz], i) => `<button class="${i === active ? 'on' : ''}"><span style="height:20px;display:flex;align-items:center">${svg(ic, sz || 18)}</span>${l}</button>`).join('')}</div>`;
+}
+const fmt = h => { const m = Math.round(h * 60); return `${Math.floor(m / 60)}h ${String(m % 60).padStart(2, '0')}m`; };
+
+/* ---------------- HOME ---------------- */
+function home(el) {
+  const sessions = [[1.9, 2.4], [2.6, 3.2], [8.4, 9.0], [9.2, 9.7], [11.8, 12.2], [12.4, 13.1], [14.7, 15.3]];
+  const week = ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => [d, totalMin(days[i]) / 60]);
+  const max = Math.max(...week.map(w => w[1])) * 1.05, avg = week.reduce((a, [, h]) => a + h, 0) / 7;
+  let on = true;
+  shell(el, `
+    <div class="head"><div><div class="date">Saturday, 3 October</div><h1>Home</h1></div><span class="chip glass"><span class="live"></span>Pi online</span></div>
+
+    <div class="card glass ac" id="acCard">
+      <div class="acrow">
+        <div>
+          <div class="ttl" style="margin:0">Bedroom AC</div>
+          <div class="big num">22<sup>°</sup></div>
+          <div class="state" id="acState">Cooling · on for 1h 12m</div>
+        </div>
+        <button class="homepwr pbtn glass on" id="hp" aria-label="Power">${fx}${svg('power', 26)}</button>
+      </div>
+      <div class="acinfo">
+        <div><div class="k">Mode</div><div class="v">${svg('snow')}Cool</div></div>
+        <div><div class="k">Fan</div><div class="v">${svg('fan')}Medium</div></div>
+        <div><div class="k">Timer</div><div class="v">${svg('clock')}Off 7:00</div></div>
+      </div>
+    </div>
+
+    <div class="card glass">
+      <div class="ttl"><span>This week</span><span class="sub num">Avg ${fmt(avg)} a day</span></div>
+      <div class="week" id="wk">
+        ${week.map(([d, h], i) => `<div class="col ${i === 6 ? 'today' : ''}" data-i="${i}"><span class="h num">${h.toFixed(1)}</span><span class="bar" style="height:${h / max * 100 * .68}%"></span><span class="d">${d}</span></div>`).join('')}
+      </div>
+      <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+        <div><div class="v num">${fmtM(days.reduce((a, d) => a + totalMin(d), 0))}</div><div class="k">Total on</div></div>
+        <div><div class="v num">${(days.reduce((a, d) => a + totalMin(d), 0) / 60 * 1.9).toFixed(0)} kWh</div><div class="k">Energy</div></div>
+        <div><div class="v num">7 / 7</div><div class="k">Days used</div></div>
+      </div>
+    </div>
+
+    <div class="card glass" id="todayCard" style="cursor:pointer">
+      <div class="ttl"><span>Today</span><span class="sub">See all ›</span></div>
+      <div class="strip">${stripHTML(days[6])}</div>
+      <div class="axis num"><span>12a</span><span>6a</span><span>12p</span><span>6p</span><span>12a</span></div>
+      <div class="duo" style="margin-top:9px;padding-top:9px;border-top:1px solid rgba(255,255,255,.07)">
+        <div><div class="k">On</div><div class="v num">${fmtM(totalMin(days[6]))}</div></div>
+        <div><div class="k">Sessions</div><div class="v num">${days[6].s.length}</div></div>
+        <div><div class="k">Longest</div><div class="v num">${fmtM(Math.max(...days[6].s.map(x => x.e - x.b)))}</div></div>
+      </div>
+    </div>
+
+    <div class="card glass duo">
+      <div><div class="k">Avg temp</div><div class="v num">21.4°</div></div>
+      <div><div class="k">Usual fan</div><div class="v">Medium</div></div>
+      <div><div class="k">Usual mode</div><div class="v">Cool</div></div>
+    </div>
+
+    <div class="card glass sysline">
+      <span><span class="live"></span>Pi 47°C</span><span><span class="live"></span>IR blaster</span><span class="sub">up 6 days</span>
+    </div>
+  `, 0);
+  el.querySelectorAll('.card').forEach(c => c.style.marginBottom = '10px');
+
+  const hp = el.querySelector('#hp'), card = el.querySelector('#acCard'), st = el.querySelector('#acState');
+  hp.onclick = () => { on = !on; fire(hp); hp.classList.toggle('on', on); card.classList.toggle('isoff', !on); st.textContent = on ? 'Cooling · on for 0m' : 'Off'; };
+
+  /* ---- day detail sheet ---- */
+  el.insertAdjacentHTML('beforeend', `<div class="scrim" id="scrim"></div>
+    <div class="sheet glass" id="sheet">
+      <div class="grab"></div>
+      <div class="shead"><button class="nav" id="prev" aria-label="Previous day">‹</button><div class="sd"><div class="st" id="sTitle"></div><div class="ss" id="sSub"></div></div><button class="nav" id="next" aria-label="Next day">›</button></div>
+      <div class="sbody" id="sBody"></div>
+    </div>`);
+  const sheet = el.querySelector('#sheet'), scrim = el.querySelector('#scrim'), sBody = el.querySelector('#sBody');
+  let cur = 6;
+  const names = ['Sunday, 27 Sep', 'Monday, 28 Sep', 'Tuesday, 29 Sep', 'Wednesday, 30 Sep', 'Thursday, 1 Oct', 'Friday, 2 Oct', 'Today'];
+  function renderDay() {
+    const d = days[cur], tot = totalMin(d);
+    el.querySelector('#sTitle').textContent = names[cur];
+    el.querySelector('#sSub').textContent = `${fmtM(tot)} on · ${d.s.length} sessions`;
+    el.querySelector('#prev').disabled = cur === 0; el.querySelector('#next').disabled = cur === 6;
+    el.querySelectorAll('#wk .col').forEach((c, i) => c.classList.toggle('sel', i === cur && i !== 6));
+    sBody.innerHTML = `
+      <div class="strip big">${stripHTML(d)}</div>
+      <div class="axis num"><span>12a</span><span>6a</span><span>12p</span><span>6p</span><span>12a</span></div>
+      <div class="duo sum">
+        <div><div class="k">Total</div><div class="v num">${fmtM(tot)}</div></div>
+        <div><div class="k">Avg temp</div><div class="v num">${d.avg}°</div></div>
+        <div><div class="k">Energy</div><div class="v num">${(tot / 60 * 1.9).toFixed(1)} kWh</div></div>
+      </div>
+      <div class="slist">${d.s.map(x => `
+        <div class="sitem">
+          <div class="tm num">${clock(x.b)}<span>${clock(x.e)}</span></div>
+          <div class="info"><div class="m">${svg(x.mode === 'Heat' ? 'sun' : 'snow')}${x.mode} · ${x.t}°</div><div class="f">${svg('fan')}${x.fan} fan</div></div>
+          <div class="dur num">${fmtM(x.e - x.b)}</div>
+        </div>`).join('')}</div>`;
+  }
+  const open = i => { cur = i; renderDay(); sheet.classList.add('open'); scrim.classList.add('open'); };
+  const close = () => { sheet.classList.remove('open'); scrim.classList.remove('open'); el.querySelectorAll('#wk .col').forEach(c => c.classList.remove('sel')); };
+  el.querySelectorAll('#wk .col').forEach(c => c.onclick = () => open(+c.dataset.i));
+  el.querySelector('#todayCard').onclick = () => open(6);
+  scrim.onclick = close;
+  el.querySelector('#prev').onclick = () => { if (cur > 0) { cur--; renderDay(); } };
+  el.querySelector('#next').onclick = () => { if (cur < 6) { cur++; renderDay(); } };
+  let y0 = null; sheet.querySelector('.grab').addEventListener('pointerdown', e => y0 = e.clientY);
+  el.addEventListener('pointerup', e => { if (y0 !== null && e.clientY - y0 > 40) close(); y0 = null; });
+}
+
+/* sample sessions per day: minutes from midnight */
+const days = (() => {
+  const base = [
+    [[95, 140, 'High', 20], [150, 190, 'Medium', 21], [500, 545, 'Medium', 21], [720, 760, 'Low', 22], [880, 930, 'Medium', 21]],
+    [[60, 150, 'High', 20], [480, 530, 'Medium', 21], [700, 775, 'Medium', 21], [820, 880, 'Low', 22], [1290, 1350, 'Medium', 22]],
+    [[110, 165, 'Medium', 21], [610, 650, 'Low', 22], [900, 950, 'Medium', 21]],
+    [[130, 175, 'Medium', 21], [740, 790, 'Low', 23]],
+    [[70, 160, 'High', 19], [470, 520, 'Medium', 21], [690, 760, 'Medium', 21], [1250, 1320, 'Medium', 22]],
+    [[100, 150, 'Medium', 21], [520, 570, 'Medium', 21], [800, 860, 'Low', 22], [1300, 1340, 'Medium', 22]],
+    [[114, 144, 'High', 20], [156, 192, 'Medium', 21], [504, 540, 'Medium', 21], [552, 582, 'Medium', 21], [708, 732, 'Low', 22], [744, 786, 'Medium', 21], [882, 918, 'Medium', 21]],
+  ];
+  return base.map(list => { const s = list.map(([b, e, fan, t]) => ({ b, e, fan, t, mode: 'Cool' }));
+    return { s, avg: Math.round(s.reduce((a, x) => a + x.t * (x.e - x.b), 0) / s.reduce((a, x) => a + x.e - x.b, 0)) }; });
+})();
+const totalMin = d => d.s.reduce((a, x) => a + x.e - x.b, 0);
+const fmtM = m => m < 60 ? `${m} min` : `${Math.floor(m / 60)}h ${String(m % 60).padStart(2, '0')}m`;
+const clock = m => { const h = Math.floor(m / 60) % 24, mm = String(m % 60).padStart(2, '0'); return `${h % 12 || 12}:${mm} ${h < 12 ? 'AM' : 'PM'}`; };
+const tempColor = t => t <= 20 ? '#3f8cff' : t === 21 ? '#6fc2ff' : t === 22 ? '#a9e2ff' : '#ffc38a';
+const stripHTML = d => d.s.map(x => `<i style="left:${x.b / 1440 * 100}%;width:${(x.e - x.b) / 1440 * 100}%;background:${tempColor(x.t)}"></i>`).join('');
+
+/* ---------------- REMOTE ---------------- */
+function remote(el) {
+  const V = 236, R = 92, C = 2 * Math.PI * R, SWEEP = .75 * C, cx = V / 2, cy = V / 2;
+  const s = { t: 22, on: true, mode: 0 };
+  const verbs = ['Cooling', 'Heating', 'Drying'];
+  let ticks = '';
+  for (let k = 0; k <= 14; k++) { const a = (135 + 270 * k / 14) * Math.PI / 180, r1 = 108, r2 = k % 2 ? 111 : 115;
+    ticks += `<line x1="${cx + r1 * Math.cos(a)}" y1="${cy + r1 * Math.sin(a)}" x2="${cx + r2 * Math.cos(a)}" y2="${cy + r2 * Math.sin(a)}" stroke="rgba(255,255,255,${k % 2 ? .18 : .35})" stroke-width="1.5" stroke-linecap="round"/>`; }
+  shell(el, `
+    <div class="head"><div><div class="date">Bedroom · Carrier</div><h1>Remote</h1></div><span class="chip glass"><span class="live"></span>Ready</span></div>
+    <div class="src glass"><span class="lens" style="width:calc((100% - 8px)/2)"></span><button class="on">Carrier</button><button>Learned</button></div>
+
+    <div class="dialrow">
+      <div class="dialwrap">
+        <div class="dialcenter glass"><div class="t num"><span class="tv">22</span><sup>°</sup></div><div class="m" id="mv">Cooling</div></div>
+        <svg viewBox="0 0 ${V} ${V}" id="dial">
+          <defs><linearGradient id="gn" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#7fe0ff"/><stop offset=".6" stop-color="#4b9dff"/><stop offset="1" stop-color="#ffb06a"/></linearGradient></defs>
+          <g class="ticks">${ticks}</g>
+          <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${SWEEP} ${C}" transform="rotate(135 ${cx} ${cy})"/>
+          <circle class="arc" cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="url(#gn)" stroke-width="14" stroke-linecap="round" stroke-dasharray="0 ${C}" transform="rotate(135 ${cx} ${cy})" style="transition:stroke-dasharray .3s cubic-bezier(.3,.8,.3,1), opacity .4s"/>
+          <circle class="knob" r="11" fill="#fff" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))"/>
+        </svg>
+      </div>
+      <button class="stepbtn minus glass" data-d="-1" aria-label="Cooler">−</button>
+      <button class="stepbtn plus glass" data-d="1" aria-label="Warmer">+</button>
+    </div>
+
+    <div class="onoff"><button class="glass pbtn b-on">${fx}${svg('power', 19)}On</button><button class="glass pbtn b-off">${fx}${svg('power', 19)}Off</button></div>
+
+    <div class="lbl"><span>Mode</span></div>
+    ${segg([['snow', 'Cool'], ['sun', 'Heat'], ['drop', 'Dry']], 0)}
+    <div class="lbl"><span>Fan</span><span id="fanLbl" class="faint">Medium</span></div>
+    ${segg([['leaf', 'Eco', 14], ['fan', 'Low', 13], ['fan', 'Medium', 16], ['fan', 'High', 19]], 2)}
+    <div class="lbl"><span>Timer</span></div>
+    <div class="tbtns"><button class="glass t-on" data-a="on">${svg('power')}Turn on after</button><button class="glass t-off" data-a="off">${svg('power')}Turn off after</button></div>
+    <div class="tpanel" id="tPanel"><div><div class="inner glass">
+      <div class="tt"><span class="v num" id="tm">30 min</span><span class="s" id="tAt"></span></div>
+      <input type="range" class="range" id="tRange" min="1" max="240" step="1" value="30" aria-label="Minutes">
+      <div class="presets"><button data-m="15">15 min</button><button data-m="30">30 min</button><button data-m="60">1h</button><button data-m="120">2h</button></div>
+      <button class="setbtn" id="tSet">Start timer</button>
+    </div></div></div>
+    <div class="tlist" id="tList"></div>
+  `, 1);
+
+  const arc = el.querySelector('.arc'), knob = el.querySelector('.knob'), tv = el.querySelector('.tv'), mv = el.querySelector('#mv');
+  const warm = el.querySelector('.field i:nth-child(3)'), cool = el.querySelector('.field i:nth-child(1)');
+  function paint() {
+    const p = (s.t - 16) / 14, a = (135 + 270 * p) * Math.PI / 180;
+    arc.setAttribute('stroke-dasharray', `${SWEEP * p} ${C}`);
+    knob.setAttribute('cx', cx + R * Math.cos(a)); knob.setAttribute('cy', cy + R * Math.sin(a));
+    tv.textContent = s.t; mv.textContent = s.on ? verbs[s.mode] : 'Off';
+    warm.style.opacity = s.on ? .08 + p * .55 : .05; cool.style.opacity = s.on ? .9 - p * .45 : .35;
+    el.classList.toggle('off', !s.on);
+  }
+  const dial = el.querySelector('#dial');
+  function fromPoint(e) {
+    const r = dial.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * V - cx, y = (e.clientY - r.top) / r.height * V - cy;
+    let rel = ((Math.atan2(y, x) * 180 / Math.PI) - 135 + 720) % 360;
+    if (rel > 270) rel = rel > 315 ? 0 : 270;
+    s.t = Math.round(16 + rel / 270 * 14); paint();
+  }
+  let drag = false;
+  dial.addEventListener('pointerdown', e => { if (!s.on) return; drag = true; dial.setPointerCapture(e.pointerId); arc.style.transition = 'opacity .4s'; fromPoint(e); });
+  dial.addEventListener('pointermove', e => drag && fromPoint(e));
+  dial.addEventListener('pointerup', () => { drag = false; arc.style.transition = 'stroke-dasharray .3s cubic-bezier(.3,.8,.3,1), opacity .4s'; });
+  el.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { if (!s.on) return; s.t = Math.min(30, Math.max(16, s.t + +b.dataset.d)); paint(); });
+
+  const bOn = el.querySelector('.b-on'), bOff = el.querySelector('.b-off');
+  const paintPower = () => { bOn.classList.toggle('active', s.on); bOff.classList.toggle('active', !s.on); paint(); };
+  bOn.onclick = () => { s.on = true; fire(bOn); paintPower(); };
+  bOff.onclick = () => { s.on = false; fire(bOff); paintPower(); };
+  paintPower();
+
+  wireLens(el.querySelector('.src'));
+  const gs = el.querySelectorAll('.segg');
+  wireLens(gs[0], i => { s.mode = i; paint(); });
+  wireLens(gs[1], i => el.querySelector('#fanLbl').textContent = ['Eco', 'Low', 'Medium', 'High'][i]);
+  // timer: two buttons open the slider panel (same flow as the current app), active timers listed below
+  let mins = 30, action = null;
+  const timers = [];
+  const panel = el.querySelector('#tPanel'), tm = el.querySelector('#tm'), tAt = el.querySelector('#tAt'), tSet = el.querySelector('#tSet');
+  const range = el.querySelector('#tRange'), presets = [...el.querySelectorAll('.presets button')], tbtns = [...el.querySelectorAll('.tbtns button')], tList = el.querySelector('#tList');
+  const fmtMin = m => m < 60 ? `${m} min` : (m % 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m / 60}h`);
+  const at = m => { const d = new Date(2026, 9, 3, 15, 30); d.setMinutes(d.getMinutes() + m); return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); };
+  function tPaint() {
+    tm.textContent = fmtMin(mins); range.value = mins; range.style.setProperty('--p', `${(mins - 1) / 239 * 100}%`);
+    tAt.textContent = action ? `turns ${action} at ${at(mins)}` : '';
+    presets.forEach(p => p.classList.toggle('active', +p.dataset.m === mins));
+    tSet.className = `setbtn ${action || ''}`; tSet.textContent = `Start ${action === 'on' ? 'turn-on' : 'turn-off'} timer`;
+    tbtns.forEach(b => b.classList.toggle('open', b.dataset.a === action));
+    tList.innerHTML = timers.length ? timers.map((t, i) => `<div class="trow glass ${t.a}"><span class="dot">${svg('power')}</span><span class="l">${t.a === 'on' ? 'Turning on' : 'Turning off'}</span><span class="c num">${fmtMin(t.m)}</span><button class="x" data-i="${i}" aria-label="Cancel timer">×</button></div>`).join('')
+      : `<div class="tempty">${svg('clock')}No active timers</div>`;
+    tList.querySelectorAll('.x').forEach(x => x.onclick = () => { timers.splice(+x.dataset.i, 1); tPaint(); });
+  }
+  tbtns.forEach(b => b.onclick = () => { action = action === b.dataset.a ? null : b.dataset.a; panel.classList.toggle('open', !!action); tPaint(); });
+  range.oninput = () => { mins = +range.value; tPaint(); };
+  presets.forEach(p => p.onclick = () => { mins = +p.dataset.m; tPaint(); });
+  tSet.onclick = () => { timers.push({ a: action, m: mins }); action = null; panel.classList.remove('open'); tPaint(); };
+  tPaint();
+}
+
+document.querySelectorAll('[data-screen]').forEach(el => (el.dataset.screen === 'home' ? home : remote)(el));</script>
+</body>
+</html>

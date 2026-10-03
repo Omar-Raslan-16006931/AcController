@@ -1,37 +1,54 @@
 import { useNavigate, useLocation } from "react-router-dom"
 
+import { cn } from "@/lib/utils"
 import { navItems } from "@/components/layout/nav-items"
-import { InteractiveMenu, type InteractiveMenuItem } from "@/components/ui/modern-mobile-menu"
-
-const menuItems: InteractiveMenuItem[] = navItems.map((item) => ({
-  label: item.title,
-  icon: item.icon,
-}))
 
 function activeIndexForPath(pathname: string): number {
   const index = navItems.findIndex((item) =>
     item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)
   )
-  return index === -1 ? 0 : index
+  // Sub-pages linked from Settings (history, system, detect) keep the
+  // Settings tab lit.
+  return index === -1 ? navItems.length - 1 : index
 }
 
-/** Floating liquid-glass pill dock; active item derived from the route. */
+/** Floating glass tab bar; a glass lens slides under the active tab. */
 export function MobileMenu() {
   const navigate = useNavigate()
   const location = useLocation()
+  const active = activeIndexForPath(location.pathname)
 
   return (
     <nav
       aria-label="Primary"
-      className="fixed inset-x-0 bottom-0 z-40 px-3"
-      style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-4"
+      style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
     >
-      <div className="mx-auto w-full max-w-md pb-1">
-        <InteractiveMenu
-          items={menuItems}
-          activeIndex={activeIndexForPath(location.pathname)}
-          onActiveIndexChange={(index) => navigate(navItems[index].href)}
+      <div className="glass glass-dense pointer-events-auto relative mx-auto grid h-[58px] w-full max-w-md grid-cols-4 rounded-[29px] p-[5px]">
+        <span
+          aria-hidden
+          className="lens absolute top-[5px] bottom-[5px] left-[5px] rounded-[24px] transition-transform duration-500 ease-[cubic-bezier(.34,1.45,.5,1)]"
+          style={{ width: "calc((100% - 10px) / 4)", transform: `translateX(${active * 100}%)` }}
         />
+        {navItems.map((item, i) => {
+          const Icon = item.icon
+          const on = i === active
+          return (
+            <button
+              key={item.href}
+              type="button"
+              aria-current={on ? "page" : undefined}
+              onClick={() => navigate(item.href)}
+              className={cn(
+                "relative flex cursor-pointer flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors duration-200",
+                on ? "text-foreground" : "text-muted-foreground"
+              )}
+            >
+              <Icon className="size-[20px]" strokeWidth={1.8} />
+              {item.title}
+            </button>
+          )
+        })}
       </div>
     </nav>
   )

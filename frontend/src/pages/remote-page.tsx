@@ -1,48 +1,55 @@
 import * as React from "react"
-import { motion } from "framer-motion"
-import { Send, Undo2, WifiOff, Zap } from "lucide-react"
+import { WifiOff } from "lucide-react"
 
 import { PageHeader } from "@/components/page-header"
-import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ConnectionBadge } from "@/components/layout/connection-badge"
+import { setBackgroundWarmth } from "@/components/ui/night-background"
 import { useStatus } from "@/features/dashboard/use-status"
-import {
-  useSetPower,
-  useSetTemperature,
-  useSetMode,
-  useSetFan,
-  useSendCommand,
-  type DraftCommand,
-} from "@/features/remote/use-ac-control"
+import { useSetPower, useSetTemperature, useSetMode, useSetFan } from "@/features/remote/use-ac-control"
 import { PowerButtons } from "@/features/remote/power-button"
-import { TemperatureDial } from "@/features/remote/temperature-dial"
-import { ModeSelector } from "@/features/remote/mode-selector"
-import { FanSelector } from "@/features/remote/fan-selector"
-import { AuxButtons } from "@/features/remote/aux-buttons"
+import { GlassDial, MIN_TEMP, MAX_TEMP } from "@/features/remote/glass-dial"
+import { GlassSegmented, type SegmentItem } from "@/features/remote/glass-segmented"
 import { TimerControls } from "@/features/remote/timer-controls"
 import { LearnedRemotePanel } from "@/features/remote/learned-remote-panel"
+import { modeConfig, modeOrder, fanConfig, fanOrder } from "@/lib/ac-labels"
 import type { AcMode, FanSpeed } from "@/types/database"
 
-const AUTO_SEND_STORAGE_KEY = "ac-controller-auto-send"
-
-function getStoredAutoSend(): boolean {
-  if (typeof window === "undefined") return true
-  const stored = window.localStorage.getItem(AUTO_SEND_STORAGE_KEY)
-  return stored === null ? true : stored === "1"
-}
-
-// Which AC the Remote page controls: the Carrier (structured state) or the
-// flat list of buttons learned on Detect AC -> Learn manually.
 type RemoteProfile = "carrier" | "learned"
 const REMOTE_PROFILE_STORAGE_KEY = "ac-controller-remote-profile"
 
 function getStoredProfile(): RemoteProfile {
   if (typeof window === "undefined") return "carrier"
   return window.localStorage.getItem(REMOTE_PROFILE_STORAGE_KEY) === "learned" ? "learned" : "carrier"
+}
+
+const VERBS: Record<AcMode, string> = { cool: "Cooling", heat: "Heating", dry: "Drying" }
+
+// Fan glyph grows with speed; Eco keeps its leaf.
+const FAN_ICON_PX: Record<FanSpeed, number> = { eco: 14, low: 13, medium: 16, high: 19 }
+
+const MODE_ITEMS: SegmentItem<AcMode>[] = modeOrder.map((m) => {
+  const Icon = modeConfig[m].icon
+  return { value: m, label: modeConfig[m].label, icon: <Icon size={17} strokeWidth={1.8} /> }
+})
+
+const FAN_ITEMS: SegmentItem<FanSpeed>[] = fanOrder.map((f) => {
+  const Icon = fanConfig[f].icon
+  return { value: f, label: fanConfig[f].label, icon: <Icon size={FAN_ICON_PX[f]} strokeWidth={2} /> }
+})
+
+const PROFILE_ITEMS: SegmentItem<RemoteProfile>[] = [
+  { value: "carrier", label: "Carrier" },
+  { value: "learned", label: "Learned" },
+]
+
+function SectionLabel({ children, right }: { children: React.ReactNode; right?: React.ReactNode }) {
+  return (
+    <div className="text-muted-foreground mt-3.5 mb-1 flex justify-between px-1 text-[11px] font-semibold">
+      <span>{children}</span>
+      {right && <span className="text-faint">{right}</span>}
+    </div>
+  )
 }
 
 export function RemotePage() {
@@ -52,187 +59,95 @@ export function RemotePage() {
   const setTemperature = useSetTemperature()
   const setMode = useSetMode()
   const setFan = useSetFan()
-  const sendCommand = useSendCommand()
 
-  const [autoSend, setAutoSend] = React.useState(getStoredAutoSend)
-  const [draft, setDraft] = React.useState<DraftCommand>({})
   const [profile, setProfile] = React.useState<RemoteProfile>(getStoredProfile)
 
-  const applyProfileChange = (next: RemoteProfile) => {
+  const changeProfile = (next: RemoteProfile) => {
     window.localStorage.setItem(REMOTE_PROFILE_STORAGE_KEY, next)
     setProfile(next)
   }
 
-  const pendingCount = Object.keys(draft).length
-  const hasPendingChanges = pendingCount > 0
+  const ac = status?.ac_state
+  const on = !!ac?.power
+  const busy = setTemperature.isPending || setMode.isPending || setFan.isPending
 
-  const busy =
-    setPower.isPending || setTemperature.isPending || setMode.isPending || setFan.isPending || sendCommand.isPending
-
-  const applyAutoSendChange = (next: boolean) => {
-    window.localStorage.setItem(AUTO_SEND_STORAGE_KEY, next ? "1" : "0")
-    setAutoSend(next)
-    if (next && hasPendingChanges) sendCommand.mutate(draft, { onSuccess: () => setDraft({}) })
-  }
-
-  const handleTemperatureChange = (temperature: number) => {
-    if (autoSend) setTemperature.mutate(temperature)
-    else setDraft((d) => ({ ...d, temperature }))
-  }
-
-  const handleModeChange = (mode: AcMode) => {
-    if (autoSend) setMode.mutate(mode)
-    else setDraft((d) => ({ ...d, mode }))
-  }
-
-  const handleFanChange = (fan: FanSpeed) => {
-    if (autoSend) setFan.mutate(fan)
-    else setDraft((d) => ({ ...d, fan }))
-  }
-
-  const handleSendNow = () => {
-    if (hasPendingChanges) sendCommand.mutate(draft, { onSuccess: () => setDraft({}) })
-  }
-
-  const effectiveMode = draft.mode ?? status?.ac_state.mode
-  const isCoolGlow = profile === "carrier" && !!status?.ac_state.power && effectiveMode === "cool"
-  const isHeatGlow = profile === "carrier" && !!status?.ac_state.power && effectiveMode === "heat"
+  // Warmer setting -> more amber in the background; off -> none.
+  const handlePreview = React.useCallback(
+    (t: number) => setBackgroundWarmth(on ? (t - MIN_TEMP) / (MAX_TEMP - MIN_TEMP) : 0),
+    [on]
+  )
+  React.useEffect(() => () => setBackgroundWarmth(0.1), [])
 
   return (
-    <div className="relative">
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <motion.div
-          className="absolute inset-0"
-          style={{ background: "radial-gradient(closest-side at 50% 10%, var(--tint-cool), transparent 65%)" }}
-          animate={{ opacity: isCoolGlow ? 1 : 0 }}
-          transition={{ duration: 1, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute inset-0"
-          style={{ background: "radial-gradient(closest-side at 50% 10%, var(--tint-heat), transparent 65%)" }}
-          animate={{ opacity: isHeatGlow ? 1 : 0 }}
-          transition={{ duration: 1, ease: "easeInOut" }}
-        />
-      </div>
+    <div>
+      <PageHeader title="Remote" eyebrow="Bedroom · Carrier" actions={<ConnectionBadge onlineLabel="Ready" />} />
 
-      <PageHeader title="Remote" />
-
-      <Tabs
-        value={profile}
-        onValueChange={(v) => applyProfileChange(v as RemoteProfile)}
-        className="mx-auto mb-3 w-full max-w-sm"
-      >
-        <TabsList className="w-full">
-          <TabsTrigger value="carrier">Carrier</TabsTrigger>
-          <TabsTrigger value="learned">Learned</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <GlassSegmented items={PROFILE_ITEMS} value={profile} onChange={changeProfile} size="sm" />
 
       {isLoading && (
-        <Card className="mx-auto w-full max-w-sm">
-          <CardContent className="flex flex-col items-center gap-3">
-            <Skeleton className="size-40 rounded-full sm:size-44" />
-            <Skeleton className="h-10 w-full rounded-full" />
-            <Skeleton className="h-16 w-full rounded-xl" />
-          </CardContent>
-        </Card>
+        <div className="mt-6 flex flex-col items-center gap-4">
+          <Skeleton className="size-[200px] rounded-full bg-white/[0.06]" />
+          <Skeleton className="h-[42px] w-full rounded-[15px] bg-white/[0.06]" />
+          <Skeleton className="h-[46px] w-full rounded-[15px] bg-white/[0.06]" />
+          <Skeleton className="h-[46px] w-full rounded-[15px] bg-white/[0.06]" />
+        </div>
       )}
 
       {isError && !isLoading && (
-        <Card className="mx-auto w-full max-w-sm">
-          <CardContent className="flex flex-col items-center gap-2.5 py-10 text-center">
-            <WifiOff className="text-destructive size-6" />
-            <p className="text-sm font-medium">Can't reach the Raspberry Pi</p>
-            <p className="text-muted-foreground text-xs">The remote needs a live connection to send commands.</p>
-          </CardContent>
-        </Card>
+        <div className="glass mt-4 flex flex-col items-center gap-2 rounded-[20px] px-4 py-10 text-center">
+          <WifiOff className="text-destructive size-6" />
+          <p className="text-sm font-semibold">Can't reach the Raspberry Pi</p>
+          <p className="text-muted-foreground text-xs">The remote needs a live connection to send commands.</p>
+        </div>
       )}
 
       {status && profile === "learned" && (
-        <Card glass className="mx-auto w-full max-w-sm">
-          <CardContent>
-            <LearnedRemotePanel />
-          </CardContent>
-        </Card>
+        <div className="glass mt-4 rounded-[20px] p-3">
+          <LearnedRemotePanel />
+        </div>
       )}
 
-      {status && profile === "carrier" && (
-        <Card glass className="mx-auto w-full max-w-sm gap-0">
-          <CardContent className="flex flex-col items-center gap-3 pt-0.5 pb-3">
-            <div className="flex w-full items-center justify-between">
-              <Label htmlFor="auto-send" className="flex cursor-pointer items-center gap-1.5 text-xs font-medium">
-                <Zap className={autoSend ? "text-frost size-3.5" : "text-muted-foreground size-3.5"} />
-                Send instantly
-              </Label>
-              <Switch id="auto-send" checked={autoSend} onCheckedChange={applyAutoSendChange} />
-            </div>
-
-            <TemperatureDial
-              value={draft.temperature ?? status.ac_state.temperature}
-              disabled={!status.ac_state.power || busy}
-              onChange={handleTemperatureChange}
+      {status && ac && profile === "carrier" && (
+        <>
+          <div className="mt-6">
+            <GlassDial
+              value={ac.temperature}
+              off={!on}
+              disabled={busy}
+              status={on ? VERBS[ac.mode] : "Off"}
+              onChange={(t) => setTemperature.mutate(t)}
+              onPreview={handlePreview}
             />
+          </div>
 
+          <div className="mt-4">
             <PowerButtons
-              on={status.ac_state.power}
+              on={on}
+              disabled={setPower.isPending}
               onPowerOn={() => setPower.mutate(true)}
               onPowerOff={() => setPower.mutate(false)}
             />
+          </div>
 
-            <div className="w-full space-y-1.5">
-              <ModeSelector
-                value={draft.mode ?? status.ac_state.mode}
-                disabled={!status.ac_state.power || busy}
-                onChange={handleModeChange}
-              />
-              <FanSelector
-                value={draft.fan ?? status.ac_state.fan}
-                disabled={!status.ac_state.power || busy}
-                onChange={handleFanChange}
-              />
-            </div>
+          <SectionLabel>Mode</SectionLabel>
+          <GlassSegmented
+            items={MODE_ITEMS}
+            value={ac.mode}
+            disabled={!on || busy}
+            onChange={(m) => setMode.mutate(m)}
+          />
 
-            <AuxButtons />
+          <SectionLabel right={fanConfig[ac.fan]?.label}>Fan</SectionLabel>
+          <GlassSegmented
+            items={FAN_ITEMS}
+            value={ac.fan}
+            disabled={!on || busy}
+            onChange={(f) => setFan.mutate(f)}
+          />
 
-            {!autoSend && hasPendingChanges && (
-              <div className="bg-accent flex w-full items-center justify-between gap-2 rounded-2xl px-3 py-2">
-                <p className="text-xs font-medium">
-                  {pendingCount} change{pendingCount > 1 ? "s" : ""} pending
-                </p>
-                <div className="flex items-center gap-1.5">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setDraft({})}
-                    disabled={sendCommand.isPending}
-                    className="h-7 px-2 text-xs"
-                  >
-                    <Undo2 className="size-3.5" />
-                    Discard
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="brand"
-                    size="sm"
-                    onClick={handleSendNow}
-                    disabled={sendCommand.isPending}
-                    className="h-7 px-2.5 text-xs"
-                  >
-                    <Send className="size-3.5" />
-                    Send
-                  </Button>
-                </div>
-              </div>
-            )}
-          </CardContent>
-
-          <div className="border-border/60 border-t" />
-
-          <CardContent className="pt-3">
-            <TimerControls />
-          </CardContent>
-        </Card>
+          <SectionLabel>Timer</SectionLabel>
+          <TimerControls />
+        </>
       )}
     </div>
   )

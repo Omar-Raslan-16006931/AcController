@@ -23,6 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 
+# generated at build time (scripts/make-icons.mjs, Capacitor CI)
+public/icons/
+ios/
+
 # environment
 .env
 .env.local

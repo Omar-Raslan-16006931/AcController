@@ -7,8 +7,7 @@ import { ThemeProvider } from "@/context/theme-context"
 import { AuthProvider } from "@/context/auth-context"
 import { ErrorBoundary } from "@/components/error-boundary"
 import { Toaster } from "@/components/ui/sonner"
-import { BackgroundPixelStars } from "@/components/ui/background-pixel-stars"
-import { GlassFilter } from "@/components/ui/glass-filter"
+import { NightBackground } from "@/components/ui/night-background"
 import { router } from "@/routes/router"
 
 function App() {
@@ -19,10 +18,7 @@ function App() {
           <AuthProvider>
             {/* Mounted once above the router so it covers /login too and
                 never remounts on navigation. */}
-            <BackgroundPixelStars />
-            {/* Shared liquid-glass SVG filter (#container-glass) used by the
-                navbar and glass Cards. */}
-            <GlassFilter />
+            <NightBackground />
             <RouterProvider router={router} />
             <Toaster />
             {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}

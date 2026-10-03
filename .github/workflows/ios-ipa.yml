@@ -1,0 +1,94 @@
+# Builds an unsigned iOS app (.ipa) for sideloading with Sideloadly or
+# AltStore, on a free GitHub macOS runner (no Mac needed).
+#
+# The app is a native shell (Capacitor) that opens the live site
+# (https://ac-controller-ten.vercel.app, see frontend/capacitor.config.json),
+# so every Vercel deploy updates the app instantly: rebuild the IPA only if
+# you change the icon, name or capacitor.config.json.
+#
+# Run it: GitHub > Actions > "iOS IPA" > Run workflow. Download the
+# "AcController-ipa" artifact when it finishes (about 10 minutes).
+name: iOS IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/capacitor.config.json"
+      - "frontend/scripts/make-icons.mjs"
+      - ".github/workflows/ios-ipa.yml"
+
+jobs:
+  build:
+    runs-on: macos-15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Capacitor (CI only; the committed package.json stays Vercel-only)
+        run: |
+          npm ci
+          npm install @capacitor/core@7 @capacitor/ios@7
+          npm install -D @capacitor/cli@7
+
+      - name: App icons
+        run: node scripts/make-icons.mjs
+
+      - name: Placeholder web bundle
+        # The app loads the live site (server.url), so the bundled web
+        # folder only has to exist.
+        run: |
+          mkdir -p dist
+          echo '<!doctype html><meta http-equiv="refresh" content="0;url=https://ac-controller-ten.vercel.app">' > dist/index.html
+
+      - name: Create iOS project
+        run: npx cap add ios --packagemanager SPM
+
+      - name: Icon, name, dark status bar
+        run: |
+          ICONSET=ios/App/App/Assets.xcassets/AppIcon.appiconset
+          for f in "$ICONSET"/*.png; do cp public/icons/icon-1024.png "$f"; done
+          PLIST=ios/App/App/Info.plist
+          set_key() {
+            /usr/libexec/PlistBuddy -c "Set :$1 $3" "$PLIST" 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Add :$1 $2 $3" "$PLIST"
+          }
+          set_key CFBundleDisplayName string "AC Controller"
+          set_key UIStatusBarStyle string UIStatusBarStyleLightContent
+          set_key UIViewControllerBasedStatusBarAppearance bool false
+          set_key UIUserInterfaceStyle string Dark
+          set_key UIRequiresFullScreen bool true
+
+      - name: Sync
+        run: npx cap sync ios
+
+      - name: Build (unsigned)
+        run: |
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Package .ipa
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/App.app Payload/
+          zip -qry AcController.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AcController-ipa
+          path: frontend/AcController.ipa
+          retention-days: 30
