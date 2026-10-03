@@ -4,7 +4,11 @@ import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { format } from "date-fns"
-import { ChevronRight, Cpu, Loader2, Plus, Radar, Save, ScanFace, Trash2 } from "lucide-react"
+import { ChevronRight, Cpu, History, Loader2, LogOut, Plus, Radar, Save, ScanFace, Trash2 } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+import { useAuth } from "@/context/auth-context"
+import { BackgroundCard } from "@/features/settings/background-card"
 
 import { PageHeader } from "@/components/page-header"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -158,45 +162,56 @@ function PasskeysCard() {
   )
 }
 
-function DetectAcLinkCard() {
+const LINKS = [
+  { to: "/history", icon: History, title: "History", sub: "Every command sent to the AC" },
+  { to: "/detect", icon: Radar, title: "Detect & learn AC", sub: "Find a new AC's brand, or learn remote buttons" },
+  { to: "/system", icon: Cpu, title: "System", sub: "Pi metrics, restart and shutdown" },
+]
+
+function LinksCard() {
   return (
-    <Card className="overflow-hidden py-0 lg:col-span-2">
-      <Link
-        to="/detect"
-        className="active:bg-secondary flex min-h-14 items-center gap-3 rounded-[inherit] px-4 py-3 transition-colors"
-      >
-        <div className="text-primary flex size-7 shrink-0 items-center justify-center">
-          <Radar className="size-5" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-[15px] font-semibold">Detect &amp; learn AC</p>
-          <p className="text-muted-foreground text-[13px]">
-            Find a new AC's brand, or learn buttons from its remote
-          </p>
-        </div>
-        <ChevronRight className="text-muted-foreground/60 size-5" />
-      </Link>
-    </Card>
+    <div className="glass overflow-hidden rounded-[20px]">
+      {LINKS.map((l, i) => {
+        const Icon = l.icon
+        return (
+          <Link
+            key={l.to}
+            to={l.to}
+            className={cn(
+              "flex min-h-[52px] items-center gap-3 px-3.5 py-2.5 transition-colors active:bg-white/[0.06]",
+              i > 0 && "border-t border-white/[0.07]"
+            )}
+          >
+            <Icon className="text-ice size-[18px] shrink-0" />
+            <div className="min-w-0 flex-1">
+              <p className="text-[13.5px] font-semibold">{l.title}</p>
+              <p className="text-muted-foreground truncate text-[11.5px]">{l.sub}</p>
+            </div>
+            <ChevronRight className="text-faint size-4" />
+          </Link>
+        )
+      })}
+    </div>
   )
 }
 
-function SystemLinkCard() {
+function AccountCard() {
+  const { user, signOut } = useAuth()
   return (
-    <Card className="overflow-hidden py-0 lg:col-span-2">
-      <Link
-        to="/system"
-        className="active:bg-secondary flex min-h-14 items-center gap-3 rounded-[inherit] px-4 py-3 transition-colors"
+    <div className="glass flex items-center gap-3 rounded-[20px] px-3.5 py-2.5">
+      <div className="min-w-0 flex-1">
+        <p className="text-[13px] font-semibold">Account</p>
+        <p className="text-muted-foreground truncate text-[11.5px]">{user?.email ?? "Signed in"}</p>
+      </div>
+      <button
+        type="button"
+        onClick={() => void signOut()}
+        className="text-destructive flex h-8 cursor-pointer items-center gap-1.5 rounded-full bg-white/10 px-3 text-[12px] font-semibold"
       >
-        <div className="text-primary flex size-7 shrink-0 items-center justify-center">
-          <Cpu className="size-5" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-[15px] font-semibold">System diagnostics</p>
-          <p className="text-muted-foreground text-[13px]">Pi metrics, restart, and shutdown</p>
-        </div>
-        <ChevronRight className="text-muted-foreground/60 size-5" />
-      </Link>
-    </Card>
+        <LogOut className="size-3.5" />
+        Sign out
+      </button>
+    </div>
   )
 }
 
@@ -251,7 +266,8 @@ export function SettingsPage() {
         }
       />
 
-      <div className="grid gap-3 lg:grid-cols-2">
+      <div className="flex flex-col gap-2.5">
+        <BackgroundCard />
         <Card>
           <CardHeader>
             <CardTitle className="text-sm">Locale</CardTitle>
@@ -346,8 +362,8 @@ export function SettingsPage() {
         </Card>
 
         <PasskeysCard />
-        <DetectAcLinkCard />
-        <SystemLinkCard />
+        <LinksCard />
+        <AccountCard />
       </div>
     </form>
   )

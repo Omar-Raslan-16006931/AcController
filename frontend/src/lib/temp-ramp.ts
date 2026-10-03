@@ -10,7 +10,7 @@ import type { FanSpeed } from "@/types/database"
  *    the 4 stops, so "lower fan speed" and "cooler shade" both read as
  *    the same visual language without introducing a second palette.
  */
-const TEMP_RAMP_STOPS = ["#3C86D8", "#4C9EF0", "#5AC8FA", "#7CD9FF"] as const
+const TEMP_RAMP_STOPS = ["#3f8cff", "#6fc2ff", "#a9e2ff", "#ffc38a"] as const
 
 const TEMP_MIN = 20
 const TEMP_MAX = 28

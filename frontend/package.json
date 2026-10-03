@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "icons": "node scripts/make-icons.mjs",
+    "build": "(node scripts/make-icons.mjs || echo 'icons skipped') && tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview"
   },

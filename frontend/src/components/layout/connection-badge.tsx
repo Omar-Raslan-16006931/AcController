@@ -1,24 +1,20 @@
-import { Wifi, WifiOff, Loader2 } from "lucide-react"
-
 import { cn } from "@/lib/utils"
 import { useConnectionStatus } from "@/hooks/use-connection-status"
 
-export function ConnectionBadge() {
+/** Small glass chip: green dot + "Pi online". */
+export function ConnectionBadge({ onlineLabel = "Pi online" }: { onlineLabel?: string }) {
   const { state } = useConnectionStatus()
 
   const config = {
-    online: { icon: Wifi, label: "Pi online", className: "bg-success/10 text-success", dot: "bg-success" },
-    offline: { icon: WifiOff, label: "Pi offline", className: "bg-destructive/10 text-destructive", dot: "bg-destructive" },
-    checking: { icon: Loader2, label: "Checking…", className: "bg-muted text-muted-foreground", dot: "bg-muted-foreground" },
+    online: { label: onlineLabel, dot: "bg-[#3ee08f] shadow-[0_0_0_3px_rgba(62,224,143,.18)]" },
+    offline: { label: "Pi offline", dot: "bg-destructive shadow-[0_0_0_3px_rgba(255,90,79,.2)]" },
+    checking: { label: "Checking", dot: "bg-muted-foreground" },
   }[state]
 
-  const Icon = config.icon
-
   return (
-    <div className={cn("flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium", config.className)}>
-      <span className={cn("size-1.5 rounded-full", config.dot, state === "online" && "animate-pulse")} />
-      <Icon className={cn("size-3.5", state === "checking" && "animate-spin")} />
-      <span className="hidden sm:inline">{config.label}</span>
+    <div className="glass flex h-[26px] items-center gap-1.5 rounded-full px-2.5 text-[11px] font-medium">
+      <span className={cn("size-[7px] rounded-full", config.dot)} />
+      {config.label}
     </div>
   )
 }

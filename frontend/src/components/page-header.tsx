@@ -1,26 +1,23 @@
 import * as React from "react"
-import { motion } from "framer-motion"
 
 interface PageHeaderProps {
   title: string
+  /** Small line above the title (a date, a room name). */
+  eyebrow?: string
   description?: string
   actions?: React.ReactNode
 }
 
-/** iOS large-title header with an optional trailing action. */
-export function PageHeader({ title, description, actions }: PageHeaderProps) {
+/** Large title with an optional small line above and a trailing slot. */
+export function PageHeader({ title, eyebrow, description, actions }: PageHeaderProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -4 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 400, damping: 32 }}
-      className="mb-4 flex items-start justify-between gap-3"
-    >
+    <div className="mb-3 flex items-end justify-between gap-3 px-1">
       <div className="min-w-0">
-        <h2 className="font-heading text-[28px] leading-tight font-bold tracking-tight">{title}</h2>
-        {description && <p className="text-muted-foreground mt-0.5 text-[13px] leading-snug">{description}</p>}
+        {eyebrow && <p className="text-muted-foreground text-[11.5px] font-semibold">{eyebrow}</p>}
+        <h1 className="text-[26px] leading-tight font-bold tracking-[-0.4px]">{title}</h1>
+        {description && <p className="text-muted-foreground mt-0.5 text-[12.5px] leading-snug">{description}</p>}
       </div>
-      {actions && <div className="flex shrink-0 items-center gap-2 pt-1">{actions}</div>}
-    </motion.div>
+      {actions && <div className="flex shrink-0 items-center gap-2 pb-1">{actions}</div>}
+    </div>
   )
 }

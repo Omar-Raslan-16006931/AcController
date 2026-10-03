@@ -1,18 +1,29 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark" style="background: #03070e">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <!-- maximum-scale=1 + user-scalable=no: no pinch/double-tap zoom and no
-         iOS auto-zoom when an input is focused. -->
+         iOS auto-zoom when an input is focused. viewport-fit=cover lets the
+         background run under the notch / home indicator. -->
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
     />
+    <meta name="theme-color" content="#03070e" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="description" content="Control your Carrier AC through the Raspberry Pi." />
+
+    <!-- Installable on iPhone: Share > Add to Home Screen opens full screen. -->
+    <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="description" content="Smart control for a Carrier air conditioner via Raspberry Pi and IR." />
-    <title>AcController</title>
+    <meta name="apple-mobile-web-app-title" content="AC" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+
+    <title>AC Controller</title>
   </head>
   <body>
     <div id="root"></div>

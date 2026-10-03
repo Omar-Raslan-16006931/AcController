@@ -1,59 +1,104 @@
-import { Power, PowerOff } from "lucide-react"
+import * as React from "react"
+import { Power } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-const base =
-  "flex h-10 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full text-[13px] font-semibold transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none active:opacity-80 disabled:pointer-events-none disabled:opacity-40"
+/** Retriggers the ripple / sheen / icon-redraw animation on a .pbtn. */
+export function useFire() {
+  const [key, setKey] = React.useState(0)
+  const fire = React.useCallback(() => setKey((k) => k + 1), [])
+  return { fireKey: key, fire }
+}
 
-/**
- * Two independent buttons instead of one toggle: IR is one-way and
- * occasionally lossy, so either can be tapped again, and neither is
- * disabled while a request is in flight.
- */
+function FireLayers() {
+  return (
+    <>
+      <span className="pbtn-ring" aria-hidden />
+      <span className="pbtn-sheen" aria-hidden />
+    </>
+  )
+}
+
+/** Separate On and Off buttons; the active one is lit green / red. */
 export function PowerButtons({
   on,
-  connected = true,
   onPowerOn,
   onPowerOff,
+  disabled,
 }: {
   on: boolean
-  connected?: boolean
   onPowerOn: () => void
   onPowerOff: () => void
+  disabled?: boolean
 }) {
-  return (
-    <div className="flex w-full items-center gap-2">
-      <button
-        type="button"
-        disabled={!connected}
-        onClick={onPowerOn}
-        aria-pressed={on}
-        aria-label="Turn AC on"
-        className={cn(
-          base,
-          on
-            ? "bg-primary text-primary-foreground shadow-[0_4px_14px_-4px_var(--frost)]"
-            : "bg-secondary text-muted-foreground hover:text-foreground"
-        )}
-      >
-        <Power className="size-4" strokeWidth={2.25} />
-        On
-      </button>
+  const [fired, setFired] = React.useState<{ which: "on" | "off"; n: number } | null>(null)
 
+  const press = (which: "on" | "off") => {
+    setFired((f) => ({ which, n: (f?.n ?? 0) + 1 }))
+    if (which === "on") onPowerOn()
+    else onPowerOff()
+  }
+
+  const btn = (which: "on" | "off") => {
+    const active = which === "on" ? on : !on
+    return (
       <button
+        // Remounting on each press restarts the CSS animation cleanly.
+        key={fired?.which === which ? `${which}-${fired.n}` : which}
         type="button"
-        disabled={!connected}
-        onClick={onPowerOff}
-        aria-pressed={!on}
-        aria-label="Turn AC off"
+        disabled={disabled}
+        onClick={() => press(which)}
         className={cn(
-          base,
-          !on ? "bg-foreground text-background" : "bg-secondary text-muted-foreground hover:text-foreground"
+          "pbtn glass flex h-[42px] cursor-pointer items-center justify-center gap-2 rounded-[15px] text-[14px] font-semibold disabled:cursor-not-allowed disabled:opacity-60",
+          fired?.which === which && "fire",
+          active ? (which === "on" ? "power-on" : "power-off") : "text-muted-foreground"
         )}
       >
-        <PowerOff className="size-4" strokeWidth={2.25} />
-        Off
+        <FireLayers />
+        <Power className="size-4" strokeWidth={2.1} />
+        {which === "on" ? "On" : "Off"}
       </button>
+    )
+  }
+
+  return (
+    <div className="grid grid-cols-2 gap-1.5">
+      {btn("on")}
+      {btn("off")}
     </div>
+  )
+}
+
+/** Single round power toggle used on the Home AC card. */
+export function PowerToggle({
+  on,
+  onToggle,
+  disabled,
+}: {
+  on: boolean
+  onToggle: () => void
+  disabled?: boolean
+}) {
+  const { fireKey, fire } = useFire()
+  return (
+    <button
+      key={fireKey}
+      type="button"
+      aria-label={on ? "Turn off" : "Turn on"}
+      aria-pressed={on}
+      disabled={disabled}
+      onClick={() => {
+        fire()
+        onToggle()
+      }}
+      className={cn(
+        "pbtn glass flex size-[50px] shrink-0 cursor-pointer items-center justify-center rounded-full disabled:opacity-60",
+        fireKey > 0 && "fire",
+        on ? "power-on" : "text-muted-foreground"
+      )}
+    >
+      <FireLayers />
+      <Power className="size-[21px]" strokeWidth={2.1} />
+    </button>
   )
 }
