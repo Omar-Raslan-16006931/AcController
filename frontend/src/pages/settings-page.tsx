@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 import { useAuth } from "@/context/auth-context"
 import { BackgroundCard } from "@/features/settings/background-card"
 import { NotificationTestCard } from "@/features/settings/notification-test-card"
+import { DynamicIslandCard } from "@/features/settings/dynamic-island-card"
 
 import { PageHeader } from "@/components/page-header"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -270,6 +271,7 @@ export function SettingsPage() {
       <div className="flex flex-col gap-2.5">
         <BackgroundCard />
         <NotificationTestCard />
+        <DynamicIslandCard />
         <Card>
           <CardHeader>
             <CardTitle className="text-sm">Locale</CardTitle>

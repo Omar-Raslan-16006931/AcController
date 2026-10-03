@@ -93,6 +93,32 @@ export function registerServiceWorker() {
 // Live Activity (Dynamic Island + lock screen)
 // ---------------------------------------------------------------------------
 
+/** One-line diagnosis for Settings: why the island would or wouldn't show. */
+export async function diagnoseLiveActivity(): Promise<string> {
+  if (!bridge()) return "Not in the iOS app (Safari / home-screen version can't use the Dynamic Island)."
+  if (!isNativeApp()) return "Capacitor found but not running natively."
+  try {
+    const res = await callNative<{ liveActivities?: boolean }>("availability")
+    if (!res?.liveActivities) return "Live Activities are off: iPhone Settings > AC Controller > Live Activities."
+    return "Ready. Turn the AC on or start a timer while the app is open."
+  } catch (err) {
+    return `This app build has no Dynamic Island support yet (${err instanceof Error ? err.message : String(err)}). Install the latest .ipa.`
+  }
+}
+
+/** Starts a short demo activity (2 minute turn-off countdown) to test the island. */
+export async function demoLiveActivity(): Promise<void> {
+  await callNative("update", {
+    room: "Bedroom",
+    power: true,
+    temperature: 22,
+    mode: "cool",
+    fan: "medium",
+    timerAction: "turn_off",
+    timerEnd: Date.now() + 2 * 60_000,
+  })
+}
+
 interface PendingTimer {
   action: "turn_on" | "turn_off"
   fires_at: string
