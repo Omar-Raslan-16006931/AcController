@@ -33,10 +33,12 @@ jobs:
           node-version: 22
 
       - name: Install Capacitor (CI only; the committed package.json stays Vercel-only)
+        # The app loads the live site, so none of the website's packages are
+        # needed here. Swap in a minimal package.json with only Capacitor.
         run: |
-          npm ci
-          npm install @capacitor/core@7 @capacitor/ios@7
-          npm install -D @capacitor/cli@7
+          rm -f package.json package-lock.json
+          echo '{ "name": "accontroller-ios", "private": true }' > package.json
+          npm install --no-audit --no-fund @capacitor/core@7 @capacitor/ios@7 @capacitor/cli@7
 
       - name: App icons
         run: node scripts/make-icons.mjs
