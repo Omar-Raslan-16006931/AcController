@@ -36,10 +36,11 @@ export interface StatusResponse {
   last_command_at: string | null
 }
 
-export function useStatus(options?: { refetchInterval?: number }) {
+export function useStatus(options?: { refetchInterval?: number; enabled?: boolean }) {
   return useQuery({
     queryKey: queryKeys.status,
     queryFn: () => api.get<StatusResponse>("/api/status"),
     refetchInterval: options?.refetchInterval ?? 10_000,
+    enabled: options?.enabled ?? true,
   })
 }

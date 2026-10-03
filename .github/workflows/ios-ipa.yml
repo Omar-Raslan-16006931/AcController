@@ -17,6 +17,7 @@ on:
     paths:
       - "frontend/capacitor.config.json"
       - "frontend/scripts/make-icons.mjs"
+      - "frontend/ios-native/**"
       - ".github/workflows/ios-ipa.yml"
 
 jobs:
@@ -71,6 +72,18 @@ jobs:
           set_key UIViewControllerBasedStatusBarAppearance bool false
           set_key UIUserInterfaceStyle string Dark
           set_key UIRequiresFullScreen bool true
+          set_key NSSupportsLiveActivities bool true
+
+      - name: Dynamic Island (Live Activity widget + native plugin)
+        run: |
+          gem list -i xcodeproj >/dev/null || gem install xcodeproj --no-document --user-install
+          ruby ios-native/add_live_activity.rb
+          SB=ios/App/App/Base.lproj/Main.storyboard
+          sed -i '' \
+            -e 's/customClass="CAPBridgeViewController"/customClass="MainViewController"/' \
+            -e 's/customModule="Capacitor"/customModule="App" customModuleProvider="target"/' \
+            "$SB"
+          grep -q 'customClass="MainViewController"' "$SB" || { echo "Main.storyboard patch failed"; cat "$SB"; exit 1; }
 
       - name: Sync
         run: npx cap sync ios
@@ -91,7 +104,9 @@ jobs:
         run: |
           mkdir -p Payload
           cp -R build/Build/Products/Release-iphoneos/App.app Payload/
+          ls Payload/App.app/PlugIns || { echo "Widget extension missing from the app"; exit 1; }
           zip -qry AcController.ipa Payload
+          ls -lh AcController.ipa
 
       - uses: actions/upload-artifact@v4
         with:

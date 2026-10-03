@@ -27,9 +27,12 @@ export function MobileMenu() {
       <div className="glass glass-dense pointer-events-auto relative mx-auto grid h-[58px] w-full max-w-md grid-cols-4 rounded-[29px] p-[5px]">
         <span
           aria-hidden
-          className="lens absolute top-[5px] bottom-[5px] left-[5px] rounded-[24px] transition-transform duration-500 ease-[cubic-bezier(.34,1.45,.5,1)]"
+          className="absolute top-[5px] bottom-[5px] left-[5px] transition-transform duration-500 ease-[cubic-bezier(.34,1.45,.5,1)]"
           style={{ width: "calc((100% - 10px) / 4)", transform: `translateX(${active * 100}%)` }}
-        />
+        >
+          {/* Keyed by tab so the liquid stretch replays on every move. */}
+          <span key={active} className="lens lens-stretch absolute inset-0 rounded-[24px]" />
+        </span>
         {navItems.map((item, i) => {
           const Icon = item.icon
           const on = i === active

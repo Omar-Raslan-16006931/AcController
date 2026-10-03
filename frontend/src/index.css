@@ -157,31 +157,74 @@
 
   /* The glass material: translucent tint, heavy blur, a bright top lip and
      a soft specular sheen from the top-left. */
+  /* Liquid glass, iOS 26 style: clearer than frosted glass (light blur, high
+     saturation so the colour behind reads through), a light-catching rim
+     that is bright top-left and bottom-right and fades along the sides
+     (a gradient border painted in the border-box), an inner lensing glow
+     at the edges and a soft top gloss. */
   .glass {
+    border: 1px solid transparent;
     background:
-      radial-gradient(120% 70% at 18% 0%, rgba(255, 255, 255, 0.12), transparent 55%),
-      linear-gradient(140deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.03));
-    -webkit-backdrop-filter: blur(28px) saturate(170%);
-    backdrop-filter: blur(28px) saturate(170%);
+      radial-gradient(130% 60% at 30% -10%, rgba(255, 255, 255, 0.14), transparent 60%) padding-box,
+      linear-gradient(160deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.025) 55%, rgba(255, 255, 255, 0.05)) padding-box,
+      linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.55),
+          rgba(255, 255, 255, 0.08) 28%,
+          rgba(255, 255, 255, 0.03) 50%,
+          rgba(255, 255, 255, 0.08) 72%,
+          rgba(255, 255, 255, 0.32)
+        )
+        border-box;
+    -webkit-backdrop-filter: blur(14px) saturate(190%) brightness(1.06);
+    backdrop-filter: blur(14px) saturate(190%) brightness(1.06);
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.24),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.04),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-      0 8px 20px -10px rgba(0, 0, 0, 0.6);
+      inset 0 0 14px rgba(255, 255, 255, 0.05),
+      inset 0 1px 1px rgba(255, 255, 255, 0.12),
+      0 10px 24px -12px rgba(0, 0, 0, 0.55);
+    transition-property: filter, background-color, color, box-shadow;
+    transition-duration: 0.25s;
+  }
+  /* Press: the glass brightens like light pooling under a finger (no scale,
+     nothing zooms). */
+  button.glass:active:not(:disabled),
+  a.glass:active {
+    filter: brightness(1.28) saturate(1.1);
   }
   /* Denser glass for floating chrome (tab bar, sheets) so text stays legible
      over anything scrolling beneath it. */
   .glass-dense {
+    -webkit-backdrop-filter: blur(22px) saturate(190%) brightness(1.04);
+    backdrop-filter: blur(22px) saturate(190%) brightness(1.04);
     background:
-      radial-gradient(120% 70% at 18% 0%, rgba(255, 255, 255, 0.08), transparent 55%),
-      linear-gradient(140deg, rgba(30, 36, 48, 0.66), rgba(14, 18, 26, 0.74));
+      radial-gradient(130% 60% at 30% -10%, rgba(255, 255, 255, 0.1), transparent 60%) padding-box,
+      linear-gradient(160deg, rgba(34, 42, 56, 0.6), rgba(14, 18, 26, 0.7)) padding-box,
+      linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.5),
+          rgba(255, 255, 255, 0.08) 28%,
+          rgba(255, 255, 255, 0.03) 50%,
+          rgba(255, 255, 255, 0.08) 72%,
+          rgba(255, 255, 255, 0.28)
+        )
+        border-box;
   }
 
+  /* The moving selection inside tab bars / segmented controls: a brighter
+     drop of glass with its own rim. */
   .lens {
-    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid transparent;
+    background:
+      linear-gradient(160deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.09)) padding-box,
+      linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.1) 40%, rgba(255, 255, 255, 0.1) 60%, rgba(255, 255, 255, 0.4))
+        border-box;
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.4),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      inset 0 0 10px rgba(255, 255, 255, 0.08),
+      0 4px 12px -6px rgba(0, 0, 0, 0.5);
+  }
+  /* Liquid stretch: replayed each time the lens moves (key change). */
+  .lens-stretch {
+    animation: lens-stretch 0.55s cubic-bezier(0.3, 0.7, 0.3, 1);
   }
 
   .brand-gradient {
@@ -395,7 +438,23 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
+@keyframes lens-stretch {
+  0% {
+    transform: scale(1, 1);
+  }
+  35% {
+    transform: scale(1.18, 0.88);
+  }
+  70% {
+    transform: scale(0.97, 1.03);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .lens-stretch,
   .night-field .blob,
   .pbtn.fire .pbtn-ring,
   .pbtn.fire .pbtn-sheen,
