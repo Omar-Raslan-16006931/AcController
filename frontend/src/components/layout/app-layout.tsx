@@ -55,6 +55,20 @@ export function AppLayout() {
   // AC (no-op outside the iOS app).
   useLiveActivitySync()
 
+  // Warm every tab's code once the first screen is up, so switching tabs
+  // never waits on a network download.
+  React.useEffect(() => {
+    const warm = () => {
+      void import("@/pages/dashboard-page")
+      void import("@/pages/remote-page")
+      void import("@/pages/schedules-page")
+      void import("@/pages/settings-page")
+    }
+    const w = window as Window & { requestIdleCallback?: (cb: () => void) => number }
+    if (w.requestIdleCallback) w.requestIdleCallback(warm)
+    else window.setTimeout(warm, 1200)
+  }, [])
+
   return (
     // Transparent so the living background (App.tsx) shows through.
     <div className="relative z-0 flex h-svh flex-col overflow-hidden">

@@ -12,6 +12,8 @@ interface CommandResponse {
   message?: string | null
 }
 
+const AC_MUTATION_KEY = ["ac-command"] as const
+
 function useAcMutation<TVariables>(
   path: string,
   toVariables: (v: TVariables) => Record<string, unknown>,
@@ -20,10 +22,13 @@ function useAcMutation<TVariables>(
   const queryClient = useQueryClient()
 
   return useMutation({
+    mutationKey: AC_MUTATION_KEY,
     mutationFn: (variables: TVariables) => api.post<CommandResponse>(path, toVariables(variables)),
     onMutate: async (variables) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.status })
+      // Optimistic first, synchronously, so the UI reacts on the same frame
+      // as the tap; then stop any in-flight status poll from overwriting it.
       const previous = queryClient.getQueryData<StatusResponse>(queryKeys.status)
+      void queryClient.cancelQueries({ queryKey: queryKeys.status })
 
       if (previous) {
         queryClient.setQueryData<StatusResponse>(queryKeys.status, {
@@ -47,12 +52,19 @@ function useAcMutation<TVariables>(
         toast.error("Command failed", { description: data.message ?? "The AC didn't respond." })
         return
       }
+      // While more taps are still in flight, keep showing the optimistic
+      // state of the latest tap instead of snapping back to this older reply.
+      if (queryClient.isMutating({ mutationKey: AC_MUTATION_KEY }) > 1) return
       queryClient.setQueryData<StatusResponse>(queryKeys.status, (prev) =>
         prev ? { ...prev, ac_state: data.state } : prev
       )
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.status })
+      // Only re-sync once the last queued command has finished; refetching
+      // between rapid taps made the controls jump back and forth.
+      if (queryClient.isMutating({ mutationKey: AC_MUTATION_KEY }) <= 1) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.status })
+      }
     },
   })
 }

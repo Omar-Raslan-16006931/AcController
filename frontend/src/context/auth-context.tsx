@@ -2,6 +2,7 @@ import * as React from "react"
 import type { Session, User } from "@supabase/supabase-js"
 
 import { supabase } from "@/lib/supabase"
+import { clearPersistedCache } from "@/lib/query-client"
 
 interface AuthContextValue {
   session: Session | null
@@ -54,6 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = React.useCallback(async () => {
     await supabase.auth.signOut()
+    clearPersistedCache()
   }, [])
 
   const signInWithPasskey = React.useCallback(async () => {

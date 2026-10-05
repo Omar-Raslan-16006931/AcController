@@ -73,8 +73,29 @@ def _read_ip_address() -> Optional[str]:
             return None
 
 
+_CACHE_SECONDS = 20.0
+_cache: tuple[float, SystemMetrics] | None = None
+
+# Prime psutil so the first non-blocking cpu_percent() call is meaningful.
+psutil.cpu_percent(interval=None)
+
+
 def get_system_metrics() -> SystemMetrics:
-    cpu_percent = psutil.cpu_percent(interval=0.2)
+    """Cached for 20 s: /api/status is polled every few seconds by every open
+    app, and running iwconfig + sampling the CPU on each poll made it slow on
+    a Pi Zero. Pi metrics don't change meaningfully that fast."""
+    global _cache
+    now = time.monotonic()
+    if _cache and now - _cache[0] < _CACHE_SECONDS:
+        return _cache[1]
+    metrics = _collect_system_metrics()
+    _cache = (now, metrics)
+    return metrics
+
+
+def _collect_system_metrics() -> SystemMetrics:
+    # Non-blocking: % since the previous call (no 0.2 s sleep per request).
+    cpu_percent = psutil.cpu_percent(interval=None)
 
     mem = psutil.virtual_memory()
     disk = psutil.disk_usage("/")

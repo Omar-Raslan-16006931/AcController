@@ -59,7 +59,7 @@ function formatUptime(seconds: number): string {
 }
 
 export function DashboardPage() {
-  const { data: status, isLoading: statusLoading, isError } = useStatus()
+  const { data: status, isLoading: statusLoading } = useStatus()
   const { data: days, isLoading: daysLoading } = useAcUsageDetail()
   const { data: timers } = useTimers()
   const setPower = useSetPower()
@@ -94,7 +94,9 @@ export function DashboardPage() {
   const on = !!ac?.power
   const nextTimer = (timers ?? [])[0]
 
-  if (statusLoading || daysLoading) {
+  // Full skeleton only when nothing at all is known yet (first ever open).
+  // Otherwise each card shows as soon as its own data arrives.
+  if (statusLoading && daysLoading) {
     return (
       <div>
         <PageHeader title="Home" eyebrow={format(new Date(), "EEEE, d MMMM")} />
@@ -116,7 +118,9 @@ export function DashboardPage() {
 
       <div className="flex flex-col gap-2.5">
         {/* ---- AC ---- */}
-        {isError || !ac ? (
+        {statusLoading ? (
+          <Skeleton className="h-[150px] rounded-[20px] bg-white/[0.06]" />
+        ) : !ac ? (
           <div className="glass flex flex-col items-center gap-2 rounded-[20px] px-4 py-8 text-center">
             <WifiOff className="text-destructive size-5" />
             <p className="text-sm font-semibold">Can't reach the Pi</p>
@@ -144,7 +148,7 @@ export function DashboardPage() {
                     : "Off"}
                 </div>
               </div>
-              <PowerToggle on={on} disabled={setPower.isPending} onToggle={() => setPower.mutate(!on)} />
+              <PowerToggle on={on} onToggle={() => setPower.mutate(!on)} />
             </div>
             <Trio
               className={cn("mt-2.5 border-t border-white/[0.08] pt-2", !on && "[&_.num]:opacity-50")}

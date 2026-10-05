@@ -69,7 +69,9 @@ export function RemotePage() {
 
   const ac = status?.ac_state
   const on = !!ac?.power
-  const busy = setTemperature.isPending || setMode.isPending || setFan.isPending
+  // Controls stay live while commands are sending: every tap updates the UI
+  // instantly (optimistic) and the IR command follows in the background.
+  const busy = false
 
   // Warmer setting -> more amber in the background; off -> none.
   const handlePreview = React.useCallback(
@@ -93,7 +95,7 @@ export function RemotePage() {
         </div>
       )}
 
-      {isError && !isLoading && (
+      {isError && !status && (
         <div className="glass mt-4 flex flex-col items-center gap-2 rounded-[20px] px-4 py-10 text-center">
           <WifiOff className="text-destructive size-6" />
           <p className="text-sm font-semibold">Can't reach the Raspberry Pi</p>
@@ -123,7 +125,6 @@ export function RemotePage() {
           <div className="mt-4">
             <PowerButtons
               on={on}
-              disabled={setPower.isPending}
               onPowerOn={() => setPower.mutate(true)}
               onPowerOff={() => setPower.mutate(false)}
             />
