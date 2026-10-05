@@ -17,6 +17,9 @@ export interface Session {
   startMs: number
   endMs: number
   ongoing: boolean
+  /** The settings segments inside this session (temperature / fan / mode
+   * changes while it ran). */
+  intervals: AcUsageInterval[]
 }
 
 export function sessionsOf(day: AcUsageDayDetail | undefined): Session[] {
@@ -27,11 +30,21 @@ export function sessionsOf(day: AcUsageDayDetail | undefined): Session[] {
     if (last && iv.startMs - last.endMs < MS_PER_MIN) {
       last.endMs = iv.endMs
       last.ongoing = iv.ongoing
+      last.intervals.push(iv)
     } else {
-      out.push({ startMs: iv.startMs, endMs: iv.endMs, ongoing: iv.ongoing })
+      out.push({ startMs: iv.startMs, endMs: iv.endMs, ongoing: iv.ongoing, intervals: [iv] })
     }
   }
   return out
+}
+
+/** "22°" or "21–23°" for the temperatures used during a session. */
+export function tempRangeLabel(intervals: AcUsageInterval[]): string | null {
+  const temps = intervals.map((iv) => iv.temperature).filter((t): t is number => t != null)
+  if (!temps.length) return null
+  const lo = Math.min(...temps)
+  const hi = Math.max(...temps)
+  return lo === hi ? `${lo}°` : `${lo}–${hi}°`
 }
 
 /** "27 min", "1h 05m" */

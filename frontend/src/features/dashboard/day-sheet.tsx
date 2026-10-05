@@ -14,6 +14,9 @@ import {
   dayTotalMs,
   formatClock,
   formatDuration,
+  mostUsed,
+  sessionsOf,
+  tempRangeLabel,
 } from "@/features/dashboard/usage-utils"
 
 // Sub-minute blips (a double tap) clutter the list; totals still count them.
@@ -62,7 +65,8 @@ export function DaySheet({
 
   const total = dayTotalMs(day)
   const temp = day ? avgTemp(day.intervals) : null
-  const listed = day ? day.intervals.filter((iv) => iv.endMs - iv.startMs >= MIN_LISTED_MS) : []
+  const sessions = sessionsOf(day)
+  const listed = sessions.filter((s) => s.endMs - s.startMs >= MIN_LISTED_MS)
 
   const title = !day ? "" : isToday ? "Today" : format(new Date(`${day.date}T00:00:00`), "EEEE, d MMM")
 
@@ -109,7 +113,7 @@ export function DaySheet({
               <div className="min-w-0 flex-1 text-center">
                 <div className="truncate text-[15px] font-bold">{title}</div>
                 <div className="text-muted-foreground text-[11.5px]">
-                  {formatDuration(total)} on · {day.intervals.length} {day.intervals.length === 1 ? "entry" : "entries"}
+                  {formatDuration(total)} on · {sessions.length} {sessions.length === 1 ? "session" : "sessions"}
                 </div>
               </div>
               <button
@@ -142,34 +146,39 @@ export function DaySheet({
                 </p>
               ) : (
                 <div className="flex flex-col gap-1.5">
-                  {listed.map((iv, i) => {
-                    const mode = iv.mode ? modeConfig[iv.mode] : null
-                    const fan = iv.fan ? fanConfig[iv.fan] : null
+                  {listed.map((s, i) => {
+                    // One row per time the AC was switched on; temperature /
+                    // fan changes while it ran are folded into the row.
+                    const modeKey = mostUsed(s.intervals, "mode")
+                    const fanKey = mostUsed(s.intervals, "fan")
+                    const mode = modeKey ? modeConfig[modeKey] : null
+                    const fan = fanKey ? fanConfig[fanKey] : null
                     const ModeIcon = mode?.icon
                     const FanIcon = fan?.icon
+                    const temps = tempRangeLabel(s.intervals)
+                    const changes = s.intervals.length - 1
                     return (
                       <div key={i} className="flex items-center gap-2.5 rounded-[14px] bg-white/[0.06] px-3 py-2">
                         <div className="num w-[64px] shrink-0 text-[12.5px] leading-tight font-semibold">
-                          {formatClock(iv.startMs)}
+                          {formatClock(s.startMs)}
                           <span className="text-muted-foreground block text-[11px] font-medium">
-                            {iv.ongoing ? "now" : formatClock(iv.endMs)}
+                            {s.ongoing ? "now" : formatClock(s.endMs)}
                           </span>
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5 text-[12px]">
                             {ModeIcon && <ModeIcon className="text-ice size-3" />}
                             {mode?.label ?? "On"}
-                            {iv.temperature != null && ` · ${iv.temperature}°`}
+                            {temps && ` · ${temps}`}
                           </div>
-                          {fan && (
-                            <div className="text-muted-foreground flex items-center gap-1.5 text-[11px]">
-                              {FanIcon && <FanIcon className="size-3" />}
-                              {fan.label} fan
-                            </div>
-                          )}
+                          <div className="text-muted-foreground flex items-center gap-1.5 truncate text-[11px]">
+                            {FanIcon && <FanIcon className="size-3 shrink-0" />}
+                            {fan ? `${fan.label} fan` : "Fan"}
+                            {changes > 0 && ` · ${changes} ${changes === 1 ? "change" : "changes"}`}
+                          </div>
                         </div>
                         <div className="num text-ice shrink-0 text-[15px] font-bold">
-                          {formatDuration(iv.endMs - iv.startMs)}
+                          {formatDuration(s.endMs - s.startMs)}
                         </div>
                       </div>
                     )
