@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12&height=200&section=header&text=AcController&fontSize=56&fontColor=ffffff&fontAlignY=36&desc=Smart%20AC%20control%20with%20a%20Raspberry%20Pi%2C%20IR%20and%20a%20React%20app&descSize=16&descAlignY=58&animation=fadeIn" width="100%" alt="AcController"/>
+<img src=".github/assets/banner.svg" width="100%" alt="AcController"/>
 
 <a href="https://ac-controller-ten.vercel.app"><img src="https://img.shields.io/badge/Live%20Demo-Visit-22c55e?style=for-the-badge&logo=vercel&logoColor=white" alt="Live demo"/></a>
 <img src="https://img.shields.io/github/last-commit/Omar-Raslan-16006931/AcController?style=for-the-badge&color=6366f1" alt="Last commit"/>
@@ -77,6 +77,6 @@ Full Pi setup: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md). iOS build: [`docs/IOS
 
 **Made with ❤️ by [Omar Raslan](https://github.com/Omar-Raslan-16006931)**
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12&height=100&section=footer" width="100%"/>
+<img src=".github/assets/footer.svg" width="100%"/>
 
 </div>
