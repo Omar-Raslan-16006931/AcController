@@ -1,0 +1,59 @@
+# AcController
+
+A smart controller for a Carrier air conditioner. A Raspberry Pi sends IR signals to the AC, and you control it from a web app or an iPhone app.
+
+**Live app:** https://ac-controller-ten.vercel.app
+
+```
+React app (Vercel)  →  HTTPS  →  FastAPI on Raspberry Pi  →  IR LED (GPIO17)  →  AC
+```
+
+## Features
+
+- **Remote control:** power, mode, fan speed, swing and temperature, with a custom temperature dial
+- **Schedules and timers** run by a background worker on the Pi
+- **Usage dashboard:** daily and weekly runtime charts and estimated energy cost
+- **AC detection:** brute-forces the brand/protocol from a library of 116+ captured IR codes
+- **IR learning:** record buttons from any remote with an IR receiver and replay them
+- **Tuya / Smart Life IR blaster** support as an alternative to the Pi's own IR LED
+- **Siri / iOS Shortcuts API** with API-key auth
+- **iOS app:** Capacitor shell, Live Activity / Dynamic Island and a home-screen widget, built as an unsigned IPA by GitHub Actions
+- **Auth:** Supabase login with passkeys; the backend verifies Supabase JWTs (HS256 or JWKS)
+- **Wi-Fi fallback:** setup page and watchdog so the Pi can recover when the network changes
+
+## Tech stack
+
+| Part | Tech |
+| --- | --- |
+| Frontend | React 19, Vite, TypeScript, Tailwind, shadcn/ui, TanStack Query, Framer Motion |
+| Backend | Python, FastAPI, Pydantic, APScheduler, psutil, `ir-ctl` |
+| Data / auth | Supabase (Postgres + RLS, Auth, passkeys) |
+| Hardware | Raspberry Pi Zero 2 W, IR LED + transistor, optional TSOP38238 receiver |
+| Infra | Vercel, Cloudflare Tunnel / Tailscale, systemd, GitHub Actions |
+
+## Project structure
+
+```
+frontend/   React web app (also wrapped as the iOS app)
+backend/    FastAPI service that runs on the Pi
+database/   Supabase schema and RLS policies
+docs/       Deployment, iOS, IR learning, AC detection, Tuya, Wi-Fi fallback
+```
+
+## Getting started
+
+```bash
+# Frontend
+cd frontend
+npm install
+cp .env.example .env.local   # Supabase URL/key + backend URL
+npm run dev
+
+# Backend (on the Pi)
+cd backend
+pip install -r requirements.txt
+cp .env.example .env         # Supabase + IR settings
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+Full Pi setup: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md). iOS build: [`docs/IOS.md`](docs/IOS.md).
