@@ -26,6 +26,9 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>
 
+// New sign-ups are temporarily paused. Flip to true to reopen registration.
+const SIGNUPS_ENABLED = false
+
 export function LoginPage() {
   const { session, loading, signIn, signUp, signInWithPasskey } = useAuth()
   const location = useLocation()
@@ -52,6 +55,11 @@ export function LoginPage() {
   const onSubmit = async (values: LoginFormValues) => {
     setSubmitting(true)
     if (mode === "sign-up") {
+      if (!SIGNUPS_ENABLED) {
+        setSubmitting(false)
+        toast.error("Sign-ups are paused right now")
+        return
+      }
       const { error } = await signUp(values.email, values.password)
       setSubmitting(false)
       if (error) {
@@ -84,6 +92,7 @@ export function LoginPage() {
   }
 
   const toggleMode = () => {
+    if (!SIGNUPS_ENABLED) return
     setMode((m) => (m === "sign-in" ? "sign-up" : "sign-in"))
     setSignUpSuccess(false)
     reset()
@@ -218,7 +227,7 @@ export function LoginPage() {
             </AnimatePresence>
           </CardContent>
         </Card>
-        {!signUpSuccess && (
+        {SIGNUPS_ENABLED && !signUpSuccess && (
           <p className="text-muted-foreground mt-6 text-center text-[13px]">
             {mode === "sign-in" ? "Don't have an account yet? " : "Already have an account? "}
             <button
