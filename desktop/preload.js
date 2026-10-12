@@ -22,11 +22,15 @@ contextBridge.exposeInMainWorld("ac", {
   setAutostart: (on) => invoke("app:setAutostart", on),
   openWeb: () => invoke("app:openWeb"),
   hide: () => invoke("app:hide"),
+  quit: () => invoke("app:quit"),
+  version: () => invoke("app:version"),
+  checkUpdate: () => invoke("update:check"),
+  installUpdate: () => invoke("update:install"),
 
   updateTray: (payload) => ipcRenderer.send("tray:update", payload),
   setHeight: (h) => ipcRenderer.send("panel:size", h),
   on: (channel, fn) => {
-    const allowed = ["panel:shown", "panel:hidden", "auth:changed"]
-    if (allowed.includes(channel)) ipcRenderer.on(channel, () => fn())
+    const allowed = ["panel:shown", "panel:hidden", "auth:changed", "update:status"]
+    if (allowed.includes(channel)) ipcRenderer.on(channel, (_event, payload) => fn(payload))
   },
 })

@@ -45,6 +45,12 @@
             <div class="name">Bedroom AC</div>
             <div class="status"><i id="dot"></i><span id="st">Connecting…</span></div>
           </div>
+          <button class="gear" id="gear" aria-label="Settings" title="Settings">
+            <svg class="ic" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z" />
+            </svg>
+          </button>
           <button class="pw" id="pw" aria-label="Power">
             <svg class="ic" viewBox="0 0 24 24"><path d="M12 3v9M6.6 6.6a8 8 0 1 0 10.8 0" /></svg>
           </button>
@@ -110,6 +116,42 @@
           </div>
         </div>
         <div class="chips" id="chips"></div>
+
+        <!-- Settings: slides over the remote -->
+        <div class="settings" id="settings" aria-hidden="true">
+          <div class="s-hd">
+            <button class="back" id="back" aria-label="Back">
+              <svg class="ic" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" /></svg>
+            </button>
+            <span>Settings</span>
+          </div>
+
+          <div class="s-group">
+            <label class="s-row">
+              <span>Start with Windows</span>
+              <input type="checkbox" id="autostart" class="switch" />
+            </label>
+            <button class="s-row" id="open-web">
+              <span>Open full app</span>
+              <svg class="ic chev" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9" /></svg>
+            </button>
+          </div>
+
+          <div class="s-group">
+            <div class="s-row">
+              <span class="s-col"><span>Updates</span><small id="upd-text">Version –</small></span>
+              <button class="s-btn" id="upd-btn">Check</button>
+            </div>
+          </div>
+
+          <div class="s-group">
+            <div class="s-row">
+              <span class="s-col"><span>Account</span><small id="acct">–</small></span>
+              <button class="s-btn" id="signout">Sign out</button>
+            </div>
+            <button class="s-row danger" id="quit"><span>Quit AC Controller</span></button>
+          </div>
+        </div>
 
         <div class="toast" id="toast"></div>
       </section>

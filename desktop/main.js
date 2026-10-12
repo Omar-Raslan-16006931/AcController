@@ -292,9 +292,88 @@ ipcMain.on("panel:size", (_event, h) => {
   const next = Math.max(200, Math.min(700, Math.round(Number(h) || 0)))
   if (!win || !next || next === HEIGHT) return
   HEIGHT = next
-  win.setSize(WIDTH, HEIGHT, false)
+  // Windows ignores size changes on non-resizable windows, so unlock briefly.
+  win.setResizable(true)
+  win.setContentSize(WIDTH, HEIGHT, false)
+  win.setResizable(false)
   if (win.isVisible()) positionPanel()
 })
+
+ipcMain.handle("app:version", wrap(() => app.getVersion()))
+ipcMain.handle("app:quit", wrap(() => setTimeout(() => app.quit(), 50)))
+ipcMain.handle("update:check", wrap(() => checkForUpdates(true)))
+ipcMain.handle(
+  "update:install",
+  wrap(() => {
+    if (updateStatus.state === "ready") installUpdate()
+  })
+)
+
+// ---------------------------------------------------------------------------
+// Auto update (installed app only): new builds are published as GitHub
+// releases by the "Windows EXE" workflow; we download them in the
+// background and install silently the next time the panel is closed.
+// ---------------------------------------------------------------------------
+
+let autoUpdater = null
+try {
+  ;({ autoUpdater } = require("electron-updater"))
+} catch {
+  autoUpdater = null
+}
+let updateStatus = { state: "idle" }
+const updatedFlag = () => path.join(app.getPath("userData"), "just-updated")
+
+function canUpdate() {
+  // The portable .exe can't replace itself; only the installed app updates.
+  return !!autoUpdater && app.isPackaged && !process.env.PORTABLE_EXECUTABLE_FILE
+}
+
+function sendUpdate(status) {
+  updateStatus = status
+  if (win && !win.isDestroyed()) win.webContents.send("update:status", status)
+}
+
+function installUpdate() {
+  try {
+    fs.writeFileSync(updatedFlag(), "1")
+  } catch {
+    // ignore
+  }
+  // Silent install, then start the new version.
+  autoUpdater.quitAndInstall(true, true)
+}
+
+async function checkForUpdates(manual = false) {
+  if (!canUpdate()) {
+    if (manual) sendUpdate({ state: "dev" })
+    return
+  }
+  if (["downloading", "ready"].includes(updateStatus.state)) return sendUpdate(updateStatus)
+  try {
+    await autoUpdater.checkForUpdates()
+  } catch (err) {
+    sendUpdate({ state: "error", message: String((err && err.message) || err) })
+  }
+}
+
+function setupUpdater() {
+  if (!canUpdate()) return
+  autoUpdater.autoDownload = true
+  autoUpdater.autoInstallOnAppQuit = true
+  autoUpdater.on("checking-for-update", () => sendUpdate({ state: "checking" }))
+  autoUpdater.on("update-available", (info) => sendUpdate({ state: "available", version: info.version }))
+  autoUpdater.on("update-not-available", () => sendUpdate({ state: "latest" }))
+  autoUpdater.on("download-progress", (p) => sendUpdate({ state: "downloading", percent: p.percent }))
+  autoUpdater.on("update-downloaded", (info) => {
+    sendUpdate({ state: "ready", version: info.version })
+    // Don't interrupt someone using the panel; install once it's closed.
+    if (!win || !win.isVisible()) installUpdate()
+  })
+  autoUpdater.on("error", (err) => sendUpdate({ state: "error", message: String((err && err.message) || err) }))
+  setTimeout(() => checkForUpdates(), 10_000)
+  setInterval(() => checkForUpdates(), 30 * 60_000)
+}
 
 // ---------------------------------------------------------------------------
 // Window + tray
@@ -375,6 +454,7 @@ function hidePanel() {
   lastHiddenAt = Date.now()
   win.hide()
   win.webContents.send("panel:hidden")
+  if (updateStatus.state === "ready") setTimeout(installUpdate, 1500)
 }
 
 function togglePanel() {
@@ -390,6 +470,7 @@ function buildMenu() {
   return Menu.buildFromTemplate([
     { label: "Open AC Controller", click: () => showPanel() },
     { label: "Open web app", click: () => shell.openExternal(cfg.WEB_APP_URL) },
+    { label: `Check for updates (v${app.getVersion()})`, click: () => checkForUpdates(true) },
     { type: "separator" },
     {
       label: "Start with Windows",
@@ -435,9 +516,13 @@ app.whenReady().then(() => {
   }
   createTray()
   createWindow()
-  if (!process.argv.includes("--hidden")) {
+  // After a silent background update, come back quietly in the tray.
+  const justUpdated = fs.existsSync(updatedFlag())
+  if (justUpdated) fs.rmSync(updatedFlag(), { force: true })
+  if (!process.argv.includes("--hidden") && !justUpdated) {
     win.once("ready-to-show", () => showPanel())
   }
+  setupUpdater()
 })
 
 // Tray app: closing the panel never quits.

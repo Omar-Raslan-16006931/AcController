@@ -1,9 +1,10 @@
-# Builds the Windows tray app (desktop/) into:
-#   AC-Controller-Setup.exe     installs it, starts with Windows
-#   AC-Controller-Portable.exe  single file, no install
+# Builds the Windows tray app (desktop/) and publishes it as a GitHub
+# release (v1.0.<run number>). The installed app checks those
+# releases and updates itself silently, so you only install once:
+#   AC-Controller-Setup.exe     installs it, starts with Windows, auto-updates
+#   AC-Controller-Portable.exe  single file, no install (no auto-update)
 #
-# Run it: GitHub > Actions > "Windows EXE" > Run workflow, then download
-# the "AcController-windows" artifact.
+# Runs on every push that touches desktop/, or by hand from the Actions tab.
 name: Windows EXE
 
 on:
@@ -13,6 +14,9 @@ on:
     paths:
       - "desktop/**"
       - ".github/workflows/windows-exe.yml"
+
+permissions:
+  contents: write # create the release + upload the installer
 
 jobs:
   build:
@@ -34,15 +38,20 @@ jobs:
           cp frontend/public/icons/icon-512.png desktop/build/icon.png
           cp frontend/public/icons/icon-192.png desktop/assets/tray.png
 
+      - name: Version = 1.0.<run number> (each build is newer than the last)
+        working-directory: desktop
+        run: npm version "1.0.${{ github.run_number }}" --no-git-tag-version --allow-same-version
+
       - name: Install
         working-directory: desktop
         run: npm install --no-audit --no-fund
 
-      - name: Build exe
+      - name: Build + publish release
         working-directory: desktop
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
-        run: npm run dist
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run release
 
       - uses: actions/upload-artifact@v4
         with:

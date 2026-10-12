@@ -8,7 +8,11 @@
   "author": "Omar",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win nsis portable --publish never"
+    "dist": "electron-builder --win nsis portable --publish never",
+    "release": "electron-builder --win nsis portable --publish always"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
   },
   "devDependencies": {
     "electron": "^33.2.0",
@@ -19,6 +23,14 @@
     "productName": "AC Controller",
     "files": ["main.js", "preload.js", "config.js", "renderer/**", "assets/**"],
     "directories": { "output": "dist", "buildResources": "build" },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Omar-Raslan-16006931",
+        "repo": "AcController",
+        "releaseType": "release"
+      }
+    ],
     "win": {
       "target": ["nsis", "portable"],
       "icon": "build/icon.png"

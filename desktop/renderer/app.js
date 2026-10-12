@@ -16,6 +16,8 @@ const state = {
   timers: [],
   timerAction: "turn_off",
   presetIndex: 0,
+  version: null,
+  update: null,
   pending: 0,
   visible: false,
   dragging: false,
@@ -228,8 +230,10 @@ function renderTimers() {
     row.className = `chip${off ? "" : " on-timer"}${t._pending ? " pending" : ""}`
     row.innerHTML = `<i></i><span>${off ? "Turns off in" : "Turns on in"}</span><b>${fmtLeft(
       minutesLeft(t.fires_at)
-    )}</b><button>Cancel</button>`
-    row.querySelector("button").addEventListener("click", () => cancelTimer(t))
+    )}</b><button type="button">Cancel</button>`
+    // Look the timer up by id at click time (the list is refreshed in the
+    // background, so a captured object can be stale).
+    row.querySelector("button").dataset.id = t.id
     box.appendChild(row)
   }
   reportHeight()
@@ -255,6 +259,25 @@ function updateTray() {
       ? `AC Controller: ${ac.temperature}°, ${FAN_LABEL[ac.fan]} fan`
       : "AC Controller: Off"
   window.ac.updateTray({ icon: c.toDataURL("image/png"), tooltip })
+}
+
+function renderUpdate() {
+  const u = state.update || {}
+  const v = state.version ? `Version ${state.version}` : "Version –"
+  const btn = $("upd-btn")
+  const text = {
+    checking: "Checking…",
+    available: "Downloading update…",
+    downloading: `Downloading… ${Math.round(u.percent || 0)}%`,
+    ready: `Update ${u.version || ""} ready`,
+    latest: `${v} · up to date`,
+    error: `${v} · couldn't check`,
+    dev: `${v} · updates only in the installed app`,
+  }[u.state]
+  $("upd-text").textContent = text || v
+  btn.textContent = u.state === "ready" ? "Restart" : "Check"
+  btn.classList.toggle("go", u.state === "ready")
+  btn.disabled = ["checking", "available", "downloading"].includes(u.state)
 }
 
 let toastTimer
@@ -316,11 +339,16 @@ async function send(change, call) {
   state.pending++
   const r = await call()
   state.pending--
-  if (r.ok && r.data && r.data.state) {
-    if (state.pending === 0 && !state.dragging) state.ac = r.data.state
-  } else if (!r.ok) {
+  if (!r.ok) {
     state.ac = before
     toast(r.error || "Command failed")
+  } else if (r.data && r.data.success === false) {
+    // The Pi answered but the IR send failed: it returns the old state.
+    if (r.data.state) state.ac = r.data.state
+    else state.ac = before
+    toast(r.data.message || "The AC didn't receive the command")
+  } else if (r.data && r.data.state) {
+    if (state.pending === 0 && !state.dragging) state.ac = r.data.state
   }
   render()
 }
@@ -359,11 +387,12 @@ async function createTimer(minutes, index) {
   loadTimers()
 }
 
-async function cancelTimer(t) {
-  state.timers = state.timers.filter((x) => x !== t)
+async function cancelTimer(id) {
+  const t = state.timers.find((x) => String(x.id) === String(id))
+  state.timers = state.timers.filter((x) => String(x.id) !== String(id))
   timerKey = ""
   renderTimers()
-  if (t._pending) return
+  if (!t || t._pending) return
   const r = await window.ac.cancelTimer(t.id)
   if (!r.ok) toast(r.error || "Could not cancel timer")
   loadTimers()
@@ -476,13 +505,54 @@ function wire() {
   window.addEventListener("pointerup", release)
   rg.addEventListener("change", release)
 
-  ;[...$("fan").querySelectorAll("button")].forEach((b, i) =>
-    b.addEventListener("click", () => {
-      if (!state.ac || !state.ac.power || b.dataset.v === state.ac.fan) return
-      setSeg($("fan"), i, true)
-      send({ fan: b.dataset.v }, () => window.ac.fan(b.dataset.v))
-    })
-  )
+  // Delegated handlers: one listener per control, resolved at click time.
+  $("fan").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-v]")
+    if (!b) return
+    if (!state.ac) return toast(state.online === false ? "Can't reach the Raspberry Pi" : "Still connecting…")
+    if (!state.ac.power) return toast("Turn the AC on to change the fan")
+    const fan = b.dataset.v
+    if (fan === state.ac.fan) return
+    setSeg($("fan"), FANS.indexOf(fan), true)
+    send({ fan }, () => window.ac.fan(fan))
+  })
+  $("chips").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-id]")
+    if (b) cancelTimer(b.dataset.id)
+  })
+
+  // Settings
+  const settings = $("settings")
+  const openSettings = async (open) => {
+    settings.classList.toggle("open", open)
+    settings.setAttribute("aria-hidden", String(!open))
+    if (!open) return
+    const [auto, auth, ver] = await Promise.all([window.ac.autostart(), window.ac.authState(), window.ac.version()])
+    $("autostart").checked = !!(auto.ok && auto.data)
+    $("acct").textContent = (auth.ok && auth.data && auth.data.email) || "–"
+    if (ver.ok) state.version = ver.data
+    renderUpdate()
+  }
+  $("gear").addEventListener("click", () => openSettings(true))
+  $("back").addEventListener("click", () => openSettings(false))
+  $("autostart").addEventListener("change", (e) => window.ac.setAutostart(e.target.checked))
+  $("open-web").addEventListener("click", () => window.ac.openWeb())
+  $("signout").addEventListener("click", async () => {
+    await window.ac.signOut()
+    openSettings(false)
+    showLogin()
+  })
+  $("quit").addEventListener("click", () => window.ac.quit())
+  $("upd-btn").addEventListener("click", () => {
+    if (state.update && state.update.state === "ready") return window.ac.installUpdate()
+    state.update = { state: "checking" }
+    renderUpdate()
+    window.ac.checkUpdate()
+  })
+  window.ac.on("update:status", (s) => {
+    state.update = s
+    renderUpdate()
+  })
 
   $("tk").addEventListener("click", () => {
     state.timerAction = state.timerAction === "turn_off" ? "turn_on" : "turn_off"
@@ -505,7 +575,9 @@ function wire() {
   )
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") window.ac.hide()
+    if (e.key !== "Escape") return
+    if ($("settings").classList.contains("open")) $("back").click()
+    else window.ac.hide()
   })
 
   window.ac.on("panel:shown", () => {
@@ -522,6 +594,7 @@ function wire() {
   window.ac.on("panel:hidden", () => {
     state.visible = false
     $("panel").classList.remove("shown")
+    $("settings").classList.remove("open")
   })
   window.ac.on("auth:changed", () => showLogin())
 
