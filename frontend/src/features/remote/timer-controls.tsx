@@ -81,7 +81,8 @@ export function TimerControls() {
       const marker = panelRef.current
       const scroller = marker?.closest("main")
       if (!marker || !scroller) return
-      const tabBarClearance = 104
+      // Tab bar height plus some breathing room so the Start button isn't hugging it.
+      const tabBarClearance = 150
       const overflow = marker.getBoundingClientRect().bottom - (window.innerHeight - tabBarClearance)
       if (overflow > 0) scroller.scrollBy({ top: overflow, behavior: "smooth" })
     }

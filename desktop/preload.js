@@ -24,6 +24,7 @@ contextBridge.exposeInMainWorld("ac", {
   hide: () => invoke("app:hide"),
 
   updateTray: (payload) => ipcRenderer.send("tray:update", payload),
+  setHeight: (h) => ipcRenderer.send("panel:size", h),
   on: (channel, fn) => {
     const allowed = ["panel:shown", "panel:hidden", "auth:changed"]
     if (allowed.includes(channel)) ipcRenderer.on(channel, () => fn())

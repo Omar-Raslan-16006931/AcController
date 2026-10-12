@@ -3,20 +3,9 @@
 
 const MIN_T = 20
 const MAX_T = 28
-const MODES = ["cool", "heat", "dry"]
-const MODE_LABEL = { cool: "Cool", heat: "Heat", dry: "Dry" }
-const VERB = { cool: "Cooling", heat: "Heating", dry: "Drying" }
 const FANS = ["eco", "low", "medium", "high"]
 const FAN_LABEL = { eco: "Eco", low: "Low", medium: "Medium", high: "High" }
-
-const ICON = {
-  cool: '<svg viewBox="0 0 24 24"><path d="M12 2v20M3.3 7l17.4 10M20.7 7 3.3 17M9.5 3.8 12 6l2.5-2.2M9.5 20.2 12 18l2.5 2.2"/></svg>',
-  heat: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
-  dry: '<svg viewBox="0 0 24 24"><path d="M12 3 6.5 11a6.5 6.5 0 1 0 11 0Z"/></svg>',
-  eco: '<svg viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.4 5.1-6C9.5 14.5 12 13 13 12"/></svg>',
-  fan: (s) =>
-    `<svg viewBox="0 0 24 24" style="width:${s}px;height:${s}px"><path d="M10.8 16.4a6.1 6.1 0 0 1-8.6-7l5.4 1.5a6.1 6.1 0 0 1 7-8.6l-1.5 5.4a6.1 6.1 0 0 1 8.6 7l-5.4-1.5a6.1 6.1 0 0 1-7 8.6l1.5-5.4Z"/><path d="M12 12v.01"/></svg>`,
-}
+const PRESETS = [0, 30, 60, 120]
 
 const $ = (id) => document.getElementById(id)
 
@@ -26,143 +15,122 @@ const state = {
   online: null,
   timers: [],
   timerAction: "turn_off",
+  presetIndex: 0,
   pending: 0,
   visible: false,
-  lastTemp: null,
+  dragging: false,
+  dragPos: 24,
 }
 
 // ===========================================================================
-// Airflow: a small particle system on a canvas. Air streams out of the
-// flap, fans outward and fades; strength follows the fan speed, colour the
-// mode, and it eases in / out when the AC turns on / off.
+// Airflow: streaks fan out from the flap, sway with it, and fade behind the
+// temperature. Density/speed follow the fan; it eases in/out with power.
 // ===========================================================================
 
-const air = {
-  canvas: null,
-  ctx: null,
-  w: 0,
-  h: 0,
-  dpr: 1,
-  parts: [],
-  intensity: 0, // 0..1, eased toward target
-  target: 0,
-  speed: 1, // fan multiplier
-  color: [143, 211, 255],
-  colorTarget: [143, 211, 255],
-  raf: 0,
-  last: 0,
-  emitAcc: 0,
-}
-
-const MODE_RGB = { cool: [143, 211, 255], heat: [255, 176, 106], dry: [130, 232, 205] }
-const FAN_MULT = { eco: 0.55, low: 0.75, medium: 1, high: 1.45 }
+const air = { cv: null, ctx: null, w: 0, h: 0, parts: [], inten: 0, target: 0, mult: 0.8, raf: 0, last: 0, acc: 0 }
+const RGB = [143, 211, 255]
+const MULT = { eco: 0.5, low: 0.8, medium: 1.15, high: 1.6 }
+const Y0 = 62 // bottom of the unit (flap)
 
 function airInit() {
-  air.canvas = $("air")
-  air.ctx = air.canvas.getContext("2d")
+  air.cv = $("air")
+  air.ctx = air.cv.getContext("2d")
   airResize()
   window.addEventListener("resize", airResize)
 }
 
 function airResize() {
-  const r = air.canvas.getBoundingClientRect()
-  air.dpr = window.devicePixelRatio || 1
+  const r = air.cv.getBoundingClientRect()
+  if (!r.width) return
+  const d = window.devicePixelRatio || 1
   air.w = r.width
   air.h = r.height
-  air.canvas.width = Math.round(r.width * air.dpr)
-  air.canvas.height = Math.round(r.height * air.dpr)
-  air.ctx.setTransform(air.dpr, 0, 0, air.dpr, 0, 0)
+  air.cv.width = Math.round(r.width * d)
+  air.cv.height = Math.round(r.height * d)
+  air.ctx.setTransform(d, 0, 0, d, 0, 0)
 }
 
-function airSpawn(swing) {
+function airSpawn(now) {
   const cx = air.w / 2
-  const halfMouth = 104
-  const x = cx + (Math.random() * 2 - 1) * halfMouth
-  const spread = (x - cx) / halfMouth // -1 .. 1
-  const base = 46 + Math.random() * 30
+  const half = 100
+  const x = cx + (Math.random() * 2 - 1) * half
+  const s = (x - cx) / half
+  const sw = Math.sin(now / 1700) * 0.6
   air.parts.push({
-    x,
-    y: 76,
-    px: x,
-    py: 76,
-    vx: spread * 22 + swing * 10,
-    vy: base,
+    x, y: Y0, px: x, py: Y0,
+    vx: s * 16 + sw * 10,
+    vy: 30 + Math.random() * 20,
     life: 0,
-    max: 1.5 + Math.random() * 1.1,
-    w: 0.8 + Math.random() * 1.4,
-    phase: Math.random() * Math.PI * 2,
+    max: 1.1 + Math.random() * 0.8,
+    w: 0.6 + Math.random() * 1.2,
+    ph: Math.random() * 6.3,
   })
 }
 
 function airFrame(now) {
-  const dt = Math.min(0.05, (now - (air.last || now)) / 1000)
+  const dt = Math.min(0.05, (now - (air.last || now)) / 1000) || 0.016
   air.last = now
   const ctx = air.ctx
-
-  // Ease intensity + colour so on/off and mode changes glide.
-  air.intensity += (air.target - air.intensity) * Math.min(1, dt * 2.2)
-  for (let k = 0; k < 3; k++) air.color[k] += (air.colorTarget[k] - air.color[k]) * Math.min(1, dt * 3)
-  const [r, g, b] = air.color.map(Math.round)
-
+  air.inten += (air.target - air.inten) * Math.min(1, dt * 2.4)
+  const [r, g, b] = RGB
+  const m = air.mult
   ctx.clearRect(0, 0, air.w, air.h)
 
-  // Soft cool "breath" right under the unit.
-  if (air.intensity > 0.01) {
-    const grd = ctx.createRadialGradient(air.w / 2, 78, 4, air.w / 2, 100, 150)
-    grd.addColorStop(0, `rgba(${r},${g},${b},${0.22 * air.intensity})`)
-    grd.addColorStop(1, `rgba(${r},${g},${b},0)`)
-    ctx.fillStyle = grd
-    ctx.fillRect(0, 70, air.w, air.h - 70)
+  if (air.inten > 0.01) {
+    const gr = ctx.createRadialGradient(air.w / 2, Y0, 2, air.w / 2, Y0 + 20, 105)
+    gr.addColorStop(0, `rgba(${r},${g},${b},${0.18 * air.inten})`)
+    gr.addColorStop(1, `rgba(${r},${g},${b},0)`)
+    ctx.fillStyle = gr
+    ctx.fillRect(0, Y0 - 2, air.w, air.h)
   }
 
-  // Emit.
-  const swing = Math.sin(now / 1800)
-  air.emitAcc += dt * 70 * air.intensity * air.speed
-  while (air.emitAcc >= 1) {
-    airSpawn(swing)
-    air.emitAcc -= 1
+  air.acc += dt * 55 * air.inten * m
+  while (air.acc >= 1) {
+    airSpawn(now)
+    air.acc--
   }
 
-  // Update + draw streaks.
   ctx.lineCap = "round"
-  const sp = 0.6 + air.speed * 0.55
+  const sp = 0.55 + m * 0.6
   for (let i = air.parts.length - 1; i >= 0; i--) {
     const p = air.parts[i]
     p.life += dt
-    if (p.life >= p.max || p.y > air.h + 10) {
+    if (p.life > p.max || p.y > air.h) {
       air.parts.splice(i, 1)
       continue
     }
     p.px = p.x
     p.py = p.y
-    const wobble = Math.sin(p.phase + p.life * 3) * 8
-    p.x += (p.vx + wobble) * dt * sp
+    p.x += (p.vx + Math.sin(p.ph + p.life * 3.2) * 6) * dt * sp
     p.y += p.vy * dt * sp
-    p.vx *= 1 + dt * 0.35 // fan out as it travels
-    p.vy *= 1 - dt * 0.25 // and slow down
-
+    p.vx *= 1 + dt * 0.4
+    p.vy *= 1 - dt * 0.2
     const t = p.life / p.max
     const fade = t < 0.15 ? t / 0.15 : 1 - (t - 0.15) / 0.85
-    const a = Math.max(0, fade) * 0.75 * Math.min(1, air.intensity * 1.4)
-    if (a <= 0.01) continue
-
-    // A tail a few frames long reads as moving air, not dots.
-    const tx = p.x - (p.x - p.px) * 4
-    const ty = p.y - (p.y - p.py) * 4
-    const grad = ctx.createLinearGradient(tx, ty, p.x, p.y)
-    grad.addColorStop(0, `rgba(${r},${g},${b},0)`)
-    grad.addColorStop(1, `rgba(${r},${g},${b},${a})`)
-    ctx.strokeStyle = grad
+    const depth = 1 - Math.max(0, (p.y - 118) / 62) * 0.6 // softer behind the number
+    const a = Math.max(0, fade) * 0.75 * depth * Math.min(1, air.inten * 1.4)
+    if (a < 0.01) continue
+    const vx = (p.x - p.px) / dt
+    const vy = (p.y - p.py) / dt
+    const L = 0.2
+    const gl = ctx.createLinearGradient(p.x - vx * L, p.y - vy * L, p.x, p.y)
+    gl.addColorStop(0, `rgba(${r},${g},${b},0)`)
+    gl.addColorStop(1, `rgba(${r},${g},${b},${a})`)
+    ctx.strokeStyle = gl
     ctx.lineWidth = p.w
     ctx.beginPath()
-    ctx.moveTo(tx, ty)
+    ctx.moveTo(p.x - vx * L, p.y - vy * L)
     ctx.lineTo(p.x, p.y)
     ctx.stroke()
   }
 
-  const idle = air.intensity < 0.005 && air.parts.length === 0
-  air.raf = idle && air.target === 0 ? 0 : requestAnimationFrame(airFrame)
-  if (!air.raf) ctx.clearRect(0, 0, air.w, air.h)
+  const idle = air.target === 0 && air.inten < 0.005 && air.parts.length === 0
+  if (idle || !state.visible) {
+    air.raf = 0
+    if (idle) ctx.clearRect(0, 0, air.w, air.h)
+    return
+  }
+  air.raf = requestAnimationFrame(airFrame)
 }
 
 function airKick() {
@@ -172,93 +140,57 @@ function airKick() {
   }
 }
 
-function airSet(on, mode, fan) {
+function airSet(on, fan) {
   air.target = on ? 1 : 0
-  air.speed = FAN_MULT[fan] || 1
-  air.colorTarget = (MODE_RGB[mode] || MODE_RGB.cool).slice()
+  air.mult = MULT[fan] || 1
   airKick()
 }
 
-function airPause() {
-  if (air.raf) cancelAnimationFrame(air.raf)
-  air.raf = 0
-}
-
 // ===========================================================================
-// Segmented controls (Mode, Fan)
+// Segmented controls
 // ===========================================================================
 
-function buildSeg(el, items, onPick) {
-  el.innerHTML = '<span class="seg-lens"></span>'
-  for (const it of items) {
-    const b = document.createElement("button")
-    b.dataset.value = it.value
-    b.innerHTML = `${it.icon}<span>${it.label}</span>`
-    b.addEventListener("click", () => onPick(it.value))
-    el.appendChild(b)
+function setSeg(el, index, animate) {
+  const prev = Number(el.style.getPropertyValue("--i"))
+  el.style.setProperty("--i", index)
+  ;[...el.querySelectorAll("button")].forEach((b, k) => b.classList.toggle("on", k === index))
+  if (animate && prev !== index) {
+    const lens = el.querySelector(".lens")
+    lens.classList.remove("stretch")
+    void lens.offsetWidth
+    lens.classList.add("stretch")
   }
-}
-
-function setSeg(el, value, disabled) {
-  const buttons = [...el.querySelectorAll("button")]
-  const i = Math.max(
-    0,
-    buttons.findIndex((b) => b.dataset.value === value)
-  )
-  el.style.setProperty("--i", i)
-  buttons.forEach((b, k) => b.classList.toggle("on", k === i))
-  el.classList.toggle("disabled", !!disabled)
 }
 
 // ===========================================================================
 // Rendering
 // ===========================================================================
 
+function setReel(v) {
+  $("strip").style.setProperty("--pos", v - MIN_T)
+  $("slider").style.setProperty("--p", (v - MIN_T) / (MAX_T - MIN_T))
+}
+
 function render() {
   const ac = state.ac
   const on = !!(ac && ac.power)
-  const mode = ac ? ac.mode : "cool"
-  const fan = ac ? ac.fan : "medium"
-  const scene = $("scene")
+  const fan = ac ? ac.fan : "low"
+  const t = ac ? ac.temperature : 24
 
-  $("remote").classList.toggle("off", !on)
-  scene.classList.toggle("running", on)
-  scene.classList.toggle("off", !on)
-  scene.classList.toggle("heat", mode === "heat")
-  scene.classList.toggle("dry", mode === "dry")
-  airSet(on, mode, fan)
+  $("remote").classList.toggle("on", on)
+  airSet(on, fan)
 
-  $("power").classList.toggle("on", on)
+  $("disp").textContent = ac ? `${t}°` : "--°"
+  setReel(state.dragging ? state.dragPos : t)
+  if (!state.dragging) $("range").value = t
 
-  // Temperature, with a small roll when it changes.
-  const t = ac ? ac.temperature : null
-  const num = $("temp")
-  if (t !== null && state.lastTemp !== null && t !== state.lastTemp) {
-    num.classList.remove("up", "down")
-    void num.offsetWidth
-    num.classList.add(t > state.lastTemp ? "up" : "down")
-  }
-  state.lastTemp = t
-  num.textContent = t ?? "--"
-  $("unit-temp").textContent = t ?? "--"
-  $("unit-mode").innerHTML = ICON[mode] || ICON.cool
-  $("temp-sub").textContent = on ? VERB[mode] : "Off"
-
-  const val = t ?? 24
-  $("range").value = val
-  $("slider").style.setProperty("--p", `${((val - MIN_T) / (MAX_T - MIN_T)) * 100}%`)
-  $("range").disabled = !on
-  $("minus").style.opacity = on ? 1 : 0.4
-  $("plus").style.opacity = on ? 1 : 0.4
-
-  setSeg($("mode-seg"), mode, !on)
-  setSeg($("fan-seg"), fan, !on)
+  setSeg($("fan"), Math.max(0, FANS.indexOf(fan)), false)
 
   const dot = $("dot")
   dot.classList.toggle("online", state.online === true)
   dot.classList.toggle("offline", state.online === false)
-  $("state-text").textContent =
-    state.online === false ? "Pi offline" : !ac ? "Connecting…" : on ? `${VERB[mode]} · ${FAN_LABEL[fan]} fan` : "Off"
+  $("st").textContent =
+    state.online === false ? "Pi offline" : !ac ? "Connecting…" : on ? `Cooling · ${FAN_LABEL[fan]} fan` : "Off"
 
   renderTimers()
   updateTray()
@@ -268,42 +200,42 @@ function minutesLeft(iso) {
   return Math.max(0, Math.round((new Date(iso).getTime() - Date.now()) / 60000))
 }
 function fmtLeft(min) {
-  if (min < 60) return `${min} min`
+  if (min < 60) return `${min}m`
   const h = Math.floor(min / 60)
   const m = min % 60
-  return m ? `${h}h ${m}m` : `${h}h`
+  return m ? `${h}h ${String(m).padStart(2, "0")}m` : `${h}h`
 }
 
 let timerKey = ""
 function renderTimers() {
-  const key = state.timers.map((t) => `${t.id}:${minutesLeft(t.fires_at)}`).join("|")
+  if (!state.timers.length) state.presetIndex = 0
+  else if (state.presetIndex === 0) {
+    // A timer set elsewhere (phone, web): highlight the nearest preset.
+    const left = minutesLeft(state.timers[0].fires_at)
+    let best = 1
+    for (let k = 1; k < PRESETS.length; k++) if (Math.abs(PRESETS[k] - left) < Math.abs(PRESETS[best] - left)) best = k
+    state.presetIndex = best
+  }
+  setSeg($("presets"), state.presetIndex, false)
+  const key = state.timers.map((t) => `${t.id}:${t.action}:${minutesLeft(t.fires_at)}:${!!t._pending}`).join("|")
   if (key === timerKey) return
   timerKey = key
-  const list = $("timer-list")
-  list.innerHTML = ""
-  if (!state.timers.length) {
-    list.innerHTML = '<div class="timer-empty">No active timers</div>'
-    return
-  }
+  const box = $("chips")
+  box.innerHTML = ""
   for (const t of state.timers) {
     const off = t.action !== "turn_on"
     const row = document.createElement("div")
-    row.className = "timer-row"
-    row.innerHTML = `<span class="t-dot" style="background:${off ? "#ff6a5f" : "#3ee08f"}"></span>
-      <span class="t-label">${off ? "Turns off in" : "Turns on in"}</span>
-      <span class="t-left">${fmtLeft(minutesLeft(t.fires_at))}</span>
-      <button class="t-x" aria-label="Cancel timer">✕</button>`
-    row.querySelector("button").addEventListener("click", async () => {
-      row.style.opacity = "0.4"
-      const r = await window.ac.cancelTimer(t.id)
-      if (!r.ok) return toast(r.error)
-      loadTimers()
-    })
-    list.appendChild(row)
+    row.className = `chip${off ? "" : " on-timer"}${t._pending ? " pending" : ""}`
+    row.innerHTML = `<i></i><span>${off ? "Turns off in" : "Turns on in"}</span><b>${fmtLeft(
+      minutesLeft(t.fires_at)
+    )}</b><button>Cancel</button>`
+    row.querySelector("button").addEventListener("click", () => cancelTimer(t))
+    box.appendChild(row)
   }
+  reportHeight()
 }
 
-// Notification-area icon: the temperature, with a coloured bar while on.
+// Notification-area icon: the temperature, with a bar while on.
 function updateTray() {
   const c = $("tray-canvas")
   const ctx = c.getContext("2d")
@@ -315,12 +247,12 @@ function updateTray() {
   ctx.textAlign = "center"
   ctx.textBaseline = "middle"
   ctx.fillText(ac ? String(ac.temperature) : "AC", 16, 14)
-  ctx.fillStyle = on ? (ac.mode === "heat" ? "#ffb06a" : "#4b9dff") : "#5a6170"
+  ctx.fillStyle = on ? "#4b9dff" : "#5a6170"
   ctx.fillRect(5, 27, 22, 4)
   const tooltip = !ac
     ? "AC Controller"
     : on
-      ? `AC Controller: ${ac.temperature}° ${MODE_LABEL[ac.mode]}, ${FAN_LABEL[ac.fan]} fan`
+      ? `AC Controller: ${ac.temperature}°, ${FAN_LABEL[ac.fan]} fan`
       : "AC Controller: Off"
   window.ac.updateTray({ icon: c.toDataURL("image/png"), tooltip })
 }
@@ -334,12 +266,24 @@ function toast(msg) {
   toastTimer = setTimeout(() => el.classList.remove("show"), 3500)
 }
 
+// The window is sized to the panel.
+let lastH = 0
+function reportHeight() {
+  requestAnimationFrame(() => {
+    const h = $("panel").offsetHeight // layout height, ignores the open animation's transform
+    if (h && h !== lastH) {
+      lastH = h
+      window.ac.setHeight(h)
+    }
+  })
+}
+
 // ===========================================================================
 // Data
 // ===========================================================================
 
 async function loadStatus() {
-  if (!state.signedIn || state.pending > 0) return
+  if (!state.signedIn || state.pending > 0 || state.dragging) return
   const r = await window.ac.status()
   if (r.ok) {
     state.online = true
@@ -355,7 +299,10 @@ async function loadStatus() {
 async function loadTimers() {
   if (!state.signedIn) return
   const r = await window.ac.timers()
-  if (r.ok) state.timers = r.data || []
+  if (r.ok) {
+    const local = state.timers.filter((t) => t._pending)
+    state.timers = [...(r.data || []), ...local]
+  }
   timerKey = ""
   renderTimers()
 }
@@ -370,7 +317,7 @@ async function send(change, call) {
   const r = await call()
   state.pending--
   if (r.ok && r.data && r.data.state) {
-    if (state.pending === 0) state.ac = r.data.state
+    if (state.pending === 0 && !state.dragging) state.ac = r.data.state
   } else if (!r.ok) {
     state.ac = before
     toast(r.error || "Command failed")
@@ -379,13 +326,57 @@ async function send(change, call) {
 }
 
 let tempTimer
-function setTemperature(t) {
-  t = Math.max(MIN_T, Math.min(MAX_T, t))
-  if (!state.ac || !state.ac.power || t === state.ac.temperature) return
-  state.ac = { ...state.ac, temperature: t }
-  render()
+function setTemperature(t, debounce = 400) {
+  t = Math.max(MIN_T, Math.min(MAX_T, Math.round(t)))
+  if (!state.ac || !state.ac.power) return
+  if (t !== state.ac.temperature) {
+    state.ac = { ...state.ac, temperature: t }
+    render()
+  }
   clearTimeout(tempTimer)
-  tempTimer = setTimeout(() => send({ temperature: t }, () => window.ac.temperature(t)), 450)
+  tempTimer = setTimeout(() => send({ temperature: t }, () => window.ac.temperature(t)), debounce)
+}
+
+// Timers: show immediately, confirm in the background.
+async function createTimer(minutes, index) {
+  const action = state.timerAction
+  // One timer at a time: replace any existing ones.
+  const old = state.timers.filter((t) => !t._pending)
+  const temp = {
+    id: `local-${Date.now()}`,
+    action,
+    fires_at: new Date(Date.now() + minutes * 60_000).toISOString(),
+    _pending: true,
+  }
+  state.presetIndex = index
+  state.timers = [temp]
+  timerKey = ""
+  renderTimers()
+  await Promise.all(old.map((t) => window.ac.cancelTimer(t.id)))
+  const r = await window.ac.createTimer(action, minutes)
+  state.timers = state.timers.filter((t) => t !== temp)
+  if (!r.ok) toast(r.error || "Could not set timer")
+  loadTimers()
+}
+
+async function cancelTimer(t) {
+  state.timers = state.timers.filter((x) => x !== t)
+  timerKey = ""
+  renderTimers()
+  if (t._pending) return
+  const r = await window.ac.cancelTimer(t.id)
+  if (!r.ok) toast(r.error || "Could not cancel timer")
+  loadTimers()
+}
+
+async function cancelAllTimers() {
+  const all = state.timers
+  state.timers = []
+  timerKey = ""
+  renderTimers()
+  const rs = await Promise.all(all.filter((t) => !t._pending).map((t) => window.ac.cancelTimer(t.id)))
+  if (rs.some((r) => !r.ok)) toast("Could not cancel timer")
+  loadTimers()
 }
 
 // ===========================================================================
@@ -397,8 +388,9 @@ function showLogin() {
   state.ac = null
   $("remote").classList.add("hidden")
   $("login").classList.remove("hidden")
-  airSet(false, "cool", "medium")
+  airSet(false, "low")
   updateTray()
+  reportHeight()
 }
 
 async function showRemote() {
@@ -406,30 +398,14 @@ async function showRemote() {
   $("login").classList.add("hidden")
   $("remote").classList.remove("hidden")
   airResize()
-  const auto = await window.ac.autostart()
-  $("autostart").checked = !!(auto.ok && auto.data)
   render()
+  reportHeight()
   loadStatus()
   loadTimers()
 }
 
 function wire() {
-  buildSeg(
-    $("mode-seg"),
-    MODES.map((m) => ({ value: m, label: MODE_LABEL[m], icon: ICON[m] })),
-    (m) => state.ac && state.ac.power && m !== state.ac.mode && send({ mode: m }, () => window.ac.mode(m))
-  )
-  buildSeg(
-    $("fan-seg"),
-    [
-      { value: "eco", label: "Eco", icon: ICON.eco },
-      { value: "low", label: "Low", icon: ICON.fan(13) },
-      { value: "medium", label: "Medium", icon: ICON.fan(16) },
-      { value: "high", label: "High", icon: ICON.fan(19) },
-    ],
-    (f) => state.ac && state.ac.power && f !== state.ac.fan && send({ fan: f }, () => window.ac.fan(f))
-  )
-  $("ticks").innerHTML = Array.from({ length: MAX_T - MIN_T + 1 }, () => "<i></i>").join("")
+  $("strip").innerHTML = Array.from({ length: MAX_T - MIN_T + 1 }, (_, k) => `<span>${MIN_T + k}</span>`).join("")
 
   $("login-form").addEventListener("submit", async (e) => {
     e.preventDefault()
@@ -440,15 +416,16 @@ function wire() {
     btn.disabled = false
     if (!r.ok) {
       $("login-error").textContent = r.error
+      reportHeight()
       return
     }
     $("password").value = ""
     showRemote()
   })
 
-  $("power").addEventListener("click", () => {
+  $("pw").addEventListener("click", () => {
     if (!state.ac) return
-    const p = $("power")
+    const p = $("pw")
     p.classList.remove("pulse")
     void p.offsetWidth
     p.classList.add("pulse")
@@ -458,10 +435,7 @@ function wire() {
 
   $("minus").addEventListener("click", () => state.ac && setTemperature(state.ac.temperature - 1))
   $("plus").addEventListener("click", () => state.ac && setTemperature(state.ac.temperature + 1))
-  $("range").addEventListener("input", (e) => setTemperature(Number(e.target.value)))
-
-  // Mouse wheel over the temperature changes it too.
-  $("scene").parentElement.querySelector(".temp-row").addEventListener(
+  $("temp").addEventListener(
     "wheel",
     (e) => {
       if (!state.ac) return
@@ -471,24 +445,65 @@ function wire() {
     { passive: false }
   )
 
-  $("timer-action").addEventListener("click", (e) => {
-    const b = e.target.closest("button")
-    if (!b) return
-    state.timerAction = b.dataset.action
-    for (const x of $("timer-action").querySelectorAll("button")) x.classList.toggle("on", x === b)
+  // Slider: moves continuously under the mouse, the number reel follows,
+  // and both settle on the nearest degree when released.
+  const rg = $("range")
+  const sl = $("slider")
+  const strip = $("strip")
+  rg.addEventListener("pointerdown", () => {
+    if (!state.ac || !state.ac.power) return
+    state.dragging = true
+    state.dragPos = Number(rg.value)
+    sl.classList.add("drag")
+    strip.classList.add("drag")
   })
-  $("presets").addEventListener("click", async (e) => {
-    const b = e.target.closest("button")
-    if (!b) return
-    b.disabled = true
-    const r = await window.ac.createTimer(state.timerAction, Number(b.dataset.min))
-    b.disabled = false
-    if (!r.ok) return toast(r.error)
-    loadTimers()
+  rg.addEventListener("input", () => {
+    if (!state.ac || !state.ac.power) return
+    state.dragPos = Number(rg.value)
+    const t = Math.round(state.dragPos)
+    if (t !== state.ac.temperature) state.ac = { ...state.ac, temperature: t }
+    render()
+    if (!state.dragging) setTemperature(t) // keyboard
   })
+  const release = () => {
+    if (!state.dragging) return
+    state.dragging = false
+    sl.classList.remove("drag")
+    strip.classList.remove("drag")
+    setTemperature(state.ac.temperature, 150)
+    render()
+  }
+  window.addEventListener("pointerup", release)
+  rg.addEventListener("change", release)
 
-  $("open-web").addEventListener("click", () => window.ac.openWeb())
-  $("autostart").addEventListener("change", (e) => window.ac.setAutostart(e.target.checked))
+  ;[...$("fan").querySelectorAll("button")].forEach((b, i) =>
+    b.addEventListener("click", () => {
+      if (!state.ac || !state.ac.power || b.dataset.v === state.ac.fan) return
+      setSeg($("fan"), i, true)
+      send({ fan: b.dataset.v }, () => window.ac.fan(b.dataset.v))
+    })
+  )
+
+  $("tk").addEventListener("click", () => {
+    state.timerAction = state.timerAction === "turn_off" ? "turn_on" : "turn_off"
+    const l = $("tk-lab")
+    l.textContent = state.timerAction === "turn_off" ? "Off in" : "On in"
+    l.classList.remove("flip")
+    void l.offsetWidth
+    l.classList.add("flip")
+  })
+  ;[...$("presets").querySelectorAll("button")].forEach((b, i) =>
+    b.addEventListener("click", () => {
+      setSeg($("presets"), i, true)
+      if (PRESETS[i] === 0) {
+        state.presetIndex = 0
+        if (state.timers.length) cancelAllTimers()
+      } else {
+        createTimer(PRESETS[i], i)
+      }
+    })
+  )
+
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") window.ac.hide()
   })
@@ -499,6 +514,7 @@ function wire() {
     panel.classList.remove("shown")
     void panel.offsetWidth
     panel.classList.add("shown")
+    airResize()
     airKick()
     loadStatus()
     loadTimers()
@@ -506,9 +522,10 @@ function wire() {
   window.ac.on("panel:hidden", () => {
     state.visible = false
     $("panel").classList.remove("shown")
-    airPause()
   })
   window.ac.on("auth:changed", () => showLogin())
+
+  new ResizeObserver(reportHeight).observe($("panel"))
 }
 
 // Poll every 10 s while open, every 60 s in the background (tray icon).
@@ -523,7 +540,6 @@ function startPolling() {
 }
 
 async function init() {
-  // Never leave the panel invisible if the first "shown" event was missed.
   $("panel").classList.add("shown")
   airInit()
   wire()

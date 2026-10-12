@@ -12,8 +12,9 @@ const path = require("path")
 const fs = require("fs")
 const cfg = require("./config")
 
-const WIDTH = 360
-const HEIGHT = 640
+const WIDTH = 304
+// The panel's height follows its content (the renderer reports it).
+let HEIGHT = 420
 
 let tray = null
 let win = null
@@ -285,6 +286,14 @@ ipcMain.on("tray:update", (_event, payload) => {
   } catch (err) {
     console.error("tray:update", err)
   }
+})
+
+ipcMain.on("panel:size", (_event, h) => {
+  const next = Math.max(200, Math.min(700, Math.round(Number(h) || 0)))
+  if (!win || !next || next === HEIGHT) return
+  HEIGHT = next
+  win.setSize(WIDTH, HEIGHT, false)
+  if (win.isVisible()) positionPanel()
 })
 
 // ---------------------------------------------------------------------------
