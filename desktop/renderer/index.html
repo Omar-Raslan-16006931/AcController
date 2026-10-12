@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; script-src 'self'"
+    />
+    <title>AC Controller</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="panel" id="panel">
+      <!-- Sign in -->
+      <section id="login" class="login hidden">
+        <svg class="login-mark" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2v20M3.3 7l17.4 10M20.7 7 3.3 17M9.5 3.8 12 6l2.5-2.2M9.5 20.2 12 18l2.5 2.2" />
+        </svg>
+        <h1>AC Controller</h1>
+        <p class="muted">Sign in with the same account as the app.</p>
+        <form id="login-form">
+          <input id="email" type="email" placeholder="Email" autocomplete="username" required />
+          <input id="password" type="password" placeholder="Password" autocomplete="current-password" required />
+          <button type="submit" class="primary" id="login-btn">Sign in</button>
+          <p class="error" id="login-error"></p>
+        </form>
+      </section>
+
+      <!-- Remote -->
+      <section id="remote" class="remote hidden">
+        <header class="top">
+          <div>
+            <div class="room">Bedroom AC</div>
+            <div class="state"><span class="dot" id="dot"></span><span id="state-text">Connecting…</span></div>
+          </div>
+          <button class="power" id="power" aria-label="Power">
+            <svg viewBox="0 0 24 24"><path d="M12 3v9M6.6 6.6a8 8 0 1 0 10.8 0" /></svg>
+          </button>
+        </header>
+
+        <!-- The AC unit, blowing air while it runs -->
+        <div class="scene" id="scene">
+          <div class="unit">
+            <div class="unit-display"><span id="unit-temp">--</span><i class="unit-led"></i></div>
+            <div class="unit-vent"></div>
+          </div>
+          <svg class="wind" viewBox="0 0 300 120" preserveAspectRatio="none" aria-hidden="true">
+            <g id="wind-lines"></g>
+          </svg>
+          <div class="particles" id="particles"></div>
+        </div>
+
+        <div class="readout">
+          <div class="temp"><span id="temp">--</span><span class="unit-c">°C</span></div>
+          <div class="mode-pill" id="mode-pill">Cool</div>
+        </div>
+
+        <div class="slider-row">
+          <button class="round" id="minus" aria-label="Cooler">−</button>
+          <div class="slider">
+            <input type="range" id="range" min="20" max="28" step="1" value="24" aria-label="Temperature" />
+            <div class="ticks" id="ticks"></div>
+          </div>
+          <button class="round" id="plus" aria-label="Warmer">+</button>
+        </div>
+        <div class="range-labels"><span>20°</span><span>28°</span></div>
+
+        <div class="tiles">
+          <button class="tile" id="tile-mode">
+            <span class="tile-icon" id="mode-icon"></span>
+            <span class="tile-k">Mode</span>
+            <span class="tile-v" id="mode-v">Cool</span>
+          </button>
+          <button class="tile" id="tile-fan">
+            <span class="tile-icon" id="fan-icon"></span>
+            <span class="tile-k">Fan speed</span>
+            <span class="tile-v" id="fan-v">Medium</span>
+          </button>
+          <button class="tile" id="tile-timer">
+            <span class="tile-icon">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 2M9.5 2.5h5" /></svg>
+            </span>
+            <span class="tile-k">Timer</span>
+            <span class="tile-v" id="timer-v">Off</span>
+          </button>
+          <button class="tile" id="tile-web">
+            <span class="tile-icon">
+              <svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3" /><path d="M9 7h6M9 11h6M9 15h3" /></svg>
+            </span>
+            <span class="tile-k">Full app</span>
+            <span class="tile-v">Open</span>
+          </button>
+        </div>
+
+        <!-- Timer drawer -->
+        <div class="drawer" id="drawer">
+          <div class="drawer-inner">
+            <div class="seg" id="timer-action">
+              <button data-action="turn_off" class="on">Turn off after</button>
+              <button data-action="turn_on">Turn on after</button>
+            </div>
+            <div class="presets" id="presets">
+              <button data-min="15">15 min</button>
+              <button data-min="30">30 min</button>
+              <button data-min="60">1 h</button>
+              <button data-min="120">2 h</button>
+              <button data-min="240">4 h</button>
+            </div>
+            <div class="timer-list" id="timer-list"></div>
+          </div>
+        </div>
+
+        <footer class="foot">
+          <span id="foot-text" class="muted"></span>
+          <label class="auto"><input type="checkbox" id="autostart" /> Start with Windows</label>
+        </footer>
+      </section>
+    </div>
+
+    <canvas id="tray-canvas" width="32" height="32" hidden></canvas>
+    <script src="app.js"></script>
+  </body>
+</html>

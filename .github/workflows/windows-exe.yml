@@ -1,0 +1,53 @@
+# Builds the Windows tray app (desktop/) into:
+#   AC-Controller-Setup.exe     installs it, starts with Windows
+#   AC-Controller-Portable.exe  single file, no install
+#
+# Run it: GitHub > Actions > "Windows EXE" > Run workflow, then download
+# the "AcController-windows" artifact.
+name: Windows EXE
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "desktop/**"
+      - ".github/workflows/windows-exe.yml"
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Icons (same generator as the web app)
+        run: |
+          node frontend/scripts/make-icons.mjs
+          mkdir -p desktop/build desktop/assets
+          cp frontend/public/icons/icon-512.png desktop/build/icon.png
+          cp frontend/public/icons/icon-192.png desktop/assets/tray.png
+
+      - name: Install
+        working-directory: desktop
+        run: npm install --no-audit --no-fund
+
+      - name: Build exe
+        working-directory: desktop
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: npm run dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AcController-windows
+          path: |
+            desktop/dist/AC-Controller-Setup.exe
+            desktop/dist/AC-Controller-Portable.exe
+          retention-days: 30
