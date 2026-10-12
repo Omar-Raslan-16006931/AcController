@@ -1,5 +1,5 @@
 # Builds the Windows tray app (desktop/) and publishes it as a GitHub
-# release (v1.0.<run number>). The installed app checks those
+# release (v1.1.0, v1.1.1, ...; see the Version step). The installed app checks those
 # releases and updates itself silently, so you only install once:
 #   AC-Controller-Setup.exe     installs it, starts with Windows, auto-updates
 #   AC-Controller-Portable.exe  single file, no install (no auto-update)
@@ -38,9 +38,21 @@ jobs:
           cp frontend/public/icons/icon-512.png desktop/build/icon.png
           cp frontend/public/icons/icon-192.png desktop/assets/tray.png
 
-      - name: Version = 1.0.<run number> (each build is newer than the last)
+      # Major.minor comes from desktop/package.json ("1.1.0" -> 1.1); the patch
+      # number counts the releases already published for that line, so the
+      # first build is 1.1.0, then 1.1.1, 1.1.2, ... Bump the minor in
+      # package.json to start a new line (e.g. 1.2.0).
+      - name: Version
         working-directory: desktop
-        run: npm version "1.0.${{ github.run_number }}" --no-git-tag-version --allow-same-version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          base=$(node -p "require('./package.json').version.split('.').slice(0,2).join('.')")
+          count=$(gh release list --repo "${{ github.repository }}" --limit 1000 --json tagName \
+            --jq "[.[] | select(.tagName | startswith(\"v$base.\"))] | length")
+          version="$base.${count:-0}"
+          echo "Building $version"
+          npm version "$version" --no-git-tag-version --allow-same-version
 
       - name: Install
         working-directory: desktop
