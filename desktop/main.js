@@ -194,7 +194,7 @@ async function api(method, pathName, body, retry = true) {
 }
 
 // Supabase REST (timers table), same row-level security as the web app.
-async function rest(method, pathAndQuery, body) {
+async function rest(method, pathAndQuery, body, returnRows = false) {
   const token = await accessToken()
   const res = await fetch(`${cfg.SUPABASE_URL}/rest/v1/${pathAndQuery}`, {
     method,
@@ -202,7 +202,7 @@ async function rest(method, pathAndQuery, body) {
       apikey: cfg.SUPABASE_ANON_KEY,
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
-      Prefer: "return=minimal",
+      Prefer: returnRows ? "return=representation" : "return=minimal",
     },
     body: body ? JSON.stringify(body) : undefined,
   })
@@ -210,7 +210,7 @@ async function rest(method, pathAndQuery, body) {
     const text = await res.text().catch(() => "")
     throw new Error(text || `Request failed (${res.status})`)
   }
-  if (method === "GET") return res.json()
+  if (method === "GET" || returnRows) return res.json()
   return null
 }
 
@@ -256,19 +256,30 @@ ipcMain.handle(
 )
 ipcMain.handle(
   "timers:create",
-  wrap((action, minutes) =>
-    rest("POST", "timers", {
-      user_id: session.user_id,
-      action,
-      fires_at: new Date(Date.now() + minutes * 60_000).toISOString(),
-      label: "",
-      status: "pending",
-    })
-  )
+  wrap(async (action, minutes) => {
+    const rows = await rest(
+      "POST",
+      "timers?select=id,action,fires_at",
+      {
+        user_id: session.user_id,
+        action,
+        fires_at: new Date(Date.now() + minutes * 60_000).toISOString(),
+        label: "",
+        status: "pending",
+      },
+      true
+    )
+    return Array.isArray(rows) ? rows[0] : rows
+  })
 )
 ipcMain.handle(
   "timers:cancel",
   wrap((id) => rest("PATCH", `timers?id=eq.${encodeURIComponent(id)}`, { status: "cancelled" }))
+)
+// Row-level security limits this to the signed-in user's timers.
+ipcMain.handle(
+  "timers:cancelAll",
+  wrap(() => rest("PATCH", "timers?status=eq.pending", { status: "cancelled" }))
 )
 
 ipcMain.handle("app:autostart", wrap(() => autoStartEnabled()))

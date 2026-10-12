@@ -680,6 +680,26 @@ svg {
 .chip.pending {
   opacity: 0.6;
 }
+.chip {
+  height: 22px;
+}
+.chip.idle {
+  color: rgba(255, 255, 255, 0.3);
+  animation: none;
+}
+.chip em {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--sub);
+}
+.chip button {
+  padding: 3px 8px;
+  margin-right: -8px;
+  border-radius: 7px;
+}
+.chip button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
 
 /* ---------- settings ---------- */
 .gear {

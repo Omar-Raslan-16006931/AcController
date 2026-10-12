@@ -186,7 +186,7 @@ function render() {
   setReel(state.dragging ? state.dragPos : t)
   if (!state.dragging) $("range").value = t
 
-  setSeg($("fan"), Math.max(0, FANS.indexOf(fan)), false)
+  setSeg($("fan-seg"), Math.max(0, FANS.indexOf(fan)), false)
 
   const dot = $("dot")
   dot.classList.toggle("online", state.online === true)
@@ -222,21 +222,25 @@ function renderTimers() {
   const key = state.timers.map((t) => `${t.id}:${t.action}:${minutesLeft(t.fires_at)}:${!!t._pending}`).join("|")
   if (key === timerKey) return
   timerKey = key
+  // Always exactly one line here, so the panel never changes height.
   const box = $("chips")
+  const t = state.timers[0]
   box.innerHTML = ""
-  for (const t of state.timers) {
+  const row = document.createElement("div")
+  if (!t) {
+    row.className = "chip idle"
+    row.innerHTML = "<span>No timer</span>"
+  } else {
     const off = t.action !== "turn_on"
-    const row = document.createElement("div")
+    const more = state.timers.length > 1 ? ` <em>+${state.timers.length - 1}</em>` : ""
     row.className = `chip${off ? "" : " on-timer"}${t._pending ? " pending" : ""}`
     row.innerHTML = `<i></i><span>${off ? "Turns off in" : "Turns on in"}</span><b>${fmtLeft(
       minutesLeft(t.fires_at)
-    )}</b><button type="button">Cancel</button>`
-    // Look the timer up by id at click time (the list is refreshed in the
-    // background, so a captured object can be stale).
-    row.querySelector("button").dataset.id = t.id
-    box.appendChild(row)
+    )}</b>${more}<button type="button">Cancel</button>`
+    // Resolved by id at click time (the list refreshes in the background).
+    row.querySelector("button").dataset.cancel = "1"
   }
-  reportHeight()
+  box.appendChild(row)
 }
 
 // Notification-area icon: the temperature, with a bar while on.
@@ -322,6 +326,7 @@ async function loadStatus() {
 async function loadTimers() {
   if (!state.signedIn) return
   const r = await window.ac.timers()
+  if (cancelling > 0) return // a cancel is in flight; don't bring the row back
   if (r.ok) {
     const local = state.timers.filter((t) => t._pending)
     state.timers = [...(r.data || []), ...local]
@@ -384,27 +389,30 @@ async function createTimer(minutes, index) {
   const r = await window.ac.createTimer(action, minutes)
   state.timers = state.timers.filter((t) => t !== temp)
   if (!r.ok) toast(r.error || "Could not set timer")
+  else if (cancelledPending.has(temp.id) && r.data && r.data.id) {
+    // Cancel was pressed while this was still being saved.
+    cancelledPending.delete(temp.id)
+    await window.ac.cancelTimer(r.data.id)
+  }
   loadTimers()
 }
 
-async function cancelTimer(id) {
-  const t = state.timers.find((x) => String(x.id) === String(id))
-  state.timers = state.timers.filter((x) => String(x.id) !== String(id))
-  timerKey = ""
-  renderTimers()
-  if (!t || t._pending) return
-  const r = await window.ac.cancelTimer(t.id)
-  if (!r.ok) toast(r.error || "Could not cancel timer")
-  loadTimers()
-}
+// Timers being created right now that were cancelled before the server
+// answered: cancel them as soon as their real id comes back.
+const cancelledPending = new Set()
+let cancelling = 0
 
 async function cancelAllTimers() {
   const all = state.timers
   state.timers = []
   timerKey = ""
   renderTimers()
-  const rs = await Promise.all(all.filter((t) => !t._pending).map((t) => window.ac.cancelTimer(t.id)))
-  if (rs.some((r) => !r.ok)) toast("Could not cancel timer")
+  for (const t of all) if (t._pending) cancelledPending.add(t.id)
+  cancelling++
+  // Server side: cancel everything pending, including rows this list hasn't seen yet.
+  const r = await window.ac.cancelAllTimers()
+  cancelling--
+  if (!r.ok) toast(r.error || "Could not cancel timer")
   loadTimers()
 }
 
@@ -506,19 +514,22 @@ function wire() {
   rg.addEventListener("change", release)
 
   // Delegated handlers: one listener per control, resolved at click time.
-  $("fan").addEventListener("click", (e) => {
+  $("fan-seg").addEventListener("click", (e) => {
     const b = e.target.closest("button[data-v]")
     if (!b) return
     if (!state.ac) return toast(state.online === false ? "Can't reach the Raspberry Pi" : "Still connecting…")
     if (!state.ac.power) return toast("Turn the AC on to change the fan")
     const fan = b.dataset.v
     if (fan === state.ac.fan) return
-    setSeg($("fan"), FANS.indexOf(fan), true)
+    setSeg($("fan-seg"), FANS.indexOf(fan), true)
     send({ fan }, () => window.ac.fan(fan))
   })
+  // Cancel = cancel every pending timer (there's only ever one from here).
   $("chips").addEventListener("click", (e) => {
-    const b = e.target.closest("button[data-id]")
-    if (b) cancelTimer(b.dataset.id)
+    if (!e.target.closest("button[data-cancel]")) return
+    setSeg($("presets"), 0, true)
+    state.presetIndex = 0
+    cancelAllTimers()
   })
 
   // Settings
@@ -567,7 +578,7 @@ function wire() {
       setSeg($("presets"), i, true)
       if (PRESETS[i] === 0) {
         state.presetIndex = 0
-        if (state.timers.length) cancelAllTimers()
+        cancelAllTimers()
       } else {
         createTimer(PRESETS[i], i)
       }

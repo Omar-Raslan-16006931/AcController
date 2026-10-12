@@ -17,6 +17,7 @@ contextBridge.exposeInMainWorld("ac", {
   timers: () => invoke("timers:list"),
   createTimer: (action, minutes) => invoke("timers:create", action, minutes),
   cancelTimer: (id) => invoke("timers:cancel", id),
+  cancelAllTimers: () => invoke("timers:cancelAll"),
 
   autostart: () => invoke("app:autostart"),
   setAutostart: (on) => invoke("app:setAutostart", on),
