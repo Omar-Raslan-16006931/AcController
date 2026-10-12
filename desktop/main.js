@@ -13,7 +13,7 @@ const fs = require("fs")
 const cfg = require("./config")
 
 const WIDTH = 360
-const HEIGHT = 600
+const HEIGHT = 640
 
 let tray = null
 let win = null
