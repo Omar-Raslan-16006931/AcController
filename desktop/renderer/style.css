@@ -701,6 +701,59 @@ svg {
   background: rgba(255, 255, 255, 0.08);
 }
 
+/* ---------- today ---------- */
+.today {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 8px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 12px;
+}
+.t-lab {
+  color: var(--sub);
+  font-weight: 600;
+}
+.t-bar {
+  position: relative;
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+.t-bar .seg-on {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  min-width: 2px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #4b9dff, #8fd3ff);
+  transition:
+    left 0.4s var(--ease),
+    width 0.4s var(--ease);
+}
+.t-bar .seg-on.live {
+  box-shadow: 0 0 8px rgba(143, 211, 255, 0.6);
+}
+.t-now {
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.55);
+  z-index: 1;
+}
+.t-val {
+  min-width: 52px;
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---------- settings ---------- */
 .gear {
   width: 32px;

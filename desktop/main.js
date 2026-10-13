@@ -29,14 +29,29 @@ if (!app.requestSingleInstanceLock()) {
 }
 app.on("second-instance", () => showPanel())
 
+// Windows only reports a login item as enabled when it's queried with the
+// same path + args it was registered with, so both calls use the same ones.
+// The choice is also saved to a file, since updates reinstall the app.
+const AUTOSTART_ARGS = ["--hidden"]
+const autostartExe = () => process.env.PORTABLE_EXECUTABLE_FILE || process.execPath
+const autostartPrefFile = () => path.join(app.getPath("userData"), "autostart.json")
+
 function autoStartEnabled() {
-  return app.getLoginItemSettings().openAtLogin
+  try {
+    return JSON.parse(fs.readFileSync(autostartPrefFile(), "utf8")).on === true
+  } catch {
+    return app.getLoginItemSettings({ path: autostartExe(), args: AUTOSTART_ARGS }).openAtLogin
+  }
 }
 function setAutoStart(on) {
   // For the portable .exe, PORTABLE_EXECUTABLE_FILE is the real file the
   // user launched (process.execPath points into a temp folder).
-  const exe = process.env.PORTABLE_EXECUTABLE_FILE || process.execPath
-  app.setLoginItemSettings({ openAtLogin: on, path: exe, args: ["--hidden"] })
+  app.setLoginItemSettings({ openAtLogin: !!on, path: autostartExe(), args: AUTOSTART_ARGS })
+  try {
+    fs.writeFileSync(autostartPrefFile(), JSON.stringify({ on: !!on }))
+  } catch {
+    // ignore
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -275,6 +290,20 @@ ipcMain.handle(
 ipcMain.handle(
   "timers:cancel",
   wrap((id) => rest("PATCH", `timers?id=eq.${encodeURIComponent(id)}`, { status: "cancelled" }))
+)
+// Today's on-time: power events from the last week (so a session that
+// started before midnight is still counted), oldest first.
+ipcMain.handle(
+  "usage:today",
+  wrap(() => {
+    const since = new Date()
+    since.setHours(0, 0, 0, 0)
+    since.setDate(since.getDate() - 7)
+    return rest(
+      "GET",
+      `command_history?select=power,created_at&created_at=gte.${encodeURIComponent(since.toISOString())}&order=created_at.asc`
+    )
+  })
 )
 // Row-level security limits this to the signed-in user's timers.
 ipcMain.handle(
@@ -516,15 +545,10 @@ app.whenReady().then(() => {
   app.setAppUserModelId("com.omar.accontroller.desktop")
   loadSession()
   // First run: turn on start-with-Windows (can be switched off in the menu).
-  const flag = path.join(app.getPath("userData"), "autostart-initialized")
-  if (!fs.existsSync(flag)) {
-    setAutoStart(true)
-    try {
-      fs.writeFileSync(flag, "1")
-    } catch {
-      // ignore
-    }
-  }
+  // After that, re-apply the saved choice on every start so it survives
+  // updates (and points at the current exe).
+  if (!fs.existsSync(autostartPrefFile())) setAutoStart(true)
+  else setAutoStart(autoStartEnabled())
   createTray()
   createWindow()
   // After a silent background update, come back quietly in the tray.

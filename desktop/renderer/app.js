@@ -195,6 +195,7 @@ function render() {
     state.online === false ? "Pi offline" : !ac ? "Connecting…" : on ? `Cooling · ${FAN_LABEL[fan]} fan` : "Off"
 
   renderTimers()
+  renderToday()
   updateTray()
 }
 
@@ -208,7 +209,7 @@ function fmtLeft(min) {
   return m ? `${h}h ${String(m).padStart(2, "0")}m` : `${h}h`
 }
 
-let timerKey = ""
+let timerKey = null
 function renderTimers() {
   if (!state.timers.length) state.presetIndex = 0
   else if (state.presetIndex === 0) {
@@ -331,8 +332,85 @@ async function loadTimers() {
     const local = state.timers.filter((t) => t._pending)
     state.timers = [...(r.data || []), ...local]
   }
-  timerKey = ""
+  timerKey = null // force a redraw (an empty list has key "", so "" wouldn't)
   renderTimers()
+}
+
+// ---------------------------------------------------------------------------
+// Today: on-periods from command history (same rule as the phone app:
+// power:true starts a period, power:false ends it), clipped to today.
+// ---------------------------------------------------------------------------
+
+let todayEvents = []
+
+function todayIntervals() {
+  const now = Date.now()
+  const d = new Date()
+  const midnight = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
+  const out = []
+  let start = null
+  for (const e of todayEvents) {
+    const t = new Date(e.created_at).getTime()
+    if (e.power === true && start === null) start = t
+    else if (e.power === false && start !== null) {
+      out.push([start, t, false])
+      start = null
+    }
+  }
+  // Trust the live state for "is it on right now".
+  const onNow = state.ac ? !!state.ac.power : start !== null
+  if (start !== null && onNow) out.push([start, now, true])
+  else if (start === null && onNow) out.push([now - 60_000, now, true]) // turned on just now
+  return out
+    .map(([a, b, live]) => [Math.max(a, midnight), Math.min(b, now), live])
+    .filter(([a, b]) => b > a)
+    .map(([a, b, live]) => ({ a: a - midnight, b: b - midnight, live }))
+}
+
+function fmtDuration(ms) {
+  const min = Math.round(ms / 60000)
+  if (min < 60) return `${min}m`
+  const h = Math.floor(min / 60)
+  const m = min % 60
+  return m ? `${h}h ${m}m` : `${h}h`
+}
+
+function renderToday() {
+  const DAY = 86_400_000
+  const ivs = todayIntervals()
+  const bar = $("t-bar")
+  bar.querySelectorAll(".seg-on").forEach((n) => n.remove())
+  let total = 0
+  for (const iv of ivs) {
+    total += iv.b - iv.a
+    const s = document.createElement("span")
+    s.className = `seg-on${iv.live ? " live" : ""}`
+    s.style.left = `${(iv.a / DAY) * 100}%`
+    s.style.width = `${((iv.b - iv.a) / DAY) * 100}%`
+    bar.appendChild(s)
+  }
+  const d = new Date()
+  const sinceMidnight = d.getTime() - new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
+  $("t-now").style.left = `${(sinceMidnight / DAY) * 100}%`
+  $("t-val").textContent = fmtDuration(total)
+  $("today").title = ivs.length
+    ? ivs
+        .map((iv) => {
+          const t = (ms) => {
+            const x = new Date(new Date().setHours(0, 0, 0, 0) + ms)
+            return x.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+          }
+          return `${t(iv.a)} – ${iv.live ? "now" : t(iv.b)}`
+        })
+        .join("\n")
+    : "Not used today"
+}
+
+async function loadToday() {
+  if (!state.signedIn) return
+  const r = await window.ac.usageToday()
+  if (r.ok) todayEvents = r.data || []
+  renderToday()
 }
 
 // Optimistic: the UI changes on the same frame; the command follows.
@@ -383,7 +461,7 @@ async function createTimer(minutes, index) {
   }
   state.presetIndex = index
   state.timers = [temp]
-  timerKey = ""
+  timerKey = null // force a redraw (an empty list has key "", so "" wouldn't)
   renderTimers()
   await Promise.all(old.map((t) => window.ac.cancelTimer(t.id)))
   const r = await window.ac.createTimer(action, minutes)
@@ -405,7 +483,7 @@ let cancelling = 0
 async function cancelAllTimers() {
   const all = state.timers
   state.timers = []
-  timerKey = ""
+  timerKey = null // force a redraw (an empty list has key "", so "" wouldn't)
   renderTimers()
   for (const t of all) if (t._pending) cancelledPending.add(t.id)
   cancelling++
@@ -439,6 +517,7 @@ async function showRemote() {
   reportHeight()
   loadStatus()
   loadTimers()
+  loadToday()
 }
 
 function wire() {
@@ -467,7 +546,7 @@ function wire() {
     void p.offsetWidth
     p.classList.add("pulse")
     const next = !state.ac.power
-    send({ power: next }, () => window.ac.power(next))
+    send({ power: next }, () => window.ac.power(next)).then(() => setTimeout(loadToday, 2500))
   })
 
   $("minus").addEventListener("click", () => state.ac && setTemperature(state.ac.temperature - 1))
@@ -601,6 +680,7 @@ function wire() {
     airKick()
     loadStatus()
     loadTimers()
+    loadToday()
   })
   window.ac.on("panel:hidden", () => {
     state.visible = false
@@ -618,6 +698,7 @@ function startPolling() {
   setInterval(() => {
     tick++
     if (state.visible || tick % 6 === 0) loadStatus()
+    if (state.visible && tick % 6 === 0) loadToday()
     if (state.visible && tick % 3 === 0) loadTimers()
     else renderTimers()
   }, 10_000)
