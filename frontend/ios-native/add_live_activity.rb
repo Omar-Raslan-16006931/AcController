@@ -2,8 +2,8 @@
 # project that `npx cap add ios` generates (it is regenerated on every CI
 # build, so nothing here is committed as an Xcode project):
 #
-#   * copies the app-side Swift (plugin, view controller, shared attributes)
-#     into the App target
+#   * copies the app-side Swift (plugin, view controller, shared attributes
+#     and the button intents) into the App target
 #   * creates the ACWidget widget-extension target and embeds it in the app
 #   * raises the deployment target to iOS 16.2 (Live Activities)
 #
@@ -23,7 +23,7 @@ app_group = project.main_group.children.find { |g| g.is_a?(PBXGroup) && (g.path 
   abort("App group not found: #{project.main_group.children.map(&:display_name).join(', ')}")
 
 # ---- app-side Swift ------------------------------------------------------
-app_files = %w[ACActivityAttributes.swift LiveActivityPlugin.swift MainViewController.swift]
+app_files = %w[ACActivityAttributes.swift ACIntents.swift LiveActivityPlugin.swift MainViewController.swift]
 app_refs = {}
 app_files.each do |f|
   FileUtils.cp(File.join(src, "App", f), File.join(ios, "App", f))
@@ -49,8 +49,11 @@ widget_group = project.main_group.children.find { |g| g.is_a?(PBXGroup) && g.pat
   widget.source_build_phase.add_file_reference(ref, true)
 end
 widget_group.new_reference("Info.plist") unless widget_group.files.any? { |r| r.path == "Info.plist" }
-# The shared attributes struct is compiled into the widget as well.
-widget.source_build_phase.add_file_reference(app_refs["ACActivityAttributes.swift"], true)
+# The shared attributes struct and the button intents are compiled into the
+# widget as well (it draws Button(intent:); only the app runs perform()).
+%w[ACActivityAttributes.swift ACIntents.swift].each do |f|
+  widget.source_build_phase.add_file_reference(app_refs[f], true)
+end
 
 widget.build_configurations.each do |config|
   s = config.build_settings

@@ -16,6 +16,10 @@ struct ACActivityAttributes: ActivityAttributes {
         /// When that timer fires. iOS counts down to it by itself, so the
         /// island stays correct even with the app closed.
         var timerEnd: Date?
+        /// Short message shown instead of the On/Off pill when a button
+        /// press failed ("Couldn't reach the AC"). Cleared by the next
+        /// successful press or by the app refreshing the activity.
+        var note: String?
     }
 
     var room: String

@@ -55,6 +55,15 @@ Apple Developer account (99 USD/year) makes it last a year.
   a timer runs it shows a live countdown (green = turns on, red = turns off).
   Long-press the island for the expanded view. The same shows on the lock
   screen.
+- **Control buttons (iOS 17+):** long-press the island (or look at the lock
+  screen card) for power, temperature -/+, mode and fan buttons. They call
+  the Pi directly, so they work with the app closed, and the island updates
+  at once. The buttons use the login the app last handed over, which expires
+  after about an hour with the app closed. For buttons that keep working all
+  day, paste your Shortcuts API key (`SHORTCUT_API_KEY` on the Pi) in
+  Settings > Dynamic Island > Save. If a button can't reach the AC the pill
+  shows why ("Open the app to sign in", "Couldn't reach the AC"). On iOS
+  16.2 the island is display-only.
 - The countdown keeps ticking with the app closed. Other changes (Siri,
   schedules) update the island the next time you open the app; live push
   updates would need a paid Apple developer account.
