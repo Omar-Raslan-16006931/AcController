@@ -71,9 +71,9 @@ enum ACRemoteError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .signedOut: return "Open the app to sign in"
+        case .signedOut: return "Open app to sign in"
         case .rejected(let why): return why
-        case .unreachable: return "Couldn't reach the AC"
+        case .unreachable: return "Can't reach AC"
         }
     }
 }
@@ -178,7 +178,7 @@ enum ACIslandActions {
             await activity.update(ActivityContent(state: settled, staleDate: nil))
         } catch {
             var failed = before
-            failed.note = (error as? LocalizedError)?.errorDescription ?? "Couldn't reach the AC"
+            failed.note = (error as? LocalizedError)?.errorDescription ?? "Can't reach AC"
             await activity.update(ActivityContent(state: failed, staleDate: nil))
         }
     }
