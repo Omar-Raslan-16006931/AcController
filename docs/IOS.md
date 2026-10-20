@@ -56,7 +56,7 @@ Apple Developer account (99 USD/year) makes it last a year.
   Long-press the island for the expanded view. The same shows on the lock
   screen.
 - **Control buttons (iOS 17+):** long-press the island (or look at the lock
-  screen card) for power, temperature -/+, mode and fan buttons. They call
+  screen card) for power, temperature -/+ and fan buttons. They call
   the Pi directly, so they work with the app closed, and the island updates
   at once. The buttons use the login the app last handed over, which expires
   after about an hour with the app closed. For buttons that keep working all

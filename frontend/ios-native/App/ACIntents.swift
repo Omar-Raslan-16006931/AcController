@@ -79,7 +79,7 @@ enum ACRemoteError: LocalizedError {
 }
 
 enum ACRemote {
-    /// POSTs one command ("power", "temperature", "mode", "fan").
+    /// POSTs one command ("power", "temperature", "fan").
     ///
     /// Prefers the Supabase session token the website last handed over (the
     /// same /api/<command> routes the website uses). Those tokens only live
@@ -183,7 +183,6 @@ enum ACIslandActions {
         }
     }
 
-    static let modes = ["cool", "heat", "dry"]
     static let fans = ["eco", "low", "medium", "high"]
     static let temperatureRange = 20...28
 
@@ -232,21 +231,6 @@ struct ACTempIntent: LiveActivityIntent {
             )
             guard target != state.temperature else { return nil }
             return ACIslandActions.Plan(command: "temperature", body: ["temperature": target], apply: { $0.temperature = target })
-        }
-        return .result()
-    }
-}
-
-@available(iOS 17.0, *)
-struct ACModeIntent: LiveActivityIntent {
-    static let title: LocalizedStringResource = "Change AC mode"
-
-    init() {}
-
-    func perform() async throws -> some IntentResult {
-        await ACIslandActions.run { state in
-            let mode = ACIslandActions.next(ACIslandActions.modes, after: state.mode)
-            return ACIslandActions.Plan(command: "mode", body: ["mode": mode], apply: { $0.mode = mode })
         }
         return .result()
     }

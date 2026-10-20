@@ -35,11 +35,6 @@ private func fanLabel(_ fan: String) -> String {
     return first.uppercased() + fan.dropFirst()
 }
 
-/// Shorter, for the chips ("Medium" -> "Med").
-private func fanShort(_ fan: String) -> String {
-    fan == "medium" ? "Med" : fanLabel(fan)
-}
-
 /// Accent colour for the whole activity: follows the mode, grey when off.
 private func tint(_ s: ACState) -> Color {
     guard s.power else { return .gray }
@@ -245,16 +240,12 @@ private struct TemperatureButtons: View {
 }
 
 @available(iOS 17.0, *)
-private struct ModeFanChips: View {
+private struct FanChip: View {
     let state: ACState
 
     var body: some View {
-        IntentButton(ACModeIntent()) {
-            ChipLabel(symbol: modeSymbol(state.mode), text: modeLabel(state.mode), color: tint(state), enabled: state.power)
-        }
-        .disabled(!state.power)
         IntentButton(ACFanIntent()) {
-            ChipLabel(symbol: "fan.fill", text: fanShort(state.fan), color: tint(state), enabled: state.power)
+            ChipLabel(symbol: "fan.fill", text: fanLabel(state.fan), color: tint(state), enabled: state.power)
         }
         .disabled(!state.power)
     }
@@ -271,7 +262,7 @@ private struct LockScreenView: View {
         VStack(spacing: 10) {
             HStack(spacing: 8) {
                 ModeBadge(state: state, size: 24)
-                Text("\(room) AC")
+                Text(state.power ? "\(room) AC · \(modeLabel(state.mode))" : "\(room) AC")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.7))
                 Spacer()
@@ -288,7 +279,7 @@ private struct LockScreenView: View {
                     PowerButton(state: state)
                 }
                 HStack(spacing: 8) {
-                    ModeFanChips(state: state)
+                    FanChip(state: state)
                     if let timer = timer {
                         TimerChip(end: timer.end, turnsOff: timer.turnsOff)
                     }
@@ -361,7 +352,7 @@ struct ACLiveActivity: Widget {
                         if #available(iOS 17.0, *) {
                             HStack(spacing: 8) {
                                 TemperatureButtons(state: s)
-                                ModeFanChips(state: s)
+                                FanChip(state: s)
                             }
                         }
                         if let note = s.note {

@@ -66,7 +66,7 @@ export function DynamicIslandCard() {
 
       <div className="space-y-1.5">
         <p className="text-muted-foreground text-[11.5px]">
-          The island's power, temperature, mode and fan buttons use your login, which expires after about an hour with
+          The island's power, temperature and fan buttons use your login, which expires after about an hour with
           the app closed. Paste your Shortcuts API key (SHORTCUT_API_KEY) so they keep working.
         </p>
         <div className="flex items-center gap-2">
