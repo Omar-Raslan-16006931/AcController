@@ -123,6 +123,8 @@ private struct ChipLabel: View {
     let text: String
     let color: Color
     var enabled = true
+    /// Fixed width, or nil to fill the row.
+    var width: CGFloat? = nil
 
     var body: some View {
         HStack(spacing: 5) {
@@ -134,7 +136,7 @@ private struct ChipLabel: View {
                 .minimumScaleFactor(0.8)
         }
         .foregroundStyle(color)
-        .frame(maxWidth: .infinity)
+        .frame(minWidth: width ?? 0, maxWidth: width ?? .infinity)
         .frame(height: 34)
         .background(Capsule().fill(Color.white.opacity(0.10)))
         .overlay(Capsule().strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
@@ -245,7 +247,7 @@ private struct FanChip: View {
 
     var body: some View {
         IntentButton(ACFanIntent()) {
-            ChipLabel(symbol: "fan.fill", text: fanLabel(state.fan), color: tint(state), enabled: state.power)
+            ChipLabel(symbol: "fan.fill", text: fanLabel(state.fan), color: tint(state), enabled: state.power, width: 104)
         }
         .disabled(!state.power)
     }
@@ -279,10 +281,12 @@ private struct LockScreenView: View {
                     PowerButton(state: state)
                 }
                 HStack(spacing: 8) {
-                    FanChip(state: state)
                     if let timer = timer {
                         TimerChip(end: timer.end, turnsOff: timer.turnsOff)
+                    } else {
+                        Spacer(minLength: 0)
                     }
+                    FanChip(state: state)
                 }
             } else {
                 // iOS 16.2: button intents don't exist, show the state only.
@@ -352,6 +356,7 @@ struct ACLiveActivity: Widget {
                         if #available(iOS 17.0, *) {
                             HStack(spacing: 8) {
                                 TemperatureButtons(state: s)
+                                Spacer(minLength: 0)
                                 FanChip(state: s)
                             }
                         }
