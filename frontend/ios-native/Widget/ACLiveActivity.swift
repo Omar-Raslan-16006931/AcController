@@ -63,7 +63,7 @@ private struct Countdown: View {
 // MARK: - Building blocks
 //
 // Both the island and the lock screen are built from two pieces:
-//   Header   one line: mode icon + "Bedroom · Cool" on the left,
+//   Header   one line: mode icon + "Cool" on the left,
 //            On/Off, a running timer or an error on the right
 //   Controls one row: [ - 24° + ]  [fan]  [power]
 
@@ -71,14 +71,13 @@ private let rowHeight: CGFloat = 40
 
 private struct Title: View {
     let state: ACState
-    let room: String
 
     var body: some View {
         HStack(spacing: 6) {
             Image(systemName: modeSymbol(state.mode))
                 .font(.system(size: 11, weight: .bold))
                 .foregroundStyle(accent(state))
-            Text(state.power ? "\(room) · \(modeLabel(state.mode))" : room)
+            Text(modeLabel(state.mode))
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(.white.opacity(0.75))
                 .lineLimit(1)
@@ -255,12 +254,11 @@ private struct Controls: View {
 
 private struct LockScreenView: View {
     let state: ACState
-    let room: String
 
     var body: some View {
         VStack(spacing: 10) {
             HStack {
-                Title(state: state, room: room)
+                Title(state: state)
                 Spacer(minLength: 8)
                 Status(state: state)
             }
@@ -288,7 +286,7 @@ private struct LockScreenView: View {
 struct ACLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: ACActivityAttributes.self) { context in
-            LockScreenView(state: context.state, room: context.attributes.room)
+            LockScreenView(state: context.state)
                 .activityBackgroundTint(Color(red: 0.03, green: 0.07, blue: 0.14).opacity(0.92))
                 .activitySystemActionForegroundColor(.white)
         } dynamicIsland: { context in
@@ -296,7 +294,7 @@ struct ACLiveActivity: Widget {
             let timer = activeTimer(s)
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    Title(state: s, room: context.attributes.room)
+                    Title(state: s)
                         .padding(.leading, 4)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
