@@ -1,10 +1,18 @@
 import ActivityKit
 import WidgetKit
 import SwiftUI
+import AppIntents
 
+// Palette follows the app's "night glass" look: ice blue for cooling, a warm
+// amber for heat, mint for dry, grey when the AC is off.
 private let ice = Color(red: 0.56, green: 0.83, blue: 1.0)
+private let warm = Color(red: 1.0, green: 0.66, blue: 0.36)
+private let mint = Color(red: 0.37, green: 0.88, blue: 0.78)
 private let onGreen = Color(red: 0.24, green: 0.88, blue: 0.56)
 private let offRed = Color(red: 1.0, green: 0.42, blue: 0.37)
+private let ink = Color(red: 0.02, green: 0.04, blue: 0.08)
+
+private typealias ACState = ACActivityAttributes.ContentState
 
 private func modeLabel(_ mode: String) -> String {
     switch mode {
@@ -27,8 +35,18 @@ private func fanLabel(_ fan: String) -> String {
     return first.uppercased() + fan.dropFirst()
 }
 
+/// Accent colour for the whole activity: follows the mode, grey when off.
+private func tint(_ s: ACState) -> Color {
+    guard s.power else { return .gray }
+    switch s.mode {
+    case "heat": return warm
+    case "dry": return mint
+    default: return ice
+    }
+}
+
 /// Running timer, or nil once it has fired.
-private func activeTimer(_ s: ACActivityAttributes.ContentState) -> (end: Date, turnsOff: Bool)? {
+private func activeTimer(_ s: ACState) -> (end: Date, turnsOff: Bool)? {
     guard let end = s.timerEnd, end > Date() else { return nil }
     return (end, s.timerAction != "turn_on")
 }
@@ -42,56 +60,259 @@ private struct Countdown: View {
     }
 }
 
+// MARK: - Building blocks
+//
+// Both the island and the lock screen are built from two pieces:
+//   Header   one line: mode icon + "Bedroom · Cool" on the left,
+//            On/Off, a running timer or an error on the right
+//   Controls one row: [ - 24° + ]  [fan]  [power]
+
+private let rowHeight: CGFloat = 40
+
+private struct Title: View {
+    let state: ACState
+    let room: String
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Image(systemName: modeSymbol(state.mode))
+                .font(.system(size: 11, weight: .bold))
+                .foregroundStyle(tint(state))
+            Text(state.power ? "\(room) · \(modeLabel(state.mode))" : room)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.75))
+                .lineLimit(1)
+        }
+    }
+}
+
+/// Right side of the header: failure reason, else the running timer, else On/Off.
+private struct Status: View {
+    let state: ACState
+
+    var body: some View {
+        if let note = state.note {
+            HStack(spacing: 4) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                Text(note).lineLimit(1).minimumScaleFactor(0.7)
+            }
+            .font(.system(size: 12, weight: .semibold))
+            .foregroundStyle(warm)
+        } else if let timer = activeTimer(state) {
+            let color = timer.turnsOff ? offRed : onGreen
+            HStack(spacing: 4) {
+                Image(systemName: "timer")
+                Text(timer.turnsOff ? "Off in" : "On in")
+                Countdown(end: timer.end)
+                    .frame(maxWidth: 56, alignment: .leading)
+            }
+            .font(.system(size: 12, weight: .semibold))
+            .foregroundStyle(color)
+        } else {
+            let color = state.power ? onGreen : offRed
+            HStack(spacing: 5) {
+                Circle().fill(color).frame(width: 6, height: 6)
+                Text(state.power ? "On" : "Off")
+            }
+            .font(.system(size: 12, weight: .semibold))
+            .foregroundStyle(color)
+        }
+    }
+}
+
+/// iOS 16.2 has no button intents: show the numbers instead of the controls.
+private struct ReadOnlyRow: View {
+    let state: ACState
+
+    var body: some View {
+        HStack {
+            Text("\(state.temperature)°")
+                .font(.system(size: 28, weight: .semibold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(state.power ? Color.white : Color.white.opacity(0.4))
+            Spacer()
+            Text("\(modeLabel(state.mode)) · \(fanLabel(state.fan))")
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(.white.opacity(0.7))
+        }
+        .frame(height: rowHeight)
+    }
+}
+
+// MARK: - Interactive controls (iOS 17+)
+
+@available(iOS 17.0, *)
+private struct IntentButton<I: AppIntent, Face: View>: View {
+    let intent: I
+    let label: Face
+
+    init(_ intent: I, @ViewBuilder label: () -> Face) {
+        self.intent = intent
+        self.label = label()
+    }
+
+    var body: some View {
+        Button(intent: intent) { label }
+            .buttonStyle(.plain)
+    }
+}
+
+@available(iOS 17.0, *)
+private struct TemperatureStepper: View {
+    let state: ACState
+
+    var body: some View {
+        let canDown = state.power && state.temperature > ACIslandActions.temperatureRange.lowerBound
+        let canUp = state.power && state.temperature < ACIslandActions.temperatureRange.upperBound
+        HStack(spacing: 0) {
+            IntentButton(ACTempIntent(delta: -1)) {
+                StepLabel(symbol: "minus", color: tint(state), enabled: canDown)
+            }
+            .disabled(!canDown)
+
+            Text("\(state.temperature)°")
+                .font(.system(size: 20, weight: .semibold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(state.power ? Color.white : Color.white.opacity(0.4))
+                .frame(maxWidth: .infinity)
+
+            IntentButton(ACTempIntent(delta: 1)) {
+                StepLabel(symbol: "plus", color: tint(state), enabled: canUp)
+            }
+            .disabled(!canUp)
+        }
+        .frame(height: rowHeight)
+        .background(Capsule().fill(Color.white.opacity(0.10)))
+    }
+}
+
+private struct StepLabel: View {
+    let symbol: String
+    let color: Color
+    let enabled: Bool
+
+    var body: some View {
+        Image(systemName: symbol)
+            .font(.system(size: 14, weight: .bold))
+            .foregroundStyle(color)
+            .frame(width: 46, height: rowHeight)
+            .contentShape(Rectangle())
+            .opacity(enabled ? 1 : 0.3)
+    }
+}
+
+@available(iOS 17.0, *)
+private struct FanButton: View {
+    let state: ACState
+
+    var body: some View {
+        IntentButton(ACFanIntent()) {
+            HStack(spacing: 5) {
+                Image(systemName: "fan.fill")
+                    .font(.system(size: 12, weight: .semibold))
+                Text(fanLabel(state.fan))
+                    .font(.system(size: 13, weight: .semibold))
+                    .lineLimit(1)
+            }
+            .foregroundStyle(tint(state))
+            .frame(width: 92, height: rowHeight)
+            .background(Capsule().fill(Color.white.opacity(0.10)))
+            .opacity(state.power ? 1 : 0.35)
+        }
+        .disabled(!state.power)
+    }
+}
+
+@available(iOS 17.0, *)
+private struct PowerButton: View {
+    let state: ACState
+
+    var body: some View {
+        IntentButton(ACPowerIntent()) {
+            Image(systemName: "power")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(state.power ? ink : offRed)
+                .frame(width: rowHeight, height: rowHeight)
+                .background(Circle().fill(state.power ? onGreen : Color.white.opacity(0.12)))
+        }
+    }
+}
+
+@available(iOS 17.0, *)
+private struct Controls: View {
+    let state: ACState
+
+    var body: some View {
+        HStack(spacing: 8) {
+            TemperatureStepper(state: state)
+            FanButton(state: state)
+            PowerButton(state: state)
+        }
+    }
+}
+
+// MARK: - Lock screen / banner
+
+private struct LockScreenView: View {
+    let state: ACState
+    let room: String
+
+    var body: some View {
+        VStack(spacing: 10) {
+            HStack {
+                Title(state: state, room: room)
+                Spacer(minLength: 8)
+                Status(state: state)
+            }
+            if #available(iOS 17.0, *) {
+                Controls(state: state)
+            } else {
+                ReadOnlyRow(state: state)
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(
+            RadialGradient(
+                colors: [tint(state).opacity(0.20), .clear],
+                center: .topLeading,
+                startRadius: 0,
+                endRadius: 240
+            )
+        )
+    }
+}
+
+// MARK: - Dynamic Island
+
 struct ACLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: ACActivityAttributes.self) { context in
             LockScreenView(state: context.state, room: context.attributes.room)
-                .activityBackgroundTint(Color.black.opacity(0.6))
+                .activityBackgroundTint(Color(red: 0.03, green: 0.07, blue: 0.14).opacity(0.92))
                 .activitySystemActionForegroundColor(.white)
         } dynamicIsland: { context in
             let s = context.state
             let timer = activeTimer(s)
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    HStack(spacing: 6) {
-                        Image(systemName: modeSymbol(s.mode))
-                            .foregroundStyle(s.power ? ice : .gray)
-                        Text("\(s.temperature)°")
-                            .font(.system(size: 30, weight: .light))
-                            .monospacedDigit()
-                    }
-                    .padding(.leading, 4)
+                    Title(state: s, room: context.attributes.room)
+                        .padding(.leading, 4)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Text(s.power ? "On" : "Off")
-                            .font(.headline)
-                            .foregroundStyle(s.power ? onGreen : offRed)
-                        Text("\(modeLabel(s.mode)) · \(fanLabel(s.fan))")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding(.trailing, 4)
+                    Status(state: s)
+                        .padding(.trailing, 4)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    if let timer = timer {
-                        HStack(spacing: 6) {
-                            Image(systemName: "timer")
-                            Text(timer.turnsOff ? "Turns off in" : "Turns on in")
-                            Countdown(end: timer.end)
-                                .font(.body.weight(.semibold))
-                                .foregroundStyle(timer.turnsOff ? offRed : onGreen)
-                        }
-                        .font(.subheadline)
+                    if #available(iOS 17.0, *) {
+                        Controls(state: s)
                     } else {
-                        Text(context.attributes.room)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        ReadOnlyRow(state: s)
                     }
                 }
             } compactLeading: {
                 Image(systemName: timer != nil ? "timer" : modeSymbol(s.mode))
-                    .foregroundStyle(s.power ? ice : .gray)
+                    .foregroundStyle(tint(s))
             } compactTrailing: {
                 if let timer = timer {
                     Countdown(end: timer.end)
@@ -99,47 +320,14 @@ struct ACLiveActivity: Widget {
                         .foregroundStyle(timer.turnsOff ? offRed : onGreen)
                 } else {
                     Text(s.power ? "\(s.temperature)°" : "Off")
-                        .foregroundStyle(s.power ? ice : .gray)
+                        .font(.system(size: 15, weight: .semibold, design: .rounded))
+                        .foregroundStyle(tint(s))
                 }
             } minimal: {
                 Image(systemName: timer != nil ? "timer" : modeSymbol(s.mode))
-                    .foregroundStyle(ice)
+                    .foregroundStyle(tint(s))
             }
-            .keylineTint(ice)
+            .keylineTint(tint(s))
         }
-    }
-}
-
-private struct LockScreenView: View {
-    let state: ACActivityAttributes.ContentState
-    let room: String
-
-    var body: some View {
-        let timer = activeTimer(state)
-        HStack(spacing: 14) {
-            Image(systemName: modeSymbol(state.mode))
-                .font(.title2)
-                .foregroundStyle(state.power ? ice : .gray)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("\(room) AC")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text(state.power ? "\(state.temperature)° · \(modeLabel(state.mode)) · \(fanLabel(state.fan))" : "Off")
-                    .font(.headline)
-            }
-            Spacer()
-            if let timer = timer {
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text(timer.turnsOff ? "Off in" : "On in")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Countdown(end: timer.end)
-                        .font(.title3.weight(.semibold))
-                        .foregroundStyle(timer.turnsOff ? offRed : onGreen)
-                        .multilineTextAlignment(.trailing)
-                }
-            }
-        }
-        .padding(16)
     }
 }

@@ -6,6 +6,7 @@ import ActivityKit
 /// Native bridge the website calls through Capacitor
 /// (window.Capacitor.nativePromise("LiveActivity", method, options)):
 ///   update            start or update the Dynamic Island / lock screen activity
+///   configure         hand over the Pi's URL + login so the island's buttons work
 ///   end               remove it
 ///   testNotification  schedule a local notification after N seconds
 ///   availability      whether Live Activities are allowed on this phone
@@ -16,6 +17,7 @@ public class LiveActivityPlugin: CAPPlugin, CAPBridgedPlugin, UNUserNotification
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "update", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "end", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "configure", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "testNotification", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "availability", returnType: CAPPluginReturnPromise),
     ]
@@ -63,7 +65,8 @@ public class LiveActivityPlugin: CAPPlugin, CAPBridgedPlugin, UNUserNotification
             mode: call.getString("mode") ?? "cool",
             fan: call.getString("fan") ?? "medium",
             timerAction: call.getString("timerAction"),
-            timerEnd: timerEnd
+            timerEnd: timerEnd,
+            note: nil
         )
         let room = call.getString("room") ?? "Bedroom"
 
@@ -85,6 +88,23 @@ public class LiveActivityPlugin: CAPPlugin, CAPBridgedPlugin, UNUserNotification
                 call.reject("Couldn't start the Live Activity: \(error.localizedDescription)")
             }
         }
+    }
+
+    /// Saves what the island's buttons (ACIntents.swift) need to reach the
+    /// Pi. The website calls this whenever its login changes; an empty
+    /// accessToken and apiKey signs the buttons out.
+    @objc func configure(_ call: CAPPluginCall) {
+        var expiresAt: Date? = nil
+        if let ms = call.getDouble("expiresAt"), ms > 0 {
+            expiresAt = Date(timeIntervalSince1970: ms / 1000)
+        }
+        ACRemoteConfig.save(
+            apiBase: call.getString("apiBase"),
+            accessToken: call.getString("accessToken"),
+            expiresAt: expiresAt,
+            apiKey: call.getString("apiKey")
+        )
+        call.resolve()
     }
 
     @objc func end(_ call: CAPPluginCall) {

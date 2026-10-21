@@ -10,6 +10,7 @@
 import * as React from "react"
 import { useQuery } from "@tanstack/react-query"
 
+import { API_BASE_URL } from "@/lib/api"
 import { supabase } from "@/lib/supabase"
 import { queryKeys } from "@/lib/query-keys"
 import { useAuth } from "@/context/auth-context"
@@ -93,6 +94,45 @@ export function registerServiceWorker() {
 // Live Activity (Dynamic Island + lock screen)
 // ---------------------------------------------------------------------------
 
+// The island's buttons call the Pi from native code, so the app needs the
+// Pi's URL and a login it can use while the website isn't running.
+const ISLAND_KEY_STORAGE = "ac.island.apiKey"
+
+/** Optional Shortcuts API key (the backend's SHORTCUT_API_KEY) for the buttons. */
+export function getIslandApiKey(): string {
+  try {
+    return window.localStorage.getItem(ISLAND_KEY_STORAGE) ?? ""
+  } catch {
+    return ""
+  }
+}
+
+export function setIslandApiKey(key: string) {
+  try {
+    if (key) window.localStorage.setItem(ISLAND_KEY_STORAGE, key)
+    else window.localStorage.removeItem(ISLAND_KEY_STORAGE)
+  } catch {
+    // Storage blocked: the key just won't persist.
+  }
+}
+
+/**
+ * Hands the native app the Pi's URL, the current login token and the optional
+ * API key. The token lasts about an hour and only refreshes while the website
+ * is running, so the API key is what keeps the buttons working after that.
+ */
+export async function configureIslandControls(): Promise<void> {
+  if (!isNativeApp()) return
+  const { data } = await supabase.auth.getSession()
+  const session = data.session
+  await callNative("configure", {
+    apiBase: API_BASE_URL,
+    accessToken: session?.access_token ?? "",
+    expiresAt: session?.expires_at ? session.expires_at * 1000 : 0,
+    apiKey: getIslandApiKey(),
+  })
+}
+
 /** One-line diagnosis for Settings: why the island would or wouldn't show. */
 export async function diagnoseLiveActivity(): Promise<string> {
   if (!bridge()) return "Not in the iOS app (Safari / home-screen version can't use the Dynamic Island)."
@@ -100,7 +140,7 @@ export async function diagnoseLiveActivity(): Promise<string> {
   try {
     const res = await callNative<{ liveActivities?: boolean }>("availability")
     if (!res?.liveActivities) return "Live Activities are off: iPhone Settings > AC Controller > Live Activities."
-    return "Ready. Turn the AC on or start a timer while the app is open."
+    return "Ready. Turn the AC on or start a timer while the app is open. Buttons on the island need iOS 17."
   } catch (err) {
     return `This app build has no Dynamic Island support yet (${err instanceof Error ? err.message : String(err)}). Install the latest .ipa.`
   }
@@ -108,6 +148,7 @@ export async function diagnoseLiveActivity(): Promise<string> {
 
 /** Starts a short demo activity (2 minute turn-off countdown) to test the island. */
 export async function demoLiveActivity(): Promise<void> {
+  await configureIslandControls().catch(() => {})
   await callNative("update", {
     room: "Bedroom",
     power: true,
@@ -154,6 +195,24 @@ export function useLiveActivitySync() {
   })
 
   const last = React.useRef<string>("")
+
+  // Keep the native side's copy of the login fresh for the island buttons.
+  React.useEffect(() => {
+    if (!native) return
+    const push = () => {
+      configureIslandControls().catch((err) => console.warn("Island controls:", err))
+    }
+    push()
+    const { data: sub } = supabase.auth.onAuthStateChange(push)
+    const onVisible = () => {
+      if (document.visibilityState === "visible") push()
+    }
+    document.addEventListener("visibilitychange", onVisible)
+    return () => {
+      sub.subscription.unsubscribe()
+      document.removeEventListener("visibilitychange", onVisible)
+    }
+  }, [native])
 
   React.useEffect(() => {
     if (!native || !status) return
