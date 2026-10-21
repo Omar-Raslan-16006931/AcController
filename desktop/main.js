@@ -19,6 +19,10 @@ let HEIGHT = 420
 let tray = null
 let win = null
 let lastHiddenAt = 0
+// While the close animation plays the window is still visible; this is the
+// timer that hides it afterwards. Keep in step with .panel.closing in style.css.
+const CLOSE_MS = 170
+let hiding = null
 
 // ---------------------------------------------------------------------------
 // Single instance + auto start
@@ -137,6 +141,83 @@ async function accessToken() {
 }
 
 // ---------------------------------------------------------------------------
+// Passkey sign-in. Passkeys belong to the website's domain, so the panel (a
+// local file) can't use them itself. Instead we open the website's sign-in
+// page in a small window, where Windows Hello works, and take the session
+// from it once signed in. The window uses a throwaway in-memory profile.
+// ---------------------------------------------------------------------------
+
+// supabase-js keeps the session in localStorage under sb-<project>-auth-token.
+const WEB_SESSION_KEY = `sb-${new URL(cfg.SUPABASE_URL).hostname.split(".")[0]}-auth-token`
+let passkeyWin = null
+
+function passkeySession() {
+  if (passkeyWin && !passkeyWin.isDestroyed()) {
+    passkeyWin.focus()
+    return Promise.reject(new Error("The passkey window is already open"))
+  }
+  return new Promise((resolve, reject) => {
+    const w = new BrowserWindow({
+      width: 440,
+      height: 640,
+      title: "Sign in with a passkey",
+      autoHideMenuBar: true,
+      backgroundColor: "#03070e",
+      webPreferences: {
+        partition: `passkey-${Date.now()}`,
+        contextIsolation: true,
+        nodeIntegration: false,
+        sandbox: true,
+      },
+    })
+    passkeyWin = w
+    let done = false
+    let poll = null
+    const finish = (err, value) => {
+      if (done) return
+      done = true
+      clearInterval(poll)
+      passkeyWin = null
+      if (!w.isDestroyed()) w.destroy()
+      if (err) reject(err)
+      else resolve(value)
+    }
+
+    const readSession = `(() => { try { return localStorage.getItem(${JSON.stringify(WEB_SESSION_KEY)}) } catch { return null } })()`
+    poll = setInterval(async () => {
+      if (w.isDestroyed()) return
+      try {
+        const raw = await w.webContents.executeJavaScript(readSession)
+        const s = raw ? JSON.parse(raw) : null
+        if (s && s.access_token && s.refresh_token) finish(null, s)
+      } catch {
+        // Page still loading.
+      }
+    }, 400)
+
+    w.on("closed", () => finish(new Error("PASSKEY_CANCELLED")))
+    w.webContents.setWindowOpenHandler(({ url }) => {
+      shell.openExternal(url)
+      return { action: "deny" }
+    })
+    // Press the site's "Sign in with a passkey" button so Windows Hello
+    // opens straight away (it can still be pressed by hand).
+    w.webContents.once("did-finish-load", () => {
+      setTimeout(() => {
+        if (w.isDestroyed()) return
+        w.webContents
+          .executeJavaScript(
+            `(() => { const b = [...document.querySelectorAll("button")].find((b) => /passkey/i.test(b.textContent)); if (b) b.click() })()`,
+            true
+          )
+          .catch(() => {})
+      }, 900)
+    })
+    w.loadURL(`${cfg.WEB_APP_URL}/login`)
+  })
+}
+
+// ---------------------------------------------------------------------------
 // Pi API: prefer the stable Tailscale address, fall back to the Cloudflare
 // tunnel published at /pi-url.txt
 // ---------------------------------------------------------------------------
@@ -248,6 +329,14 @@ ipcMain.handle(
   "auth:signIn",
   wrap(async (email, password) => {
     storeAuthResponse(await authRequest("password", { email, password }))
+    return { email: session.email }
+  })
+)
+ipcMain.handle(
+  "auth:passkey",
+  wrap(async () => {
+    storeAuthResponse(await passkeySession())
+    showPanel()
     return { email: session.email }
   })
 )
@@ -483,23 +572,34 @@ function positionPanel() {
 
 function showPanel() {
   if (!win) return
+  if (hiding) {
+    clearTimeout(hiding)
+    hiding = null
+  }
   positionPanel()
   win.show()
   win.focus()
   win.webContents.send("panel:shown")
 }
 
+// Plays the close animation in the panel, then hides the window. Ending on
+// a fully transparent frame also means reopening never flashes the old one.
 function hidePanel() {
-  if (!win || !win.isVisible()) return
+  if (!win || !win.isVisible() || hiding) return
   lastHiddenAt = Date.now()
-  win.hide()
-  win.webContents.send("panel:hidden")
-  if (updateStatus.state === "ready") setTimeout(installUpdate, 1500)
+  win.webContents.send("panel:hiding")
+  hiding = setTimeout(() => {
+    hiding = null
+    if (!win || !win.isVisible()) return
+    win.hide()
+    win.webContents.send("panel:hidden")
+    if (updateStatus.state === "ready") setTimeout(installUpdate, 1500)
+  }, CLOSE_MS)
 }
 
 function togglePanel() {
   if (!win) return
-  if (win.isVisible()) return hidePanel()
+  if (win.isVisible() && !hiding) return hidePanel()
   // Clicking the tray icon while the panel is open first blurs (hides) it;
   // don't immediately re-open on that same click.
   if (Date.now() - lastHiddenAt < 250) return

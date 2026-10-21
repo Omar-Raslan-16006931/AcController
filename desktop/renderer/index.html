@@ -30,10 +30,17 @@
         </svg>
         <h1>AC Controller</h1>
         <p class="muted">Sign in with the same account as the app.</p>
+        <button type="button" class="primary passkey" id="passkey-btn">
+          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="8" cy="9" r="4" /><path d="M2 21a6 6 0 0 1 10.5-4" /><circle cx="17" cy="12" r="2.5" /><path d="M17 14.5V21l1.5-1.5L17 18" />
+          </svg>
+          <span id="passkey-lab">Sign in with a passkey</span>
+        </button>
+        <div class="or"><span>or use email</span></div>
         <form id="login-form">
           <input id="email" type="email" placeholder="Email" autocomplete="username" required />
           <input id="password" type="password" placeholder="Password" autocomplete="current-password" required />
-          <button type="submit" class="primary" id="login-btn">Sign in</button>
+          <button type="submit" class="secondary" id="login-btn">Sign in</button>
           <p class="error" id="login-error"></p>
         </form>
       </section>

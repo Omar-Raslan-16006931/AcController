@@ -6,6 +6,7 @@ const invoke = (channel, ...args) => ipcRenderer.invoke(channel, ...args)
 contextBridge.exposeInMainWorld("ac", {
   authState: () => invoke("auth:state"),
   signIn: (email, password) => invoke("auth:signIn", email, password),
+  signInWithPasskey: () => invoke("auth:passkey"),
   signOut: () => invoke("auth:signOut"),
 
   status: () => invoke("ac:status"),
@@ -32,7 +33,7 @@ contextBridge.exposeInMainWorld("ac", {
   updateTray: (payload) => ipcRenderer.send("tray:update", payload),
   setHeight: (h) => ipcRenderer.send("panel:size", h),
   on: (channel, fn) => {
-    const allowed = ["panel:shown", "panel:hidden", "auth:changed", "update:status"]
+    const allowed = ["panel:shown", "panel:hiding", "panel:hidden", "auth:changed", "update:status"]
     if (allowed.includes(channel)) ipcRenderer.on(channel, (_event, payload) => fn(payload))
   },
 })

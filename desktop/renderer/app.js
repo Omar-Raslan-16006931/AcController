@@ -539,6 +539,23 @@ function wire() {
     showRemote()
   })
 
+  // Opens the website's sign-in page in a small window (Windows Hello).
+  $("passkey-btn").addEventListener("click", async () => {
+    const btn = $("passkey-btn")
+    btn.disabled = true
+    $("passkey-lab").textContent = "Waiting for Windows Hello…"
+    $("login-error").textContent = ""
+    const r = await window.ac.signInWithPasskey()
+    btn.disabled = false
+    $("passkey-lab").textContent = "Sign in with a passkey"
+    if (!r.ok) {
+      if (r.error !== "PASSKEY_CANCELLED") $("login-error").textContent = r.error
+      reportHeight()
+      return
+    }
+    showRemote()
+  })
+
   $("pw").addEventListener("click", () => {
     if (!state.ac) return
     const p = $("pw")
@@ -673,7 +690,7 @@ function wire() {
   window.ac.on("panel:shown", () => {
     state.visible = true
     const panel = $("panel")
-    panel.classList.remove("shown")
+    panel.classList.remove("shown", "closing")
     void panel.offsetWidth
     panel.classList.add("shown")
     airResize()
@@ -682,9 +699,13 @@ function wire() {
     loadTimers()
     loadToday()
   })
+  // The main process hides the window once this close animation is done.
+  window.ac.on("panel:hiding", () => {
+    $("panel").classList.remove("shown")
+    $("panel").classList.add("closing")
+  })
   window.ac.on("panel:hidden", () => {
     state.visible = false
-    $("panel").classList.remove("shown")
     $("settings").classList.remove("open")
   })
   window.ac.on("auth:changed", () => showLogin())

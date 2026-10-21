@@ -59,15 +59,64 @@ svg {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     inset 0 0 0 1px rgba(255, 255, 255, 0.07);
-  transform: translateY(12px) scale(0.98);
+  /* Rises out of the taskbar like the Windows 11 flyouts. */
+  transform-origin: 50% 100%;
+  transform: translateY(18px) scale(0.95);
   opacity: 0;
   transition:
-    transform 0.45s var(--ease),
-    opacity 0.3s ease;
+    transform 0.36s var(--ease),
+    opacity 0.2s ease-out;
 }
 .panel.shown {
   transform: none;
   opacity: 1;
+}
+/* Close: quick drop and fade. main.js hides the window after CLOSE_MS. */
+.panel.closing {
+  transform: translateY(10px) scale(0.97);
+  opacity: 0;
+  transition:
+    transform 0.16s cubic-bezier(0.4, 0, 1, 1),
+    opacity 0.14s ease-in;
+}
+/* Content follows the panel in, one row after another. "backwards" so the
+   rows go back to their own transforms (e.g. the slider while dragged). */
+.panel.shown .remote > .hd,
+.panel.shown .remote > .scene,
+.panel.shown .remote > .slider,
+.panel.shown .remote > .seg,
+.panel.shown .remote > .timer,
+.panel.shown .remote > .chips,
+.panel.shown .remote > .today,
+.panel.shown .login > * {
+  animation: rise 0.42s var(--ease) backwards;
+}
+.panel.shown .remote > .scene,
+.panel.shown .login > :nth-child(2) {
+  animation-delay: 0.03s;
+}
+.panel.shown .remote > .slider,
+.panel.shown .login > :nth-child(3) {
+  animation-delay: 0.06s;
+}
+.panel.shown .remote > .seg,
+.panel.shown .login > :nth-child(4) {
+  animation-delay: 0.09s;
+}
+.panel.shown .remote > .timer,
+.panel.shown .login > :nth-child(5) {
+  animation-delay: 0.12s;
+}
+.panel.shown .remote > .chips,
+.panel.shown .remote > .today,
+.panel.shown .login > :nth-child(n + 6) {
+  animation-delay: 0.15s;
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
 }
 .remote {
   position: relative;
@@ -971,7 +1020,7 @@ button.s-row:hover {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 4px;
 }
 .login input {
   height: 38px;
@@ -994,8 +1043,46 @@ button.s-row:hover {
   background: linear-gradient(145deg, #5aa8ff, #2f6fe0);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
-.primary:disabled {
+.primary:disabled,
+.secondary:disabled {
   opacity: 0.6;
+}
+.passkey {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+.passkey svg {
+  width: 17px;
+  height: 17px;
+}
+.secondary {
+  height: 38px;
+  border-radius: 11px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  transition: background 0.2s;
+}
+.secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+}
+.or {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: var(--sub);
+}
+.or::before,
+.or::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.12);
 }
 .error {
   min-height: 16px;
@@ -1004,6 +1091,14 @@ button.s-row:hover {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .panel,
+  .panel.closing {
+    transition-duration: 0.01s;
+  }
+  .panel.shown .remote > *,
+  .panel.shown .login > * {
+    animation: none;
+  }
   .on .flap,
   .on .fan-seg button.on .fan,
   .on .fan-seg button.on .w i {

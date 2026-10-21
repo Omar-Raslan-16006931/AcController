@@ -107,7 +107,7 @@ enum ACRemote {
 
         for attempt in attempts {
             guard let url = URL(string: base + attempt.path) else { continue }
-            var request = URLRequest(url: url, timeoutInterval: 15)
+            var request = URLRequest(url: url, timeoutInterval: 8)
             request.httpMethod = "POST"
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.setValue(attempt.value, forHTTPHeaderField: attempt.header)
@@ -148,36 +148,66 @@ enum ACIslandActions {
     struct Plan {
         let command: String
         let body: [String: Any]
+        /// Wait a moment and send only if no newer press of the same button
+        /// came in, so tapping + three times sends one request, not three.
+        var debounce = false
         let apply: (inout ACState) -> Void
+        /// Copies this button's field from the Pi's reply.
+        let settle: (inout ACState, ACReply.State) -> Void
+        /// Puts this button's field back after a failure.
+        let revert: (inout ACState, ACState) -> Void
+    }
+
+    // Newest press per command. An older press whose reply arrives late must
+    // not overwrite what a newer press already put on screen.
+    private static let lock = NSLock()
+    private static var tickets: [String: Int] = [:]
+
+    private static func nextTicket(_ command: String) -> Int {
+        lock.lock(); defer { lock.unlock() }
+        let ticket = (tickets[command] ?? 0) + 1
+        tickets[command] = ticket
+        return ticket
+    }
+
+    private static func isNewest(_ ticket: Int, _ command: String) -> Bool {
+        lock.lock(); defer { lock.unlock() }
+        return tickets[command] == ticket
     }
 
     /// Updates the island straight away (so the tap feels instant), sends
     /// the command, then settles on what the Pi reports. On failure it puts
-    /// the previous state back and shows why in `note`.
+    /// the previous value back and shows why in `note`.
     static func run(_ makePlan: (ACState) -> Plan?) async {
         guard let activity = Activity<ACActivityAttributes>.activities.first else { return }
         let before = activity.content.state
         guard let plan = makePlan(before) else { return }
+        let ticket = nextTicket(plan.command)
 
         var optimistic = before
         plan.apply(&optimistic)
         optimistic.note = nil
         await activity.update(ActivityContent(state: optimistic, staleDate: nil))
 
+        if plan.debounce {
+            try? await Task.sleep(nanoseconds: 350_000_000)
+            guard isNewest(ticket, plan.command) else { return }
+        }
+
         do {
             let reply = try await ACRemote.send(plan.command, body: plan.body)
             guard reply.success, let confirmed = reply.state else {
                 throw ACRemoteError.rejected(reply.message ?? "The AC didn't respond")
             }
+            guard isNewest(ticket, plan.command) else { return }
             var settled = activity.content.state
-            settled.power = confirmed.power
-            settled.temperature = confirmed.temperature
-            settled.mode = confirmed.mode
-            settled.fan = confirmed.fan
+            plan.settle(&settled, confirmed)
             settled.note = nil
             await activity.update(ActivityContent(state: settled, staleDate: nil))
         } catch {
-            var failed = before
+            guard isNewest(ticket, plan.command) else { return }
+            var failed = activity.content.state
+            plan.revert(&failed, before)
             failed.note = (error as? LocalizedError)?.errorDescription ?? "Can't reach AC"
             await activity.update(ActivityContent(state: failed, staleDate: nil))
         }
@@ -203,7 +233,12 @@ struct ACPowerIntent: LiveActivityIntent {
     func perform() async throws -> some IntentResult {
         await ACIslandActions.run { state in
             let power = !state.power
-            return ACIslandActions.Plan(command: "power", body: ["power": power], apply: { $0.power = power })
+            return ACIslandActions.Plan(
+                command: "power", body: ["power": power],
+                apply: { $0.power = power },
+                settle: { s, r in s.power = r.power },
+                revert: { s, b in s.power = b.power }
+            )
         }
         return .result()
     }
@@ -230,7 +265,12 @@ struct ACTempIntent: LiveActivityIntent {
                 ACIslandActions.temperatureRange.upperBound
             )
             guard target != state.temperature else { return nil }
-            return ACIslandActions.Plan(command: "temperature", body: ["temperature": target], apply: { $0.temperature = target })
+            return ACIslandActions.Plan(
+                command: "temperature", body: ["temperature": target], debounce: true,
+                apply: { $0.temperature = target },
+                settle: { s, r in s.temperature = r.temperature },
+                revert: { s, b in s.temperature = b.temperature }
+            )
         }
         return .result()
     }
@@ -245,7 +285,12 @@ struct ACFanIntent: LiveActivityIntent {
     func perform() async throws -> some IntentResult {
         await ACIslandActions.run { state in
             let fan = ACIslandActions.next(ACIslandActions.fans, after: state.fan)
-            return ACIslandActions.Plan(command: "fan", body: ["fan": fan], apply: { $0.fan = fan })
+            return ACIslandActions.Plan(
+                command: "fan", body: ["fan": fan], debounce: true,
+                apply: { $0.fan = fan },
+                settle: { s, r in s.fan = r.fan },
+                revert: { s, b in s.fan = b.fan }
+            )
         }
         return .result()
     }
