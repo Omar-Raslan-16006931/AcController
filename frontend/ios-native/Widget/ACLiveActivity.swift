@@ -36,7 +36,7 @@ private func fanLabel(_ fan: String) -> String {
 }
 
 /// Accent colour for the whole activity: follows the mode, grey when off.
-private func tint(_ s: ACState) -> Color {
+private func accent(_ s: ACState) -> Color {
     guard s.power else { return .gray }
     switch s.mode {
     case "heat": return warm
@@ -77,7 +77,7 @@ private struct Title: View {
         HStack(spacing: 6) {
             Image(systemName: modeSymbol(state.mode))
                 .font(.system(size: 11, weight: .bold))
-                .foregroundStyle(tint(state))
+                .foregroundStyle(accent(state))
             Text(state.power ? "\(room) · \(modeLabel(state.mode))" : room)
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(.white.opacity(0.75))
@@ -166,7 +166,7 @@ private struct TemperatureStepper: View {
         let canUp = state.power && state.temperature < ACIslandActions.temperatureRange.upperBound
         HStack(spacing: 0) {
             IntentButton(ACTempIntent(delta: -1)) {
-                StepLabel(symbol: "minus", color: tint(state), enabled: canDown)
+                StepLabel(symbol: "minus", color: accent(state), enabled: canDown)
             }
             .disabled(!canDown)
 
@@ -177,7 +177,7 @@ private struct TemperatureStepper: View {
                 .frame(maxWidth: .infinity)
 
             IntentButton(ACTempIntent(delta: 1)) {
-                StepLabel(symbol: "plus", color: tint(state), enabled: canUp)
+                StepLabel(symbol: "plus", color: accent(state), enabled: canUp)
             }
             .disabled(!canUp)
         }
@@ -214,7 +214,7 @@ private struct FanButton: View {
                     .font(.system(size: 13, weight: .semibold))
                     .lineLimit(1)
             }
-            .foregroundStyle(tint(state))
+            .foregroundStyle(accent(state))
             .frame(width: 92, height: rowHeight)
             .background(Capsule().fill(Color.white.opacity(0.10)))
             .opacity(state.power ? 1 : 0.35)
@@ -274,7 +274,7 @@ private struct LockScreenView: View {
         .padding(.vertical, 12)
         .background(
             RadialGradient(
-                colors: [tint(state).opacity(0.20), .clear],
+                colors: [accent(state).opacity(0.20), .clear],
                 center: .topLeading,
                 startRadius: 0,
                 endRadius: 240
@@ -312,7 +312,7 @@ struct ACLiveActivity: Widget {
                 }
             } compactLeading: {
                 Image(systemName: timer != nil ? "timer" : modeSymbol(s.mode))
-                    .foregroundStyle(tint(s))
+                    .foregroundStyle(accent(s))
             } compactTrailing: {
                 if let timer = timer {
                     Countdown(end: timer.end)
@@ -321,13 +321,13 @@ struct ACLiveActivity: Widget {
                 } else {
                     Text(s.power ? "\(s.temperature)°" : "Off")
                         .font(.system(size: 15, weight: .semibold, design: .rounded))
-                        .foregroundStyle(tint(s))
+                        .foregroundStyle(accent(s))
                 }
             } minimal: {
                 Image(systemName: timer != nil ? "timer" : modeSymbol(s.mode))
-                    .foregroundStyle(tint(s))
+                    .foregroundStyle(accent(s))
             }
-            .keylineTint(tint(s))
+            .keylineTint(accent(s))
         }
     }
 }
