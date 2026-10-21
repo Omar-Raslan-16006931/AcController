@@ -32,6 +32,11 @@ app_files.each do |f|
   app.source_build_phase.add_file_reference(ref, true)
 end
 
+# Our AppDelegate replaces the generated one (same file, already in the App
+# target): it builds the web view only when the app comes on screen, so a
+# Dynamic Island button doesn't boot the whole site first.
+FileUtils.cp(File.join(src, "App", "AppDelegate.swift"), File.join(ios, "App", "AppDelegate.swift"))
+
 # ---- widget extension ----------------------------------------------------
 widget_dir = File.join(ios, "ACWidget")
 FileUtils.mkdir_p(widget_dir)

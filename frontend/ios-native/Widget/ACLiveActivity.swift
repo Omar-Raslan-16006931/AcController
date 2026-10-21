@@ -174,6 +174,8 @@ private struct TemperatureStepper: View {
                 .monospacedDigit()
                 .foregroundStyle(state.power ? Color.white : Color.white.opacity(0.4))
                 .frame(maxWidth: .infinity)
+                // Pulses from the moment of the tap until the new value is in.
+                .invalidatableContent()
 
             IntentButton(ACTempIntent(delta: 1)) {
                 StepLabel(symbol: "plus", color: accent(state), enabled: canUp)
@@ -212,6 +214,7 @@ private struct FanButton: View {
                 Text(fanLabel(state.fan))
                     .font(.system(size: 13, weight: .semibold))
                     .lineLimit(1)
+                    .invalidatableContent()
             }
             .foregroundStyle(accent(state))
             .frame(width: 92, height: rowHeight)

@@ -73,6 +73,9 @@ jobs:
           set_key UIUserInterfaceStyle string Dark
           set_key UIRequiresFullScreen bool true
           set_key NSSupportsLiveActivities bool true
+          # ios-native/App/AppDelegate.swift creates the window itself, only
+          # when the app comes on screen (fast Dynamic Island buttons).
+          /usr/libexec/PlistBuddy -c "Delete :UIMainStoryboardFile" "$PLIST" || true
 
       - name: Dynamic Island (Live Activity widget + native plugin)
         run: |
