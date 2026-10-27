@@ -11,6 +11,7 @@ import { useAuth } from "@/context/auth-context"
 import { BackgroundCard } from "@/features/settings/background-card"
 import { NotificationTestCard } from "@/features/settings/notification-test-card"
 import { DynamicIslandCard } from "@/features/settings/dynamic-island-card"
+import { UsageAdjustCard } from "@/features/settings/usage-adjust-card"
 
 import { PageHeader } from "@/components/page-header"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -271,6 +272,7 @@ export function SettingsPage() {
       <div className="flex flex-col gap-2.5">
         <BackgroundCard />
         <NotificationTestCard />
+        <UsageAdjustCard />
         <DynamicIslandCard />
         <Card>
           <CardHeader>

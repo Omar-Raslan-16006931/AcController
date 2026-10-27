@@ -14,16 +14,58 @@ interface CommandResponse {
 
 const AC_MUTATION_KEY = ["ac-command"] as const
 
+type CommandPatch = Partial<Pick<StatusResponse["ac_state"], "power" | "temperature" | "mode" | "fan">>
+
+/**
+ * One command at a time on the wire. The Pi sends infrared one command at a
+ * time and every command re-sends the whole state, so firing a request per
+ * tap just queues them up on the Pi (and they can overtake each other).
+ * Instead: while a request is out, further taps are merged into ONE pending
+ * request with the latest values, sent the moment the first one returns.
+ * Tapping + five times is two requests, not five, and the AC ends on the
+ * right value sooner.
+ */
+interface Waiter {
+  resolve: (r: CommandResponse) => void
+  reject: (e: unknown) => void
+}
+let inFlight = false
+let pending: { patch: CommandPatch; waiters: Waiter[] } | null = null
+
+function sendMerged(patch: CommandPatch): Promise<CommandResponse> {
+  return new Promise((resolve, reject) => {
+    pending ??= { patch: {}, waiters: [] }
+    Object.assign(pending.patch, patch)
+    pending.waiters.push({ resolve, reject })
+    void pump()
+  })
+}
+
+async function pump(): Promise<void> {
+  if (inFlight || !pending) return
+  inFlight = true
+  const batch = pending
+  pending = null
+  try {
+    const res = await api.post<CommandResponse>("/api/command", batch.patch)
+    batch.waiters.forEach((w) => w.resolve(res))
+  } catch (err) {
+    batch.waiters.forEach((w) => w.reject(err))
+  } finally {
+    inFlight = false
+    void pump()
+  }
+}
+
 function useAcMutation<TVariables>(
-  path: string,
-  toVariables: (v: TVariables) => Record<string, unknown>,
+  toVariables: (v: TVariables) => CommandPatch,
   optimisticState: (current: StatusResponse["ac_state"], v: TVariables) => StatusResponse["ac_state"]
 ) {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationKey: AC_MUTATION_KEY,
-    mutationFn: (variables: TVariables) => api.post<CommandResponse>(path, toVariables(variables)),
+    mutationFn: (variables: TVariables) => sendMerged(toVariables(variables)),
     onMutate: async (variables) => {
       // Optimistic first, synchronously, so the UI reacts on the same frame
       // as the tap; then stop any in-flight status poll from overwriting it.
@@ -43,13 +85,15 @@ function useAcMutation<TVariables>(
       if (context?.previous) {
         queryClient.setQueryData(queryKeys.status, context.previous)
       }
+      // Merged taps fail together: one toast, not one per tap.
       toast.error("Command failed", {
+        id: "ac-command-failed",
         description: error instanceof Error ? error.message : "The AC didn't respond.",
       })
     },
     onSuccess: (data) => {
       if (!data.success) {
-        toast.error("Command failed", { description: data.message ?? "The AC didn't respond." })
+        toast.error("Command failed", { id: "ac-command-failed", description: data.message ?? "The AC didn't respond." })
         return
       }
       // While more taps are still in flight, keep showing the optimistic
@@ -71,7 +115,6 @@ function useAcMutation<TVariables>(
 
 export function useSetPower() {
   return useAcMutation<boolean>(
-    "/api/power",
     (power) => ({ power }),
     (current, power) => ({ ...current, power })
   )
@@ -79,7 +122,6 @@ export function useSetPower() {
 
 export function useSetTemperature() {
   return useAcMutation<number>(
-    "/api/temperature",
     (temperature) => ({ temperature }),
     (current, temperature) => ({ ...current, temperature })
   )
@@ -87,7 +129,6 @@ export function useSetTemperature() {
 
 export function useSetMode() {
   return useAcMutation<AcMode>(
-    "/api/mode",
     (mode) => ({ mode }),
     (current, mode) => ({ ...current, mode })
   )
@@ -95,7 +136,6 @@ export function useSetMode() {
 
 export function useSetFan() {
   return useAcMutation<FanSpeed>(
-    "/api/fan",
     (fan) => ({ fan }),
     (current, fan) => ({ ...current, fan })
   )
@@ -115,7 +155,6 @@ export interface DraftCommand {
  */
 export function useSendCommand() {
   return useAcMutation<DraftCommand>(
-    "/api/command",
     (draft) => ({ ...draft }),
     (current, draft) => ({ ...current, ...draft })
   )

@@ -1,34 +1,26 @@
-import { useQuery } from "@tanstack/react-query"
-
-import { api } from "@/lib/api"
+import { useStatus } from "@/features/dashboard/use-status"
 
 export type ConnectionState = "online" | "offline" | "checking"
 
-interface StatusResponse {
-  online: boolean
-}
-
 /**
- * Polls the FastAPI backend's /api/status endpoint to determine whether the
- * Raspberry Pi is reachable. Full payload (CPU/RAM/etc.) is consumed by the
- * Dashboard/System pages in a later module — this hook only needs the
- * online/offline signal for the topbar indicator.
+ * Online/offline signal for the topbar chip, derived from the same
+ * /api/status query the rest of the app already polls (one request instead
+ * of two, and it starts from the cached copy, so the chip is right on the
+ * first frame instead of sitting on "Checking").
+ *
+ * "checking" only shows while there is nothing to go on yet: no cached
+ * answer and the first request still running.
  */
 export function useConnectionStatus() {
-  const query = useQuery({
-    queryKey: ["connection-status"],
-    queryFn: () => api.get<StatusResponse>("/api/status"),
-    refetchInterval: 15_000,
-    retry: 1,
-  })
+  const query = useStatus()
 
-  const state: ConnectionState = query.isLoading
-    ? "checking"
+  const state: ConnectionState = query.data
+    ? query.data.online
+      ? "online"
+      : "offline"
     : query.isError
       ? "offline"
-      : query.data?.online
-        ? "online"
-        : "offline"
+      : "checking"
 
   return { state, isLoading: query.isLoading }
 }
