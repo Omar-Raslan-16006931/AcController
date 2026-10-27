@@ -1,7 +1,9 @@
+import * as React from "react"
 import { useQuery } from "@tanstack/react-query"
 
 import { supabase } from "@/lib/supabase"
 import { useAuth } from "@/context/auth-context"
+import { applyAdjustments, useUsageAdjustments } from "@/features/dashboard/usage-adjustment"
 import type { AcMode, FanSpeed } from "@/types/database"
 
 const LOOKBACK_DAYS = 8 // one extra day of context, same reasoning as use-ac-usage.ts
@@ -113,9 +115,13 @@ function mergeNoOpIntervals(intervals: AcUsageInterval[]): AcUsageInterval[] {
 export function useAcUsageDetail(enabled = true) {
   const { user } = useAuth()
   const userId = user?.id
+  const adjustments = useUsageAdjustments()
+  // Manual "minutes off" corrections are applied on top of the cached data.
+  const select = React.useCallback((days: AcUsageDayDetail[]) => applyAdjustments(days, adjustments), [adjustments])
 
   return useQuery({
     queryKey: ["ac-usage-detail", userId],
+    select,
     queryFn: async (): Promise<AcUsageDayDetail[]> => {
       const since = new Date()
       since.setDate(since.getDate() - LOOKBACK_DAYS)

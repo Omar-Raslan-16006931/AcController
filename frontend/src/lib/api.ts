@@ -24,11 +24,30 @@ export class ApiError extends Error {
   }
 }
 
+// The access token is kept in memory and updated by the auth listener, so a
+// request never waits on supabase.auth.getSession() (which can queue behind
+// a token refresh) before it can leave the phone.
+let cachedToken: string | null = null
+let tokenReady: Promise<void> | null = null
+
+supabase.auth.onAuthStateChange((_event, session) => {
+  cachedToken = session?.access_token ?? null
+})
+
 async function authHeaders(): Promise<HeadersInit> {
-  const { data } = await supabase.auth.getSession()
-  const token = data.session?.access_token
-  return token ? { Authorization: `Bearer ${token}` } : {}
+  if (cachedToken === null) {
+    tokenReady ??= supabase.auth.getSession().then(({ data }) => {
+      cachedToken = data.session?.access_token ?? null
+    })
+    await tokenReady
+    tokenReady = null
+  }
+  return cachedToken ? { Authorization: `Bearer ${cachedToken}` } : {}
 }
+
+// A request that hangs (Pi busy, bad signal) must fail in seconds so the UI
+// can show "offline" / retry, instead of spinning for the browser's minutes.
+const DEFAULT_TIMEOUT_MS = 8_000
 
 export async function apiFetch<T>(
   path: string,
@@ -36,14 +55,23 @@ export async function apiFetch<T>(
 ): Promise<T> {
   const headers = await authHeaders()
 
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...headers,
-      ...init.headers,
-    },
-  })
+  let res: Response
+  try {
+    res = await fetch(`${API_BASE_URL}${path}`, {
+      ...init,
+      signal: init.signal ?? AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
+      headers: {
+        "Content-Type": "application/json",
+        ...headers,
+        ...init.headers,
+      },
+    })
+  } catch (err) {
+    if (err instanceof DOMException && (err.name === "TimeoutError" || err.name === "AbortError")) {
+      throw new ApiError("The AC controller took too long to answer", 0, null)
+    }
+    throw err
+  }
 
   const contentType = res.headers.get("content-type") ?? ""
   const body = contentType.includes("application/json")

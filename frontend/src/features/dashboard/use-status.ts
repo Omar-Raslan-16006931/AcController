@@ -42,5 +42,9 @@ export function useStatus(options?: { refetchInterval?: number; enabled?: boolea
     queryFn: () => api.get<StatusResponse>("/api/status"),
     refetchInterval: options?.refetchInterval ?? 10_000,
     enabled: options?.enabled ?? true,
+    // One quick retry: a slow Pi shouldn't leave the UI "checking" for the
+    // default 2 retries with growing delays.
+    retry: 1,
+    retryDelay: 800,
   })
 }
